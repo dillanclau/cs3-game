@@ -5,6 +5,12 @@
 “The Floor is Lava” is a single player game where the player moves a water sprite to interact with obstacles including platforms, doors, and elevators. If the player successfully collects gems and escapes through the final door, the player wins! The game will be timed, so the player with the quickest moves and most gems wins the most!
 
 We will also describe how the game works, the special features we implemented in our game, our development timeline, and disaster recovery when things go awry. 
+“The Floor is Lava” by Olivia Wang, Natalie Zhou, and Dillan Lau.
+
+“The Floor is Lava” is a single player game where the player moves a water sprite to interact with obstacles including platforms, doors, and elevators. If the player successfully collects gems and escapes through the final door, the player wins! The game will be timed, so the player with the quickest moves and most gems wins the most!
+
+We will also describe how the game works, the special features we implemented in our game, our development timeline, and disaster recovery when things go awry. 
+
 ## Section 1: Gameplay
 There will be a timer at the top of the game screen that indicates the progress of the game. The faster the player completes the level, the better their final score will be! The final score (red, orange, or green gem) will be calculated using the number of gems the player collected and the amount of time the player took to complete the level.
 
@@ -74,8 +80,8 @@ Priority numbers (1, 2, 3, 4) are in parentheses.
 ## Section 3: Timeline
 **Week of 5/12 - 5/18**
 - Planning of game design
-= Writing up game design document
-= Splitting up the development features to work on
+- Writing up game design document
+- Splitting up the development features to work on
 
 **Week of 5/19 - 5/25**
 - Starting to implement feature 1
