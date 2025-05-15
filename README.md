@@ -16,7 +16,7 @@ There will be a timer at the top of the game screen that indicates the progress 
 
 The player will navigate through a map filled with platform, elevator, and door obstacles. If the player successfully completes the level and enters the final door, the player wins! If the player falls into lava and dies, the player loses :(.
 
-We will be implementing one map level, so once the player succeeds, they can restart the game and try to beat their previous score. 
+We will be implementing one map level (no scrolling screen), so once the player succeeds, they can restart the game and try to beat their previous score. 
 
 The player will be able to control the movement of the sprite using the right, left, and up arrow keys. In order to move right, the player will press the right key. In order to move left, the player will move the left key. In order to jump on blocks, the player will press the up arrow key. 
 
@@ -28,7 +28,7 @@ Priority numbers (1, 2, 3, 4) are in parentheses.
 
 **General Features**
 - Initialization of the map (1)
-- Where the obstacle objets and blocks are located in the map
+- Where the obstacle objects and blocks are located in the map
 - Keyboard controls (1)
 - Up is jumping, sprite is facing front
     - Left is moving left, sprite faces left
