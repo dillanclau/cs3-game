@@ -28,9 +28,9 @@ Priority numbers (1, 2, 3, 4) are in parentheses.
 -   Where the obstacle objects and blocks are located in the map
 - Keyboard controls (1)
 -   Controlling the sprite
--       Up is jumping, sprite is facing front
--       Left is moving left, sprite faces left
--       Right is moving left, sprite faces right
+-    Up is jumping, sprite is facing front
+-    Left is moving left, sprite faces left
+-    Right is moving left, sprite faces right
 -   Selecting level during homepage
 - Homepage (2)
 - Timer (3)
