@@ -25,13 +25,13 @@ Priority numbers (1, 2, 3, 4) are in parentheses.
 
 **General Features**
 - Initialization of the 3 maps (1)
--   Where the obstacle objects and blocks are located in the map
+    - Where the obstacle objects and blocks are located in the map
 - Keyboard controls (1)
--   Controlling the sprite
--    Up is jumping, sprite is facing front
--    Left is moving left, sprite faces left
--    Right is moving left, sprite faces right
--   Selecting level during homepage
+    - Controlling the sprite
+        - Up is jumping, sprite is facing front
+        - Left is moving left, sprite faces left
+        - Right is moving left, sprite faces right
+    - Selecting level during homepage
 - Homepage (2)
 - Timer (3)
 - Restart, Pause, Return to Homepage (3)
@@ -39,15 +39,15 @@ Priority numbers (1, 2, 3, 4) are in parentheses.
 
 **Physics**
 - Player is able to walk and run around (with velocity and acceleration implemented) (1)
--   Player is also able to jump on blocks and fall off
+    - Player is also able to jump on blocks and fall off
 - Player dies when landing in lava (1)
 - Player can click buttons to lead to movements including…
--   Doors opening and closing (2)
--   Elevators lifting and lowering (3)
+    - Doors opening and closing (2)
+    - Elevators lifting and lowering (3)
 
 **Graphics** (2)
 - Sprites (player, gems, blocks, levels)
--   Player sprite (left, right, and front)
+    - Player sprite (left, right, and front)
 - Lava and water animation (3-4 frames)
 - Background
 
@@ -84,29 +84,29 @@ Priority numbers (1, 2, 3, 4) are in parentheses.
 
 **Week of 5/19 - 5/25**
 - Starting to implement feature 1
--   Lava leading to dying
--   Keyboard controls
--   Initializing the map
--   Designing sprites 
--   Walking and running 
+    - Lava leading to dying
+    - Keyboard controls
+    - Initializing the map
+    - Designing sprites 
+    - Walking and running 
 
 **Week of 5/26 - 6/1**
 - Making sure the basic controls work and implemented features 1 work
 - Making sure the physics works and is as accurate as possible
 - Implementing feature 2
--   Timer
--   Implementing pause
--   Implementing doors 
+    - Timer
+    - Implementing pause
+    - Implementing doors 
 
 **Week of 6/2 - 6/8**
 - Implementing feature 3
--   Point calculation
--   Moving elevator
--   Water animation
+    - Point calculation
+    - Moving elevator
+    - Water animation
 - Implementing feature 4
--   Sound effects
--   Graphics for game background
--   Constant background music
+    - Sound effects
+    - Graphics for game background
+    - Constant background music
 
 **Week of 6/9 - 6/10**
 - Testing the game and making sure it works
