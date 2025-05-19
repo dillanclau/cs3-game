@@ -58,23 +58,23 @@ Priority numbers (1, 2, 3, 4) are in parentheses.
 ### Features Assigned to Each Person
 
 **Dillan:**
-1 - Keyboard controls
-1 - Lava leading to dying (implement the game over function)
-2 - Implementing doors moving when map button is clicked
-3 - Timer
-4 - Point calculation with gems and time
+- 1 - Keyboard controls
+- 1 - Lava leading to dying (implement the game over function)
+- 2 - Implementing doors moving when map button is clicked
+- 3 - Timer
+- 4 - Point calculation with gems and time
 
 **Olivia:** 
-1 - Initializing the map 
-2 - Graphics for the game
-3 - Moving elevator when map button is clicked
-4 - Sound effects 
+- 1 - Initializing the map 
+- 2 - Graphics for the game
+- 3 - Moving elevator when map button is clicked
+- 4 - Sound effects 
 
 **Natalie:**
-1 - Walking and running (velocity + acceleration)
-2 - Homepage
-3 -  Restart, Pause, Return to Homepage
-4 - Constant background music
+- 1 - Walking and running (velocity + acceleration)
+- 2 - Homepage
+- 3 -  Restart, Pause, Return to Homepage
+- 4 - Constant background music
 
 ## Section 3: Timeline
 **Week of 5/12 - 5/18**
