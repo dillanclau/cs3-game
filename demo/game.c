@@ -12,7 +12,7 @@
 #include "sdl_wrapper.h"
 
 const vector_t MIN = {0, 0};
-const vector_t MAX = {1000, 500};
+const vector_t MAX = {1500, 1000};
 
 const vector_t START_POS = {500, 30};
 const vector_t RESET_POS = {500, 45};
@@ -38,12 +38,12 @@ const size_t ROWS = 8;
 
 const size_t BODY_ASSETS = 2;
 
-const char *FROGGER_PATH = "assets/frogger.png";
-const char *LOG_PATH = "assets/log.png";
-const char *BACKGROUND_PATH = "assets/frogger-background.png";
+const char *SPIRIT_FRONT_PATH = "assets/waterspiritfront.png";
+// const char *LOG_PATH = "assets/log.png";
+const char *BACKGROUND_PATH = "assets/dungeonbackground.png";
 
 struct state {
-  body_t *frog;
+  body_t *spirit;
   scene_t *scene;
   int16_t points;
 };
