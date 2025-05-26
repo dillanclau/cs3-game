@@ -159,6 +159,32 @@ void sdl_clear(void) {
   SDL_RenderClear(renderer);
 }
 
+SDL_Rect sdl_get_body_bounding_box(body_t *body) {
+  vector_t vert = {.x = __DBL_MAX__, .y = -__DBL_MAX__};
+  vector_t horiz = {.x = -__DBL_MAX__, .y = __DBL_MAX__};
+  list_t *points = body_get_shape(body);
+  size_t n = list_size(points);
+  vector_t window_center = get_window_center();
+  for (size_t i = 0; i < n; i++) {
+    vector_t *vertex = list_get(points, i);
+    vector_t pixel = get_window_position(*vertex, window_center);
+    if (pixel.y > vert.y) {
+      vert.y = pixel.y;
+    } else if (pixel.y < horiz.y) {
+      horiz.y = pixel.y;
+    }
+
+    if (pixel.x > horiz.x) {
+      horiz.x = pixel.x;
+    } else if (pixel.x < vert.x) {
+      vert.x = pixel.x;
+    }
+  }
+
+  return (SDL_Rect){
+      .x = vert.x, .y = horiz.y, .w = horiz.x - vert.x, .h = vert.y - horiz.y};
+}
+
 void sdl_draw_body(body_t *body) {
   // Check parameters
   list_t *points = body_get_shape(body);
@@ -194,6 +220,7 @@ void sdl_draw_body(body_t *body) {
   free(x_points);
   free(y_points);
 }
+
 
 SDL_Texture *sdl_get_image_texture(const char *image_path) {
   SDL_Texture *img = IMG_LoadTexture(renderer, image_path);

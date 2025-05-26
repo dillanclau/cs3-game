@@ -12,7 +12,7 @@
 #include "sdl_wrapper.h"
 
 const vector_t MIN = {0, 0};
-const vector_t MAX = {1500, 1000};
+const vector_t MAX = {750, 500}; 
 
 const vector_t START_POS = {500, 30};
 const vector_t RESET_POS = {500, 45};
@@ -26,21 +26,22 @@ const size_t OBSTACLE_HEIGHT = 30;
 const vector_t OBS_WIDTHS = {30, 70};
 const vector_t OBS_SPACING = {120, 350};
 
-const size_t FROG_NUM_POINTS = 20;
+const size_t SPIRIT_NUM_POINTS = 20;
 
 const color_t OBS_COLOR = (color_t){0.2, 0.2, 0.3};
-const color_t FROG_COLOR = (color_t){0.1, 0.9, 0.2};
+const color_t SPIRIT_COLOR = (color_t){0.1, 0.9, 0.2};
 
-// constants to create invaders
-const int16_t H_STEP = 20;
-const int16_t V_STEP = 40;
-const size_t ROWS = 8;
+// constants to create platforms
+const int16_t H_STEP = 50;
+const int16_t V_STEP = 30;
+const size_t ROWS = 50;
 
 const size_t BODY_ASSETS = 2;
 
 const char *SPIRIT_FRONT_PATH = "assets/waterspiritfront.png";
-// const char *LOG_PATH = "assets/log.png";
 const char *BACKGROUND_PATH = "assets/dungeonbackground.png";
+const char *BRICK_PATH = "assets/bricks.png";
+const char *BRICK_PATH1 = "assets/log.png";
 
 struct state {
   body_t *spirit;
@@ -65,23 +66,23 @@ body_t *make_obstacle(size_t w, size_t h, vector_t center) {
   vector_t *v4 = malloc(sizeof(vector_t));
   *v4 = (vector_t){0, h};
   list_add(c, v4);
-  body_t *obstacle = body_init(c, 1, OBS_COLOR);
+  body_t *obstacle = body_init(c, __DBL_MAX__, OBS_COLOR);
   body_set_centroid(obstacle, center);
   return obstacle;
 }
 
-body_t *make_frog(double outer_radius, double inner_radius, vector_t center) {
+body_t *make_spirit(double outer_radius, double inner_radius, vector_t center) {
   center.y += inner_radius;
-  list_t *c = list_init(FROG_NUM_POINTS, free);
-  for (size_t i = 0; i < FROG_NUM_POINTS; i++) {
-    double angle = 2 * M_PI * i / FROG_NUM_POINTS;
+  list_t *c = list_init(SPIRIT_NUM_POINTS, free);
+  for (size_t i = 0; i < SPIRIT_NUM_POINTS; i++) {
+    double angle = 2 * M_PI * i / SPIRIT_NUM_POINTS;
     vector_t *v = malloc(sizeof(*v));
     *v = (vector_t){center.x + inner_radius * cos(angle),
                     center.y + outer_radius * sin(angle)};
     list_add(c, v);
   }
-  body_t *froggy = body_init(c, 1, FROG_COLOR);
-  return froggy;
+  body_t *spirit = body_init(c, 1, SPIRIT_COLOR);
+  return spirit;
 }
 
 void wrap_edges(body_t *body) {
@@ -115,7 +116,7 @@ void player_wrap_edges(state_t *state) {
 }
 
 void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
-  body_t *froggy = scene_get_body(state->scene, 0);
+  body_t *spirit = scene_get_body(state->scene, 0);
   vector_t translation = (vector_t){0, 0};
   if (type == KEY_PRESSED && type != KEY_RELEASED) {
     switch (key) {
@@ -129,13 +130,13 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
       translation.y = V_STEP;
       break;
     case DOWN_ARROW:
-      if (body_get_centroid(froggy).y > START_POS.y) {
+      if (body_get_centroid(spirit).y > START_POS.y) {
         translation.y = -V_STEP;
       }
       break;
     }
-    vector_t new_centroid = vec_add(body_get_centroid(froggy), translation);
-    body_set_centroid(froggy, new_centroid);
+    vector_t new_centroid = vec_add(body_get_centroid(spirit), translation);
+    body_set_centroid(spirit, new_centroid);
   }
 }
 
@@ -143,33 +144,35 @@ double rand_double(double low, double high) {
   return (high - low) * rand() / RAND_MAX + low;
 }
 
-void make_logs(state_t *state) {
-  body_t *froggy = state->frog;
-  for (size_t r = 3; r < ROWS + 3; r++) {
-    double cx = 0;
-    double cy = r * V_STEP + body_get_centroid(froggy).y;
-    double multiplier = 0;
-    if (r % 2 == 0) {
-      multiplier = 1;
-    } else {
-      multiplier = -1;
-    }
-    if ((double)rand() / RAND_MAX < VEL_MULT_PROB) {
-      multiplier *= EXTRA_VEL_MULT;
-    }
-    while (cx < MAX.x) {
-      double w = rand_double(OBS_WIDTHS.x, OBS_WIDTHS.y);
-      body_t *obstacle = make_obstacle(w, OBSTACLE_HEIGHT, (vector_t){cx, cy});
-      cx += w + rand_double(OBS_SPACING.x, OBS_SPACING.y);
+void make_platforms(state_t *state){
+  // for map 1, will make this more organized later!
+  const size_t BRICK_WIDTH = 20;
+  const size_t BRICK_NUM = 8;
 
-      body_set_velocity(obstacle, vec_multiply(multiplier, BASE_OBJ_VEL));
-      scene_add_body(state->scene, obstacle);
+  // size_t HEIGHTS[ROW_NUM] = {425, 300, 200, 75};
+  int BRICKS[BRICK_NUM][3] = {{160, 425, 320}, {560, 425, 150}, {425, 300, 650}, 
+  {325, 200, 650}, {180, 75, 175}, {500, 75, 175}};
+  // {x, y, width}
+  for(size_t i = 0; i < BRICK_NUM; i++){
+    vector_t coord = (vector_t) {BRICKS[i][0],BRICKS[i][1] };
+    body_t *obstacle = make_obstacle(BRICKS[i][2], BRICK_WIDTH, coord);
+    scene_add_body(state->scene, obstacle);
+    create_collision(state->scene, state->spirit, obstacle, reset_user_handler, NULL, 0, NULL);
+    asset_make_image_with_body(BRICK_PATH, obstacle);
 
-      create_collision(state->scene, froggy, obstacle, reset_user_handler, NULL,
-                       0, NULL);
+  } 
 
-      // TODO (task 4a): make the asset for the log image
-    }
+  // misc sized blocks
+  // {x, y, width, height}
+  const size_t NUM_OBST = 4;
+  int OBST[NUM_OBST][4] = {{730, 330, 40, 60}, {30, 235, 60, 70}, {730, 90, 40, 60}, {715, 35, 70, 70}};
+
+  for (size_t i = 0; i < NUM_OBST; i++){
+    vector_t coord = (vector_t) {OBST[i][0],OBST[i][1] };
+    body_t *obstacle = make_obstacle(OBST[i][2], OBST[i][3], coord);
+    scene_add_body(state->scene, obstacle);
+    create_collision(state->scene, state->spirit, obstacle, reset_user_handler, NULL, 0, NULL);
+    asset_make_image_with_body(BRICK_PATH, obstacle);
   }
 }
 
@@ -181,17 +184,20 @@ state_t *emscripten_init() {
   srand(time(NULL));
   state->scene = scene_init();
 
-  body_t *froggy = make_frog(OUTER_RADIUS, INNER_RADIUS, VEC_ZERO);
-  body_set_centroid(froggy, RESET_POS);
-  state->frog = froggy;
+  // background image - the offset is a little strange
+  SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
+  asset_make_image(BACKGROUND_PATH, box);
 
-  scene_add_body(state->scene, froggy);
+  body_t *spirit =  make_spirit(OUTER_RADIUS, INNER_RADIUS, VEC_ZERO);
+  body_set_centroid(spirit, RESET_POS);
+  state->spirit = spirit;
+  scene_add_body(state->scene, spirit);
 
-  // TODO (task 4a): make the asset for the frog image
+  // spirit
+  asset_make_image_with_body(SPIRIT_FRONT_PATH, state->spirit);
 
-  // TODO (task 4c): make the asset for the background image
-
-  make_logs(state);
+  make_platforms(state);
+  
 
   sdl_on_key((key_handler_t)on_key);
   return state;

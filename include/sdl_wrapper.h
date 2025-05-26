@@ -64,6 +64,13 @@ bool sdl_is_done(state_t *state);
 void sdl_clear(void);
 
 /**
+ * Returns the SDL_Rect bounding box when given a body.
+ *
+ * @param body body_t where the bounding box will be determined by
+ */
+SDL_Rect sdl_get_body_bounding_box(body_t *body);
+
+/**
  * Draws a body using the color of the body.
  *
  * @param body the body struct to draw
