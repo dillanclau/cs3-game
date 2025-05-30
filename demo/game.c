@@ -131,8 +131,22 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
 }
 
 void platform_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
-                        double force_const) {
-  //
+                      double force_const) {
+  vector_t user_vel = body_get_velocity(body1);
+  vector_t user_pos = body_get_centroid(body1);
+  vector_t plat_pos = body_get_centroid(body2);
+  if ((user_vel.x > 0) && (plat_pos.x > user_pos.x)) {
+    user_vel.x = 0;
+  } else if ((user_vel.x < 0) && (plat_pos.x < user_pos.x)) {
+    user_vel.x = 0;
+  }
+
+  if ((user_vel.y > 0) && (plat_pos.y > user_pos.y)) {
+    user_vel.y = -user_vel.y;
+  } else if ((user_vel.y < 0) && (plat_pos.y < user_pos.y)) {
+    user_vel.y = 0;
+  }
+  body_set_velocity(body1, user_vel);
 }
 
 void player_wrap_edges(state_t *state) {
@@ -184,7 +198,6 @@ void make_platforms(state_t *state, size_t idx) {
     body_t *obstacle =
         make_obstacle(BRICKS1[i][2], BRICKS1[i][3], coord, "platform");
     scene_add_body(state->scene, obstacle);
-    // create_physics_collision(state->scene, state->spirit, obstacle, 1);
     create_collision(state->scene, state->spirit, obstacle, platform_handler,
                      NULL, 0, NULL);
     asset_make_image_with_body(BRICK_PATH, obstacle);
