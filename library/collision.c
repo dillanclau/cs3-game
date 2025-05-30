@@ -3,9 +3,8 @@
 
 #include <assert.h>
 #include <math.h>
-#include <stdlib.h>
 #include <sdl_wrapper.h>
-
+#include <stdlib.h>
 
 /**
  * Returns a list of vectors representing the edges of a shape.
@@ -70,7 +69,7 @@ static collision_info_t compare_collision(list_t *shape1, list_t *shape2,
   list_t *edges1 = get_edges(shape1);
   vector_t collision_axis = (vector_t){.x = 0, .y = 0};
   for (size_t i = 0; i < list_size(edges1); i++) {
-    vector_t *curr_edge1 = (vector_t *) list_get(edges1, i);
+    vector_t *curr_edge1 = (vector_t *)list_get(edges1, i);
     vector_t projection = vec_rotate(*curr_edge1, M_PI / 2);
     double help = 1 / vec_get_length(projection);
     vector_t unit_axis = vec_multiply(help, projection);
@@ -128,7 +127,5 @@ collision_type_t find_collision_type(body_t *sprite, body_t *platform) {
   SDL_Rect platform_rect = sdl_get_body_bounding_box(platform);
 
   if (sprite_rect.x < platform_rect.x) {
-    
   }
-
 }

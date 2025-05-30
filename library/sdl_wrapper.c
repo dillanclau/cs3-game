@@ -221,7 +221,6 @@ void sdl_draw_body(body_t *body) {
   free(y_points);
 }
 
-
 SDL_Texture *sdl_get_image_texture(const char *image_path) {
   SDL_Texture *img = IMG_LoadTexture(renderer, image_path);
   return img;
