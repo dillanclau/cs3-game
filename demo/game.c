@@ -35,19 +35,25 @@ const color_t SPIRIT_COLOR = (color_t){0.1, 0.9, 0.2};
 const size_t NUM_MAP = 3;
 const size_t BRICK_WIDTH = 20;
 const size_t BRICK_NUM[NUM_MAP] = {10, 10, 10};
-size_t BRICKS1[10][4] = {{160, 425, 320, BRICK_WIDTH}, 
-{560, 425, 150, BRICK_WIDTH}, 
-{425, 300, 650, BRICK_WIDTH}, {325, 200, 650, BRICK_WIDTH}, 
-{180, 75, 175, BRICK_WIDTH},
-{500, 75, 175, BRICK_WIDTH}, {730, 330, 40, 60}, {30, 235, 60, 70}, 
-{730, 90, 40, 60}, {715, 35, 70, 70}};
+size_t BRICKS1[10][4] = {{160, 425, 320, BRICK_WIDTH},
+                         {560, 425, 150, BRICK_WIDTH},
+                         {425, 300, 650, BRICK_WIDTH},
+                         {325, 200, 650, BRICK_WIDTH},
+                         {180, 75, 175, BRICK_WIDTH},
+                         {500, 75, 175, BRICK_WIDTH},
+                         {730, 330, 40, 60},
+                         {30, 235, 60, 70},
+                         {730, 90, 40, 60},
+                         {715, 35, 70, 70}};
 // size_t BRICKS2[][]
 // size_t BRICKS3[][]
 
 const size_t LAVA_WIDTH = 7;
 const size_t LAVA_NUM[NUM_MAP] = {4, 0, 0};
-size_t LAVA1[4][4] = {{180, 10, 165, LAVA_WIDTH}, 
-{500, 90, 165, LAVA_WIDTH}, {500, 310, 100, LAVA_WIDTH}, {250, 310, 175, LAVA_WIDTH}};
+size_t LAVA1[4][4] = {{180, 10, 165, LAVA_WIDTH},
+                      {500, 90, 165, LAVA_WIDTH},
+                      {500, 310, 100, LAVA_WIDTH},
+                      {250, 310, 175, LAVA_WIDTH}};
 
 const int16_t H_STEP = 50;
 const int16_t V_STEP = 30;
@@ -67,7 +73,7 @@ struct state {
   bool pause;
 };
 
-body_t *make_obstacle(size_t w, size_t h, vector_t center, char* info) {
+body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
   list_t *c = list_init(4, free);
   vector_t *v1 = malloc(sizeof(vector_t));
   *v1 = (vector_t){0, 0};
@@ -124,6 +130,11 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   reset_user(body1);
 }
 
+void platform_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
+                        double force_const) {
+  //
+}
+
 void player_wrap_edges(state_t *state) {
   body_t *player = scene_get_body(state->scene, 0);
   vector_t centroid = body_get_centroid(player);
@@ -170,9 +181,11 @@ void make_platforms(state_t *state, size_t idx) {
     if (BRICKS1[i][3] == 0) {
       BRICKS1[i][3] = BRICK_WIDTH;
     }
-    body_t *obstacle = make_obstacle(BRICKS1[i][2], BRICKS1[i][3], coord, "platform");
+    body_t *obstacle =
+        make_obstacle(BRICKS1[i][2], BRICKS1[i][3], coord, "platform");
     scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
+    // create_physics_collision(state->scene, state->spirit, obstacle, 1);
+    create_collision(state->scene, state->spirit, obstacle, platform_handler,
                      NULL, 0, NULL);
     asset_make_image_with_body(BRICK_PATH, obstacle);
   }
@@ -199,7 +212,8 @@ state_t *emscripten_init() {
   state->scene = scene_init();
 
   // background image - the offset is a little strange
-  SDL_Rect box = (SDL_Rect){.x = MIN.x + 125, .y = MIN.y, .w = MAX.x, .h = MAX.y};
+  SDL_Rect box =
+      (SDL_Rect){.x = MIN.x + 125, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(BACKGROUND_PATH, box);
 
   body_t *spirit = make_spirit(OUTER_RADIUS, INNER_RADIUS, VEC_ZERO);
@@ -209,12 +223,12 @@ state_t *emscripten_init() {
 
   // spirit
   asset_make_image_with_body(SPIRIT_FRONT_PATH, state->spirit);
-  //make platform
+  // make platform
   make_platforms(state, 1);
-  //make lava
+  // make lava
   make_lava(state);
-  
-  //make water
+
+  // make water
   sdl_on_key((key_handler_t)on_key);
   return state;
 }
