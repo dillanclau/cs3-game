@@ -9,7 +9,7 @@
 #include <time.h>
 
 const char WINDOW_TITLE[] = "CS 3";
-const size_t WINDOW_WIDTH = 1000;
+const size_t WINDOW_WIDTH = 750;
 const size_t WINDOW_HEIGHT = 500;
 const SDL_Color SDL_BLACK = {0, 0, 0};
 const int8_t FONT_HEIGHT_SCALE = 2;
@@ -101,6 +101,20 @@ char get_keycode(SDL_Keycode key) {
     return DOWN_ARROW;
   case SDLK_SPACE:
     return SPACE_BAR;
+  case SDLK_1:
+    return KEY_1;
+  case SDLK_2:
+    return KEY_2;
+  case SDLK_3:
+    return KEY_3;
+  case SDLK_h:
+    return KEY_H;
+  case SDLK_p:
+    return KEY_P;
+  case SDLK_r:
+    return KEY_R;
+  case SDLK_u:
+    return KEY_U;
   default:
     // Only process 7-bit ASCII characters
     return key == (SDL_Keycode)(char)key ? key : '\0';

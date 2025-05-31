@@ -13,6 +13,7 @@
 
 const vector_t MIN = {0, 0};
 const vector_t MAX = {750, 500}; 
+const vector_t CENTER = {375, 250};
 
 const vector_t START_POS = {500, 30};
 const vector_t RESET_POS = {500, 45};
@@ -30,6 +31,7 @@ const size_t SPIRIT_NUM_POINTS = 20;
 
 const color_t OBS_COLOR = (color_t){0.2, 0.2, 0.3};
 const color_t SPIRIT_COLOR = (color_t){0.1, 0.9, 0.2};
+const color_t TEXT_COLOR = (color_t){1, 0, 0};
 
 // constants to create platforms
 const int16_t H_STEP = 50;
@@ -42,11 +44,23 @@ const char *SPIRIT_FRONT_PATH = "assets/waterspiritfront.png";
 const char *BACKGROUND_PATH = "assets/dungeonbackground.png";
 const char *BRICK_PATH = "assets/bricks.png";
 const char *BRICK_PATH1 = "assets/log.png";
+const char *PAUSE_FILEPATH = "assets/pause.png";
+const char *FONT_FILEPATH = "assets/Cascadia.ttf";
+
+typedef enum {
+  LEVEL1 = 1,
+  LEVEL2 = 2,
+  LEVEL3 = 3,
+  HOMEPAGE = 4,
+} screen_t;
 
 struct state {
   body_t *spirit;
   scene_t *scene;
   int16_t points;
+  screen_t current_screen;
+  bool pause;
+  body_t *pause_body;
 };
 
 body_t *make_obstacle(size_t w, size_t h, vector_t center) {
@@ -115,11 +129,104 @@ void player_wrap_edges(state_t *state) {
   }
 }
 
+void go_to_level1(state_t *state) {
+  asset_reset_asset_list();
+  state->current_screen = LEVEL1;
+  return;
+}
+
+void go_to_level2(state_t *state) {
+  asset_reset_asset_list();
+  state->current_screen = LEVEL2;
+  return;
+}
+
+void go_to_level3(state_t *state) {
+  asset_reset_asset_list();
+  state->current_screen = LEVEL3;
+  return;
+}
+
+void go_to_homepage(state_t *state) {
+  asset_reset_asset_list();
+  state->current_screen = HOMEPAGE;
+  SDL_Rect box = (SDL_Rect) {.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
+  asset_make_image(BACKGROUND_PATH, box);
+  asset_make_text(FONT_FILEPATH, (SDL_Rect) {.x = 200, .y = 25, .w = 200, .h = 100}, "HOMEPAGE", TEXT_COLOR);
+  asset_make_text(FONT_FILEPATH, (SDL_Rect) {.x = 200, .y = 150, .w = 300, .h = 50}, "Press 1 to go to Level 1", TEXT_COLOR);
+  asset_make_text(FONT_FILEPATH, (SDL_Rect) {.x = 200, .y = 250, .w = 300, .h = 50}, "Press 2 to go to Level 2", TEXT_COLOR);
+  asset_make_text(FONT_FILEPATH, (SDL_Rect) {.x = 200, .y = 350, .w = 300, .h = 50}, "Press 3 to go to Level 3", TEXT_COLOR);
+}
+
+void pause(state_t *state) {
+  state->pause = true;
+  list_t *body_list = list_init(4, free);
+  vector_t *v1 = malloc(sizeof(vector_t));
+  *v1 = (vector_t){150, 100};
+  list_add(body_list, v1);
+  vector_t *v2 = malloc(sizeof(vector_t));
+  *v2 = (vector_t){600, 400};
+  list_add(body_list, v2);
+  vector_t *v3 = malloc(sizeof(vector_t));
+  *v3 = (vector_t){150, 400};
+  list_add(body_list, v3);
+  vector_t *v4 = malloc(sizeof(vector_t));
+  *v4 = (vector_t){600, 100};
+  list_add(body_list, v4);
+  state->pause_body = body_init(body_list, 100, SPIRIT_COLOR);
+  body_set_centroid(state->pause_body, CENTER);
+  scene_add_body(state->scene, state->pause_body);
+  asset_make_image_with_body(PAUSE_FILEPATH, state->pause_body);
+}
+
+void unpause(state_t *state) {
+  if (state->pause_body) {
+    asset_remove_body(state->pause_body);
+    body_remove(state->pause_body);
+    body_free(state->pause_body);
+  }
+  state->pause = false;
+}
+
+void restart(state_t *state) {
+  unpause(state);
+  if (state->current_screen == LEVEL1) {
+    go_to_level1(state);
+  }
+  else if (state->current_screen == LEVEL2) {
+    go_to_level2(state);
+  }
+  else if (state->current_screen == LEVEL3) {
+    go_to_level3(state);
+  }
+}
+
 void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
   body_t *spirit = scene_get_body(state->scene, 0);
   vector_t translation = (vector_t){0, 0};
   if (type == KEY_PRESSED && type != KEY_RELEASED) {
     switch (key) {
+    case KEY_1:
+      go_to_level1(state);
+      break;
+    case KEY_2:
+      go_to_level2(state);
+      break;
+    case KEY_3:
+      go_to_level3(state);
+      break;
+    case KEY_H:
+      go_to_homepage(state);
+      break;
+    case KEY_P:
+      pause(state);
+      break;
+    case KEY_R:
+      restart(state);
+      break;
+    case KEY_U:
+      unpause(state);
+      break;
     case LEFT_ARROW:
       translation.x = -H_STEP;
       break;
@@ -176,6 +283,7 @@ void make_platforms(state_t *state){
   }
 }
 
+
 state_t *emscripten_init() {
   asset_cache_init();
   sdl_init(MIN, MAX);
@@ -183,6 +291,8 @@ state_t *emscripten_init() {
   state->points = 0;
   srand(time(NULL));
   state->scene = scene_init();
+  state->pause_body = NULL;
+  state->pause = false;
 
   // background image - the offset is a little strange
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
