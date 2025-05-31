@@ -12,7 +12,7 @@
 #include "sdl_wrapper.h"
 
 const vector_t MIN = {0, 0};
-const vector_t MAX = {750, 500}; 
+const vector_t MAX = {750, 500};
 const vector_t CENTER = {375, 250};
 
 const vector_t START_POS = {500, 30};
@@ -150,12 +150,20 @@ void go_to_level3(state_t *state) {
 void go_to_homepage(state_t *state) {
   asset_reset_asset_list();
   state->current_screen = HOMEPAGE;
-  SDL_Rect box = (SDL_Rect) {.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
+  SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(BACKGROUND_PATH, box);
-  asset_make_text(FONT_FILEPATH, (SDL_Rect) {.x = 200, .y = 25, .w = 200, .h = 100}, "HOMEPAGE", TEXT_COLOR);
-  asset_make_text(FONT_FILEPATH, (SDL_Rect) {.x = 200, .y = 150, .w = 300, .h = 50}, "Press 1 to go to Level 1", TEXT_COLOR);
-  asset_make_text(FONT_FILEPATH, (SDL_Rect) {.x = 200, .y = 250, .w = 300, .h = 50}, "Press 2 to go to Level 2", TEXT_COLOR);
-  asset_make_text(FONT_FILEPATH, (SDL_Rect) {.x = 200, .y = 350, .w = 300, .h = 50}, "Press 3 to go to Level 3", TEXT_COLOR);
+  asset_make_text(FONT_FILEPATH,
+                  (SDL_Rect){.x = 200, .y = 25, .w = 200, .h = 100}, "HOMEPAGE",
+                  TEXT_COLOR);
+  asset_make_text(FONT_FILEPATH,
+                  (SDL_Rect){.x = 200, .y = 150, .w = 300, .h = 50},
+                  "Press 1 to go to Level 1", TEXT_COLOR);
+  asset_make_text(FONT_FILEPATH,
+                  (SDL_Rect){.x = 200, .y = 250, .w = 300, .h = 50},
+                  "Press 2 to go to Level 2", TEXT_COLOR);
+  asset_make_text(FONT_FILEPATH,
+                  (SDL_Rect){.x = 200, .y = 350, .w = 300, .h = 50},
+                  "Press 3 to go to Level 3", TEXT_COLOR);
 }
 
 void pause(state_t *state) {
@@ -192,11 +200,9 @@ void restart(state_t *state) {
   unpause(state);
   if (state->current_screen == LEVEL1) {
     go_to_level1(state);
-  }
-  else if (state->current_screen == LEVEL2) {
+  } else if (state->current_screen == LEVEL2) {
     go_to_level2(state);
-  }
-  else if (state->current_screen == LEVEL3) {
+  } else if (state->current_screen == LEVEL3) {
     go_to_level3(state);
   }
 }
@@ -251,38 +257,41 @@ double rand_double(double low, double high) {
   return (high - low) * rand() / RAND_MAX + low;
 }
 
-void make_platforms(state_t *state){
+void make_platforms(state_t *state) {
   // for map 1, will make this more organized later!
   const size_t BRICK_WIDTH = 20;
   const size_t BRICK_NUM = 8;
 
   // size_t HEIGHTS[ROW_NUM] = {425, 300, 200, 75};
-  int BRICKS[BRICK_NUM][3] = {{160, 425, 320}, {560, 425, 150}, {425, 300, 650}, 
-  {325, 200, 650}, {180, 75, 175}, {500, 75, 175}};
+  int BRICKS[BRICK_NUM][3] = {{160, 425, 320}, {560, 425, 150}, {425, 300, 650},
+                              {325, 200, 650}, {180, 75, 175},  {500, 75, 175}};
   // {x, y, width}
-  for(size_t i = 0; i < BRICK_NUM; i++){
-    vector_t coord = (vector_t) {BRICKS[i][0],BRICKS[i][1] };
+  for (size_t i = 0; i < BRICK_NUM; i++) {
+    vector_t coord = (vector_t){BRICKS[i][0], BRICKS[i][1]};
     body_t *obstacle = make_obstacle(BRICKS[i][2], BRICK_WIDTH, coord);
     scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, state->spirit, obstacle, reset_user_handler, NULL, 0, NULL);
+    create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
+                     NULL, 0, NULL);
     asset_make_image_with_body(BRICK_PATH, obstacle);
-
-  } 
+  }
 
   // misc sized blocks
   // {x, y, width, height}
   const size_t NUM_OBST = 4;
-  int OBST[NUM_OBST][4] = {{730, 330, 40, 60}, {30, 235, 60, 70}, {730, 90, 40, 60}, {715, 35, 70, 70}};
+  int OBST[NUM_OBST][4] = {{730, 330, 40, 60},
+                           {30, 235, 60, 70},
+                           {730, 90, 40, 60},
+                           {715, 35, 70, 70}};
 
-  for (size_t i = 0; i < NUM_OBST; i++){
-    vector_t coord = (vector_t) {OBST[i][0],OBST[i][1] };
+  for (size_t i = 0; i < NUM_OBST; i++) {
+    vector_t coord = (vector_t){OBST[i][0], OBST[i][1]};
     body_t *obstacle = make_obstacle(OBST[i][2], OBST[i][3], coord);
     scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, state->spirit, obstacle, reset_user_handler, NULL, 0, NULL);
+    create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
+                     NULL, 0, NULL);
     asset_make_image_with_body(BRICK_PATH, obstacle);
   }
 }
-
 
 state_t *emscripten_init() {
   asset_cache_init();
@@ -298,7 +307,7 @@ state_t *emscripten_init() {
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(BACKGROUND_PATH, box);
 
-  body_t *spirit =  make_spirit(OUTER_RADIUS, INNER_RADIUS, VEC_ZERO);
+  body_t *spirit = make_spirit(OUTER_RADIUS, INNER_RADIUS, VEC_ZERO);
   body_set_centroid(spirit, RESET_POS);
   state->spirit = spirit;
   scene_add_body(state->scene, spirit);
@@ -307,7 +316,6 @@ state_t *emscripten_init() {
   asset_make_image_with_body(SPIRIT_FRONT_PATH, state->spirit);
 
   make_platforms(state);
-  
 
   sdl_on_key((key_handler_t)on_key);
   return state;
