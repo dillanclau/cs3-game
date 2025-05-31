@@ -34,6 +34,23 @@ const color_t SPIRIT_COLOR = (color_t){0.1, 0.9, 0.2};
 const color_t TEXT_COLOR = (color_t){1, 0, 0};
 
 // constants to create platforms
+const size_t NUM_MAP = 3;
+const size_t BRICK_WIDTH = 20;
+const size_t BRICK_NUM[NUM_MAP] = {10, 10, 10};
+size_t BRICKS1[10][4] = {{160, 425, 320, BRICK_WIDTH}, 
+{560, 425, 150, BRICK_WIDTH}, 
+{425, 300, 650, BRICK_WIDTH}, {325, 200, 650, BRICK_WIDTH}, 
+{180, 75, 175, BRICK_WIDTH},
+{500, 75, 175, BRICK_WIDTH}, {730, 330, 40, 60}, {30, 235, 60, 70}, 
+{730, 90, 40, 60}, {715, 35, 70, 70}};
+// size_t BRICKS2[][]
+// size_t BRICKS3[][]
+
+const size_t LAVA_WIDTH = 7;
+const size_t LAVA_NUM[NUM_MAP] = {4, 0, 0};
+size_t LAVA1[4][4] = {{180, 10, 165, LAVA_WIDTH}, 
+{500, 90, 165, LAVA_WIDTH}, {500, 310, 100, LAVA_WIDTH}, {250, 310, 175, LAVA_WIDTH}};
+
 const int16_t H_STEP = 50;
 const int16_t V_STEP = 30;
 const size_t ROWS = 50;
@@ -53,6 +70,8 @@ typedef enum {
   LEVEL3 = 3,
   HOMEPAGE = 4,
 } screen_t;
+const char *BRICK_PATH = "assets/brick_texture.png";
+const char *LAVA_PATH = "assets/lava.png";
 
 struct state {
   body_t *spirit;
@@ -61,9 +80,10 @@ struct state {
   screen_t current_screen;
   bool pause;
   body_t *pause_body;
+  bool pause;
 };
 
-body_t *make_obstacle(size_t w, size_t h, vector_t center) {
+body_t *make_obstacle(size_t w, size_t h, vector_t center, char* info) {
   list_t *c = list_init(4, free);
   vector_t *v1 = malloc(sizeof(vector_t));
   *v1 = (vector_t){0, 0};
@@ -80,7 +100,8 @@ body_t *make_obstacle(size_t w, size_t h, vector_t center) {
   vector_t *v4 = malloc(sizeof(vector_t));
   *v4 = (vector_t){0, h};
   list_add(c, v4);
-  body_t *obstacle = body_init(c, __DBL_MAX__, OBS_COLOR);
+  // body_t *obstacle = body_init(c, __DBL_MAX__, OBS_COLOR);
+  body_t *obstacle = body_init_with_info(c, __DBL_MAX__, OBS_COLOR, info, NULL);
   body_set_centroid(obstacle, center);
   return obstacle;
 }
@@ -269,6 +290,14 @@ void make_platforms(state_t *state) {
   for (size_t i = 0; i < BRICK_NUM; i++) {
     vector_t coord = (vector_t){BRICKS[i][0], BRICKS[i][1]};
     body_t *obstacle = make_obstacle(BRICKS[i][2], BRICK_WIDTH, coord);
+void make_platforms(state_t *state, size_t idx) {
+  size_t len = BRICK_NUM[0];
+  for (size_t i = 0; i < len; i++) {
+    vector_t coord = (vector_t){BRICKS1[i][0], BRICKS1[i][1]};
+    if (BRICKS1[i][3] == 0) {
+      BRICKS1[i][3] = BRICK_WIDTH;
+    }
+    body_t *obstacle = make_obstacle(BRICKS1[i][2], BRICKS1[i][3], coord, "platform");
     scene_add_body(state->scene, obstacle);
     create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
                      NULL, 0, NULL);
@@ -290,6 +319,17 @@ void make_platforms(state_t *state) {
     create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
                      NULL, 0, NULL);
     asset_make_image_with_body(BRICK_PATH, obstacle);
+}
+
+void make_lava(state_t *state) {
+  size_t len = LAVA_NUM[0];
+  for (size_t i = 0; i < len; i++) {
+    vector_t coord = (vector_t){LAVA1[i][0], LAVA1[i][1]};
+    body_t *obstacle = make_obstacle(LAVA1[i][2], LAVA1[i][3], coord, "lava");
+    scene_add_body(state->scene, obstacle);
+    create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
+                     NULL, 0, NULL);
+    asset_make_image_with_body(LAVA_PATH, obstacle);
   }
 }
 
@@ -304,7 +344,7 @@ state_t *emscripten_init() {
   state->pause = false;
 
   // background image - the offset is a little strange
-  SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
+  SDL_Rect box = (SDL_Rect){.x = MIN.x + 125, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(BACKGROUND_PATH, box);
 
   body_t *spirit = make_spirit(OUTER_RADIUS, INNER_RADIUS, VEC_ZERO);
@@ -317,6 +357,12 @@ state_t *emscripten_init() {
 
   make_platforms(state);
 
+  //make platform
+  make_platforms(state, 1);
+  //make lava
+  make_lava(state);
+  
+  //make water
   sdl_on_key((key_handler_t)on_key);
   return state;
 }
