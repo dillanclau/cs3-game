@@ -13,7 +13,8 @@ const size_t WINDOW_WIDTH = 750;
 const size_t WINDOW_HEIGHT = 500;
 const SDL_Color SDL_BLACK = {0, 0, 0};
 const int8_t FONT_HEIGHT_SCALE = 2;
-const double MS_PER_S = 1000.0;
+// const double MS_PER_S = 1000.0;
+const double MS_PER_S = 100000;
 
 /**
  * The coordinate at the center of the screen.
@@ -251,6 +252,20 @@ SDL_Rect *sdl_get_rect(double x, double y, double w, double h) {
 
 void sdl_render_image(SDL_Texture *image_texture, SDL_Rect *rect) {
   SDL_RenderCopy(renderer, image_texture, NULL, rect);
+}
+
+void sdl_render_text(const char *text, TTF_Font *font, color_t color,
+                     SDL_Rect *rect) {
+  SDL_Color sdl_color = (SDL_Color){.r = color.red * 255,
+                                    .g = color.green * 255,
+                                    .b = color.blue * 255,
+                                    .a = 255};
+  SDL_Surface *text_surface = TTF_RenderText_Solid(font, text, sdl_color);
+  SDL_Texture *text_texture =
+      SDL_CreateTextureFromSurface(renderer, text_surface);
+  SDL_RenderCopy(renderer, text_texture, NULL, rect);
+  SDL_FreeSurface(text_surface);
+  SDL_DestroyTexture(text_texture);
 }
 
 void sdl_show(void) {

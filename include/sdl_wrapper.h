@@ -113,6 +113,18 @@ SDL_Rect *sdl_get_rect(double x, double y, double w, double h);
 void sdl_render_image(SDL_Texture *image_texture, SDL_Rect *rect);
 
 /**
+ * Renders an image to the screen using the specified texture and rectangle.
+ *
+ * @param text const char * message to render
+ * @param font TTF_Font for the text
+ * @param color color_t for the text
+ * @param rect the rectangle defining the position and size of the rendered
+ * image
+ */
+void sdl_render_text(const char *text, TTF_Font *font, color_t color,
+                     SDL_Rect *rect);
+
+/**
  * Displays the rendered frame on the SDL window.
  * Must be called after drawing the bodies in order to show them.
  */
