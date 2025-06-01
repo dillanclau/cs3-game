@@ -36,12 +36,16 @@ const color_t TEXT_COLOR = (color_t){1, 0, 0};
 const size_t NUM_MAP = 3;
 const size_t BRICK_WIDTH = 20;
 const size_t BRICK_NUM[NUM_MAP] = {10, 10, 10};
-size_t BRICKS1[10][4] = {{160, 425, 320, BRICK_WIDTH}, 
-{560, 425, 150, BRICK_WIDTH}, 
-{425, 300, 650, BRICK_WIDTH}, {325, 200, 650, BRICK_WIDTH}, 
-{180, 75, 175, BRICK_WIDTH},
-{500, 75, 175, BRICK_WIDTH}, {730, 330, 40, 60}, {30, 235, 60, 70}, 
-{730, 90, 40, 60}, {715, 35, 70, 70}};
+size_t BRICKS1[10][4] = {{160, 425, 320, BRICK_WIDTH},
+                         {560, 425, 150, BRICK_WIDTH},
+                         {425, 300, 650, BRICK_WIDTH},
+                         {325, 200, 650, BRICK_WIDTH},
+                         {180, 75, 175, BRICK_WIDTH},
+                         {500, 75, 175, BRICK_WIDTH},
+                         {730, 330, 40, 60},
+                         {30, 235, 60, 70},
+                         {730, 90, 40, 60},
+                         {715, 35, 70, 70}};
 // size_t BRICKS2[][]
 // size_t BRICKS3[][]
 
@@ -87,7 +91,7 @@ struct state {
   body_t *pause_body;
 };
 
-body_t *make_obstacle(size_t w, size_t h, vector_t center, char* info) {
+body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
   list_t *c = list_init(4, free);
   vector_t *v1 = malloc(sizeof(vector_t));
   *v1 = (vector_t){0, 0};
@@ -372,8 +376,8 @@ state_t *emscripten_init() {
 
   //make lava
   make_lava(state);
-  
-  //make water
+
+  // make water
   sdl_on_key((key_handler_t)on_key);
   return state;
 }
