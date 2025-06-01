@@ -36,16 +36,12 @@ const color_t TEXT_COLOR = (color_t){1, 0, 0};
 const size_t NUM_MAP = 3;
 const size_t BRICK_WIDTH = 20;
 const size_t BRICK_NUM[NUM_MAP] = {10, 10, 10};
-size_t BRICKS1[10][4] = {{160, 425, 320, BRICK_WIDTH},
-                         {560, 425, 150, BRICK_WIDTH},
-                         {425, 300, 650, BRICK_WIDTH},
-                         {325, 200, 650, BRICK_WIDTH},
-                         {180, 75, 175, BRICK_WIDTH},
-                         {500, 75, 175, BRICK_WIDTH},
-                         {730, 330, 40, 60},
-                         {30, 235, 60, 70},
-                         {730, 90, 40, 60},
-                         {715, 35, 70, 70}};
+size_t BRICKS1[10][4] = {{160, 425, 320, BRICK_WIDTH}, 
+{560, 425, 150, BRICK_WIDTH}, 
+{425, 300, 650, BRICK_WIDTH}, {325, 200, 650, BRICK_WIDTH}, 
+{180, 75, 175, BRICK_WIDTH},
+{500, 75, 175, BRICK_WIDTH}, {730, 330, 40, 60}, {30, 235, 60, 70}, 
+{730, 90, 40, 60}, {715, 35, 70, 70}};
 // size_t BRICKS2[][]
 // size_t BRICKS3[][]
 
@@ -68,10 +64,11 @@ const vector_t VELOCITY_UP = (vector_t){0, 200};
 const char *SPIRIT_FRONT_PATH = "assets/waterspiritfront.png";
 const char *BACKGROUND_PATH = "assets/dungeonbackground.png";
 const char *BRICK_PATH1 = "assets/log.png";
-const char *PAUSE_FILEPATH = "assets/pause.png";
+const char *PAUSE_PATH = "assets/pause.png";
 const char *FONT_FILEPATH = "assets/Cascadia.ttf";
 const char *BRICK_PATH = "assets/brick_texture.png";
 const char *LAVA_PATH = "assets/lava.png";
+const char *HOMEPAGE_PATH = "assets/homepage.png";
 
 typedef enum {
   LEVEL1 = 1,
@@ -90,7 +87,7 @@ struct state {
   body_t *pause_body;
 };
 
-body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
+body_t *make_obstacle(size_t w, size_t h, vector_t center, char* info) {
   list_t *c = list_init(4, free);
   vector_t *v1 = malloc(sizeof(vector_t));
   *v1 = (vector_t){0, 0};
@@ -171,49 +168,53 @@ void go_to_homepage(state_t *state) {
   asset_reset_asset_list();
   state->current_screen = HOMEPAGE;
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
-  asset_make_image(BACKGROUND_PATH, box);
-  asset_make_text(FONT_FILEPATH,
-                  (SDL_Rect){.x = 200, .y = 25, .w = 200, .h = 100}, "HOMEPAGE",
-                  TEXT_COLOR);
-  asset_make_text(FONT_FILEPATH,
-                  (SDL_Rect){.x = 200, .y = 150, .w = 300, .h = 50},
-                  "Press 1 to go to Level 1", TEXT_COLOR);
-  asset_make_text(FONT_FILEPATH,
-                  (SDL_Rect){.x = 200, .y = 250, .w = 300, .h = 50},
-                  "Press 2 to go to Level 2", TEXT_COLOR);
-  asset_make_text(FONT_FILEPATH,
-                  (SDL_Rect){.x = 200, .y = 350, .w = 300, .h = 50},
-                  "Press 3 to go to Level 3", TEXT_COLOR);
+  asset_make_image(HOMEPAGE_PATH, box);
+  // asset_make_text(FONT_FILEPATH,
+  //                 (SDL_Rect){.x = 200, .y = 25, .w = 200, .h = 100}, "HOMEPAGE",
+  //                 TEXT_COLOR);
+  // asset_make_text(FONT_FILEPATH,
+  //                 (SDL_Rect){.x = 200, .y = 150, .w = 300, .h = 50},
+  //                 "Press 1 to go to Level 1", TEXT_COLOR);
+  // asset_make_text(FONT_FILEPATH,
+  //                 (SDL_Rect){.x = 200, .y = 250, .w = 300, .h = 50},
+  //                 "Press 2 to go to Level 2", TEXT_COLOR);
+  // asset_make_text(FONT_FILEPATH,
+  //                 (SDL_Rect){.x = 200, .y = 350, .w = 300, .h = 50},
+  //                 "Press 3 to go to Level 3", TEXT_COLOR);
 }
 
 void pause(state_t *state) {
   state->pause = true;
-  list_t *body_list = list_init(4, free);
-  vector_t *v1 = malloc(sizeof(vector_t));
-  *v1 = (vector_t){150, 100};
-  list_add(body_list, v1);
-  vector_t *v2 = malloc(sizeof(vector_t));
-  *v2 = (vector_t){600, 400};
-  list_add(body_list, v2);
-  vector_t *v3 = malloc(sizeof(vector_t));
-  *v3 = (vector_t){150, 400};
-  list_add(body_list, v3);
-  vector_t *v4 = malloc(sizeof(vector_t));
-  *v4 = (vector_t){600, 100};
-  list_add(body_list, v4);
-  state->pause_body = body_init(body_list, 100, SPIRIT_COLOR);
-  body_set_centroid(state->pause_body, CENTER);
-  scene_add_body(state->scene, state->pause_body);
-  asset_make_image_with_body(PAUSE_FILEPATH, state->pause_body);
+  // list_t *body_list = list_init(4, free);
+  // vector_t *v1 = malloc(sizeof(vector_t));
+  // *v1 = (vector_t){150, 100};
+  // list_add(body_list, v1);
+  // vector_t *v2 = malloc(sizeof(vector_t));
+  // *v2 = (vector_t){600, 400};
+  // list_add(body_list, v2);
+  // vector_t *v3 = malloc(sizeof(vector_t));
+  // *v3 = (vector_t){150, 400};
+  // list_add(body_list, v3);
+  // vector_t *v4 = malloc(sizeof(vector_t));
+  // *v4 = (vector_t){600, 100};
+  // list_add(body_list, v4);
+  // state->pause_body = body_init(body_list, 100, SPIRIT_COLOR);
+  // body_set_centroid(state->pause_body, CENTER);
+  // scene_add_body(state->scene, state->pause_body);
+  // asset_make_image_with_body(PAUSE_FILEPATH, state->pause_body);
+  asset_make_image(PAUSE_PATH, (SDL_Rect) {.x = 100, .y = 50, .w = 550, .h = 400});
 }
 
 void unpause(state_t *state) {
-  if (state->pause_body) {
-    asset_remove_body(state->pause_body);
-    body_remove(state->pause_body);
-    body_free(state->pause_body);
-  }
+  // if (state->pause_body) {
+  //   asset_remove_body(state->pause_body);
+  //   body_remove(state->pause_body);
+  //   body_free(state->pause_body);
+  // }
   state->pause = false;
+  list_t *asset_list = asset_get_asset_list();
+  list_remove(asset_list, list_size(asset_list) - 1);
+  list_remove(asset_list, list_size(asset_list) - 1);
 }
 
 void restart(state_t *state) {
@@ -262,7 +263,9 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
       restart(state);
       break;
     case KEY_U:
-      unpause(state);
+      if (state->pause) {
+        unpause(state);
+      }
       break;
     }
   } else {
@@ -361,22 +364,8 @@ state_t *emscripten_init() {
   state->spirit = spirit;
   scene_add_body(state->scene, spirit);
 
-      // misc sized blocks
-      // {x, y, width, height}
-      const size_t NUM_OBST = 4;
-      int OBST[NUM_OBST][4] = {{730, 330, 40, 60},
-                               {30, 235, 60, 70},
-                               {730, 90, 40, 60},
-                               {715, 35, 70, 70}};
-
-      for (size_t i = 0; i < NUM_OBST; i++) {
-        vector_t coord = (vector_t){OBST[i][0], OBST[i][1]};
-        body_t *obstacle = make_obstacle(OBST[i][2], OBST[i][3], coord);
-        scene_add_body(state->scene, obstacle);
-        create_collision(state->scene, state->spirit, obstacle,
-                         reset_user_handler, NULL, 0, NULL);
-        asset_make_image_with_body(BRICK_PATH, obstacle);
-      }
+  // spirit
+  asset_make_image_with_body(SPIRIT_FRONT_PATH, state->spirit);
 
   //make platform
   make_platforms(state, 1);
@@ -398,13 +387,15 @@ bool emscripten_main(state_t *state) {
     asset_render(list_get(body_assets, i));
   }
   sdl_show();
-  scene_tick(state->scene, dt);
+  if (!state->pause) {
+    scene_tick(state->scene, dt);
+  }
   return false;
 }
 
-      void emscripten_free(state_t * state) {
-        list_free(asset_get_asset_list());
-        scene_free(state->scene);
-        asset_cache_destroy();
-        free(state);
-      }
+void emscripten_free(state_t *state) {
+  list_free(asset_get_asset_list());
+  scene_free(state->scene);
+  asset_cache_destroy();
+  free(state);
+}
