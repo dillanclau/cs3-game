@@ -36,19 +36,25 @@ const color_t TEXT_COLOR = (color_t){1, 0, 0};
 const size_t NUM_MAP = 3;
 const size_t BRICK_WIDTH = 20;
 const size_t BRICK_NUM[NUM_MAP] = {10, 10, 10};
-size_t BRICKS1[10][4] = {{160, 425, 320, BRICK_WIDTH}, 
-{560, 425, 150, BRICK_WIDTH}, 
-{425, 300, 650, BRICK_WIDTH}, {325, 200, 650, BRICK_WIDTH}, 
-{180, 75, 175, BRICK_WIDTH},
-{500, 75, 175, BRICK_WIDTH}, {730, 330, 40, 60}, {30, 235, 60, 70}, 
-{730, 90, 40, 60}, {715, 35, 70, 70}};
+size_t BRICKS1[10][4] = {{160, 425, 320, BRICK_WIDTH},
+                         {560, 425, 150, BRICK_WIDTH},
+                         {425, 300, 650, BRICK_WIDTH},
+                         {325, 200, 650, BRICK_WIDTH},
+                         {180, 75, 175, BRICK_WIDTH},
+                         {500, 75, 175, BRICK_WIDTH},
+                         {730, 330, 40, 60},
+                         {30, 235, 60, 70},
+                         {730, 90, 40, 60},
+                         {715, 35, 70, 70}};
 // size_t BRICKS2[][]
 // size_t BRICKS3[][]
 
 const size_t LAVA_WIDTH = 7;
 const size_t LAVA_NUM[NUM_MAP] = {4, 0, 0};
-size_t LAVA1[4][4] = {{180, 15, 165, LAVA_WIDTH}, 
-{500, 90, 165, LAVA_WIDTH}, {500, 310, 100, LAVA_WIDTH}, {250, 310, 175, LAVA_WIDTH}};
+size_t LAVA1[4][4] = {{180, 15, 165, LAVA_WIDTH},
+                      {500, 90, 165, LAVA_WIDTH},
+                      {500, 310, 100, LAVA_WIDTH},
+                      {250, 310, 175, LAVA_WIDTH}};
 
 const int16_t H_STEP = 50;
 const int16_t V_STEP = 30;
@@ -77,17 +83,15 @@ typedef enum {
   HOMEPAGE = 4,
 } screen_t;
 
-
 struct state {
   body_t *spirit;
   scene_t *scene;
   int16_t points;
   screen_t current_screen;
   bool pause;
-  body_t *pause_body;
 };
 
-body_t *make_obstacle(size_t w, size_t h, vector_t center, char* info) {
+body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
   list_t *c = list_init(4, free);
   vector_t *v1 = malloc(sizeof(vector_t));
   *v1 = (vector_t){0, 0};
@@ -145,7 +149,6 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   reset_user(body1);
 }
 
-
 void go_to_level1(state_t *state) {
   asset_reset_asset_list();
   state->current_screen = LEVEL1;
@@ -170,8 +173,8 @@ void go_to_homepage(state_t *state) {
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(HOMEPAGE_PATH, box);
   // asset_make_text(FONT_FILEPATH,
-  //                 (SDL_Rect){.x = 200, .y = 25, .w = 200, .h = 100}, "HOMEPAGE",
-  //                 TEXT_COLOR);
+  //                 (SDL_Rect){.x = 200, .y = 25, .w = 200, .h = 100},
+  //                 "HOMEPAGE", TEXT_COLOR);
   // asset_make_text(FONT_FILEPATH,
   //                 (SDL_Rect){.x = 200, .y = 150, .w = 300, .h = 50},
   //                 "Press 1 to go to Level 1", TEXT_COLOR);
@@ -202,7 +205,8 @@ void pause(state_t *state) {
   // body_set_centroid(state->pause_body, CENTER);
   // scene_add_body(state->scene, state->pause_body);
   // asset_make_image_with_body(PAUSE_FILEPATH, state->pause_body);
-  asset_make_image(PAUSE_PATH, (SDL_Rect) {.x = 100, .y = 50, .w = 550, .h = 400});
+  asset_make_image(PAUSE_PATH,
+                   (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
 }
 
 void unpause(state_t *state) {
@@ -239,28 +243,41 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
     case RIGHT_ARROW:
       body_set_velocity(spirit, (vector_t){VELOCITY_RIGHT.x, velocity.y});
       break;
-    if (velocity.y == 0) {
+      if (velocity.y == 0) {
       case UP_ARROW:
         body_set_velocity(spirit, (vector_t){velocity.x, VELOCITY_UP.y});
         break;
-    }
+      }
     case KEY_1:
-      go_to_level1(state);
+      if (state->pause || state->current_screen == HOMEPAGE) {
+        go_to_level1(state);
+      }
       break;
     case KEY_2:
-      go_to_level2(state);
+      if (state->pause || state->current_screen == HOMEPAGE) {
+        go_to_level2(state);
+      }
       break;
     case KEY_3:
-      go_to_level3(state);
+      if (state->pause || state->current_screen == HOMEPAGE) {
+        go_to_level3(state);
+      }
+      break;
       break;
     case KEY_H:
-      go_to_homepage(state);
+      if (state->pause) {
+        go_to_homepage(state);
+      }
       break;
     case KEY_P:
-      pause(state);
+      if (state->current_screen == LEVEL1 || state->current_screen == LEVEL2 || state->current_screen == LEVEL3) {
+        pause(state);
+      }
       break;
     case KEY_R:
-      restart(state);
+      if (state->pause) {
+        restart(state);
+      }
       break;
     case KEY_U:
       if (state->pause) {
@@ -270,12 +287,12 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
     }
   } else {
     switch (key) {
-      case LEFT_ARROW:
-        body_set_velocity(spirit, (vector_t){0, velocity.y});
-        break;
-      case RIGHT_ARROW:
-        body_set_velocity(spirit, (vector_t){0, velocity.y});
-        break;
+    case LEFT_ARROW:
+      body_set_velocity(spirit, (vector_t){0, velocity.y});
+      break;
+    case RIGHT_ARROW:
+      body_set_velocity(spirit, (vector_t){0, velocity.y});
+      break;
     }
   }
 }
@@ -291,7 +308,8 @@ void make_platforms(state_t *state, size_t idx) {
     if (BRICKS1[i][3] == 0) {
       BRICKS1[i][3] = BRICK_WIDTH;
     }
-    body_t *obstacle = make_obstacle(BRICKS1[i][2], BRICKS1[i][3], coord, "platform");
+    body_t *obstacle =
+        make_obstacle(BRICKS1[i][2], BRICKS1[i][3], coord, "platform");
     scene_add_body(state->scene, obstacle);
     create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
                      NULL, 0, NULL);
@@ -318,20 +336,18 @@ void make_platforms(state_t *state, size_t idx) {
   // boundaries
   // {x, y, width, height}
   const size_t BOUNDARIES = 3;
-  int EDGES[BOUNDARIES][4] = {{375, 0, 750, 30}, 
-                              {0, 250, 30, 500},
-                              {750, 250, 30, 500}};
+  int EDGES[BOUNDARIES][4] = {
+      {375, 0, 750, 30}, {0, 250, 30, 500}, {750, 250, 30, 500}};
 
   for (size_t i = 0; i < BOUNDARIES; i++) {
     vector_t coord = (vector_t){EDGES[i][0], EDGES[i][1]};
-    body_t *obstacle = make_obstacle(EDGES[i][2], EDGES[i][3], coord, "obstacle");
+    body_t *obstacle =
+        make_obstacle(EDGES[i][2], EDGES[i][3], coord, "obstacle");
     scene_add_body(state->scene, obstacle);
     create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
                      NULL, 0, NULL);
     asset_make_image_with_body(BRICK_PATH, obstacle);
   }
-
-  
 }
 
 void make_lava(state_t *state) {
@@ -353,9 +369,9 @@ state_t *emscripten_init() {
   state->points = 0;
   srand(time(NULL));
   state->scene = scene_init();
-  state->pause_body = NULL;
+  state->current_screen = LEVEL1;
   state->pause = false;
-  
+
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(BACKGROUND_PATH, box);
 
@@ -367,13 +383,13 @@ state_t *emscripten_init() {
   // spirit
   asset_make_image_with_body(SPIRIT_FRONT_PATH, state->spirit);
 
-  //make platform
+  // make platform
   make_platforms(state, 1);
 
-  //make lava
+  // make lava
   make_lava(state);
-  
-  //make water
+
+  // make water
   sdl_on_key((key_handler_t)on_key);
   return state;
 }
