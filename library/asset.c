@@ -114,7 +114,7 @@ void asset_render(asset_t *asset) {
   case ASSET_TEXT:
     text_asset_t *text_asset = (text_asset_t *)asset;
     sdl_render_text(text_asset->text, text_asset->font, text_asset->color,
-                      &box);
+                    &box);
     break;
   }
 }

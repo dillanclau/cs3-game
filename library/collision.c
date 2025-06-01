@@ -121,4 +121,3 @@ collision_info_t find_collision(body_t *body1, body_t *body2) {
   }
   return collision2;
 }
-
