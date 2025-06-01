@@ -121,11 +121,3 @@ collision_info_t find_collision(body_t *body1, body_t *body2) {
   }
   return collision2;
 }
-
-collision_type_t find_collision_type(body_t *sprite, body_t *platform) {
-  SDL_Rect sprite_rect = sdl_get_body_bounding_box(sprite);
-  SDL_Rect platform_rect = sdl_get_body_bounding_box(platform);
-
-  if (sprite_rect.x < platform_rect.x) {
-  }
-}
