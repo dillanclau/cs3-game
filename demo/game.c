@@ -270,7 +270,8 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
       }
       break;
     case KEY_P:
-      if (state->current_screen == LEVEL1 || state->current_screen == LEVEL2 || state->current_screen == LEVEL3) {
+      if (state->current_screen == LEVEL1 || state->current_screen == LEVEL2 ||
+          state->current_screen == LEVEL3) {
         pause(state);
       }
       break;
