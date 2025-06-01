@@ -37,19 +37,25 @@ const color_t TEXT_COLOR = (color_t){1, 0, 0};
 const size_t NUM_MAP = 3;
 const size_t BRICK_WIDTH = 20;
 const size_t BRICK_NUM[NUM_MAP] = {10, 10, 10};
-size_t BRICKS1[10][4] = {{160, 425, 320, BRICK_WIDTH}, 
-{560, 425, 150, BRICK_WIDTH}, 
-{425, 300, 650, BRICK_WIDTH}, {325, 200, 650, BRICK_WIDTH}, 
-{180, 75, 175, BRICK_WIDTH},
-{500, 75, 175, BRICK_WIDTH}, {730, 330, 40, 60}, {30, 235, 60, 70}, 
-{730, 90, 40, 60}, {715, 35, 70, 70}};
+size_t BRICKS1[10][4] = {{160, 425, 320, BRICK_WIDTH},
+                         {560, 425, 150, BRICK_WIDTH},
+                         {425, 300, 650, BRICK_WIDTH},
+                         {325, 200, 650, BRICK_WIDTH},
+                         {180, 75, 175, BRICK_WIDTH},
+                         {500, 75, 175, BRICK_WIDTH},
+                         {730, 330, 40, 60},
+                         {30, 235, 60, 70},
+                         {730, 90, 40, 60},
+                         {715, 35, 70, 70}};
 // size_t BRICKS2[][]
 // size_t BRICKS3[][]
 
 const size_t LAVA_WIDTH = 7;
 const size_t LAVA_NUM[NUM_MAP] = {4, 0, 0};
-size_t LAVA1[4][4] = {{180, 10, 165, LAVA_WIDTH}, 
-{500, 90, 165, LAVA_WIDTH}, {500, 310, 100, LAVA_WIDTH}, {250, 310, 175, LAVA_WIDTH}};
+size_t LAVA1[4][4] = {{180, 10, 165, LAVA_WIDTH},
+                      {500, 90, 165, LAVA_WIDTH},
+                      {500, 310, 100, LAVA_WIDTH},
+                      {250, 310, 175, LAVA_WIDTH}};
 
 const int16_t H_STEP = 50;
 const int16_t V_STEP = 30;
@@ -80,10 +86,9 @@ struct state {
   screen_t current_screen;
   bool pause;
   body_t *pause_body;
-  bool pause;
 };
 
-body_t *make_obstacle(size_t w, size_t h, vector_t center, char* info) {
+body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
   list_t *c = list_init(4, free);
   vector_t *v1 = malloc(sizeof(vector_t));
   *v1 = (vector_t){0, 0};
@@ -290,103 +295,106 @@ void make_platforms(state_t *state) {
   for (size_t i = 0; i < BRICK_NUM; i++) {
     vector_t coord = (vector_t){BRICKS[i][0], BRICKS[i][1]};
     body_t *obstacle = make_obstacle(BRICKS[i][2], BRICK_WIDTH, coord);
-void make_platforms(state_t *state, size_t idx) {
-  size_t len = BRICK_NUM[0];
-  for (size_t i = 0; i < len; i++) {
-    vector_t coord = (vector_t){BRICKS1[i][0], BRICKS1[i][1]};
-    if (BRICKS1[i][3] == 0) {
-      BRICKS1[i][3] = BRICK_WIDTH;
-    }
-    body_t *obstacle = make_obstacle(BRICKS1[i][2], BRICKS1[i][3], coord, "platform");
-    scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
-                     NULL, 0, NULL);
-    asset_make_image_with_body(BRICK_PATH, obstacle);
-  }
+    void make_platforms(state_t * state, size_t idx) {
+      size_t len = BRICK_NUM[0];
+      for (size_t i = 0; i < len; i++) {
+        vector_t coord = (vector_t){BRICKS1[i][0], BRICKS1[i][1]};
+        if (BRICKS1[i][3] == 0) {
+          BRICKS1[i][3] = BRICK_WIDTH;
+        }
+        body_t *obstacle =
+            make_obstacle(BRICKS1[i][2], BRICKS1[i][3], coord, "platform");
+        scene_add_body(state->scene, obstacle);
+        create_collision(state->scene, state->spirit, obstacle,
+                         reset_user_handler, NULL, 0, NULL);
+        asset_make_image_with_body(BRICK_PATH, obstacle);
+      }
 
-  // misc sized blocks
-  // {x, y, width, height}
-  const size_t NUM_OBST = 4;
-  int OBST[NUM_OBST][4] = {{730, 330, 40, 60},
-                           {30, 235, 60, 70},
-                           {730, 90, 40, 60},
-                           {715, 35, 70, 70}};
+      // misc sized blocks
+      // {x, y, width, height}
+      const size_t NUM_OBST = 4;
+      int OBST[NUM_OBST][4] = {{730, 330, 40, 60},
+                               {30, 235, 60, 70},
+                               {730, 90, 40, 60},
+                               {715, 35, 70, 70}};
 
-  for (size_t i = 0; i < NUM_OBST; i++) {
-    vector_t coord = (vector_t){OBST[i][0], OBST[i][1]};
-    body_t *obstacle = make_obstacle(OBST[i][2], OBST[i][3], coord);
-    scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
-                     NULL, 0, NULL);
-    asset_make_image_with_body(BRICK_PATH, obstacle);
-}
+      for (size_t i = 0; i < NUM_OBST; i++) {
+        vector_t coord = (vector_t){OBST[i][0], OBST[i][1]};
+        body_t *obstacle = make_obstacle(OBST[i][2], OBST[i][3], coord);
+        scene_add_body(state->scene, obstacle);
+        create_collision(state->scene, state->spirit, obstacle,
+                         reset_user_handler, NULL, 0, NULL);
+        asset_make_image_with_body(BRICK_PATH, obstacle);
+      }
 
-void make_lava(state_t *state) {
-  size_t len = LAVA_NUM[0];
-  for (size_t i = 0; i < len; i++) {
-    vector_t coord = (vector_t){LAVA1[i][0], LAVA1[i][1]};
-    body_t *obstacle = make_obstacle(LAVA1[i][2], LAVA1[i][3], coord, "lava");
-    scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
-                     NULL, 0, NULL);
-    asset_make_image_with_body(LAVA_PATH, obstacle);
-  }
-}
+      void make_lava(state_t * state) {
+        size_t len = LAVA_NUM[0];
+        for (size_t i = 0; i < len; i++) {
+          vector_t coord = (vector_t){LAVA1[i][0], LAVA1[i][1]};
+          body_t *obstacle =
+              make_obstacle(LAVA1[i][2], LAVA1[i][3], coord, "lava");
+          scene_add_body(state->scene, obstacle);
+          create_collision(state->scene, state->spirit, obstacle,
+                           reset_user_handler, NULL, 0, NULL);
+          asset_make_image_with_body(LAVA_PATH, obstacle);
+        }
+      }
 
-state_t *emscripten_init() {
-  asset_cache_init();
-  sdl_init(MIN, MAX);
-  state_t *state = malloc(sizeof(state_t));
-  state->points = 0;
-  srand(time(NULL));
-  state->scene = scene_init();
-  state->pause_body = NULL;
-  state->pause = false;
+      state_t *emscripten_init() {
+        asset_cache_init();
+        sdl_init(MIN, MAX);
+        state_t *state = malloc(sizeof(state_t));
+        state->points = 0;
+        srand(time(NULL));
+        state->scene = scene_init();
+        state->pause_body = NULL;
+        state->pause = false;
 
-  // background image - the offset is a little strange
-  SDL_Rect box = (SDL_Rect){.x = MIN.x + 125, .y = MIN.y, .w = MAX.x, .h = MAX.y};
-  asset_make_image(BACKGROUND_PATH, box);
+        // background image - the offset is a little strange
+        SDL_Rect box =
+            (SDL_Rect){.x = MIN.x + 125, .y = MIN.y, .w = MAX.x, .h = MAX.y};
+        asset_make_image(BACKGROUND_PATH, box);
 
-  body_t *spirit = make_spirit(OUTER_RADIUS, INNER_RADIUS, VEC_ZERO);
-  body_set_centroid(spirit, RESET_POS);
-  state->spirit = spirit;
-  scene_add_body(state->scene, spirit);
+        body_t *spirit = make_spirit(OUTER_RADIUS, INNER_RADIUS, VEC_ZERO);
+        body_set_centroid(spirit, RESET_POS);
+        state->spirit = spirit;
+        scene_add_body(state->scene, spirit);
 
-  // spirit
-  asset_make_image_with_body(SPIRIT_FRONT_PATH, state->spirit);
+        // spirit
+        asset_make_image_with_body(SPIRIT_FRONT_PATH, state->spirit);
 
-  make_platforms(state);
+        make_platforms(state);
 
-  //make platform
-  make_platforms(state, 1);
-  //make lava
-  make_lava(state);
-  
-  //make water
-  sdl_on_key((key_handler_t)on_key);
-  return state;
-}
+        // make platform
+        make_platforms(state, 1);
+        // make lava
+        make_lava(state);
 
-bool emscripten_main(state_t *state) {
-  double dt = time_since_last_tick();
-  player_wrap_edges(state);
-  for (int i = 1; i < scene_bodies(state->scene); i++) {
-    wrap_edges(scene_get_body(state->scene, i));
-  }
-  sdl_clear();
-  sdl_render_scene(state->scene);
-  list_t *body_assets = asset_get_asset_list();
-  for (size_t i = 0; i < list_size(body_assets); i++) {
-    asset_render(list_get(body_assets, i));
-  }
-  sdl_show();
-  scene_tick(state->scene, dt);
-  return false;
-}
+        // make water
+        sdl_on_key((key_handler_t)on_key);
+        return state;
+      }
 
-void emscripten_free(state_t *state) {
-  list_free(asset_get_asset_list());
-  scene_free(state->scene);
-  asset_cache_destroy();
-  free(state);
-}
+      bool emscripten_main(state_t * state) {
+        double dt = time_since_last_tick();
+        player_wrap_edges(state);
+        for (int i = 1; i < scene_bodies(state->scene); i++) {
+          wrap_edges(scene_get_body(state->scene, i));
+        }
+        sdl_clear();
+        sdl_render_scene(state->scene);
+        list_t *body_assets = asset_get_asset_list();
+        for (size_t i = 0; i < list_size(body_assets); i++) {
+          asset_render(list_get(body_assets, i));
+        }
+        sdl_show();
+        scene_tick(state->scene, dt);
+        return false;
+      }
+
+      void emscripten_free(state_t * state) {
+        list_free(asset_get_asset_list());
+        scene_free(state->scene);
+        asset_cache_destroy();
+        free(state);
+      }
