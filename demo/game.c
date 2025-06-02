@@ -15,7 +15,7 @@ const vector_t MIN = {0, 0};
 const vector_t MAX = {750, 500};
 const vector_t CENTER = {375, 250};
 
-const vector_t START_POS = {40, 30};
+const vector_t START_POS = {40, 40};
 const vector_t BASE_OBJ_VEL = {30, 0};
 const double EXTRA_VEL_MULT = 10;
 const double VEL_MULT_PROB = 0.2;
@@ -35,8 +35,9 @@ const color_t TEXT_COLOR = (color_t){1, 0, 0};
 // constants to create platforms
 const size_t NUM_MAP = 3;
 const size_t BRICK_WIDTH = 20;
-const size_t BRICK_NUM[NUM_MAP] = {13, 10, 10};
-size_t BRICKS1[13][4] = {{160, 425, 320, BRICK_WIDTH},
+const size_t BRICK_NUM[NUM_MAP] = {14, 10, 10};
+size_t BRICKS1[14][4] = {{375, -500, 750, 30},
+                         {160, 425, 320, BRICK_WIDTH},
                          {560, 425, 150, BRICK_WIDTH},
                          {425, 300, 650, BRICK_WIDTH},
                          {325, 200, 650, BRICK_WIDTH},
@@ -51,6 +52,7 @@ size_t BRICKS1[13][4] = {{160, 425, 320, BRICK_WIDTH},
                          {750, 250, 30, 500}};
 // size_t BRICKS2[][]
 // size_t BRICKS3[][]
+
 
 const size_t LAVA_WIDTH = 7;
 const size_t LAVA_NUM[NUM_MAP] = {4, 0, 0};
@@ -69,6 +71,10 @@ const size_t BODY_ASSETS = 2;
 const vector_t VELOCITY_LEFT = (vector_t){-200, 0};
 const vector_t VELOCITY_RIGHT = (vector_t){200, 0};
 const vector_t VELOCITY_UP = (vector_t){0, 200};
+
+// gravity constants
+const double GRAVITY = 250;
+
 
 const char *SPIRIT_FRONT_PATH = "assets/waterspiritfront.png";
 const char *BACKGROUND_PATH = "assets/dungeonbackground.png";
@@ -90,10 +96,10 @@ struct state {
   scene_t *scene;
   int16_t points;
   screen_t current_screen;
+  bool collided;
   bool pause;
 };
 
-body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
 body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
   list_t *c = list_init(4, free);
   vector_t *v1 = malloc(sizeof(vector_t));
@@ -113,7 +119,7 @@ body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
   list_add(c, v4);
 
   // body_t *obstacle = body_init(c, __DBL_MAX__, OBS_COLOR);
-  body_t *obstacle = body_init_with_info(c, __DBL_MAX__, OBS_COLOR, info, NULL);
+  body_t *obstacle = body_init_with_info(c, 1e6, OBS_COLOR, info, NULL);
   body_set_centroid(obstacle, center);
   return obstacle;
 }
@@ -183,8 +189,7 @@ void make_level1(state_t *state) {
     body_t *obstacle =
         make_obstacle(BRICKS1[i][2], BRICKS1[i][3], coord, "platform");
     scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, state->spirit, obstacle, platform_handler,
-                     NULL, 0, NULL);
+    create_collision(state->scene, state->spirit, obstacle, platform_handler, NULL, 0, NULL);
     asset_make_image_with_body(BRICK_PATH, obstacle);
   }
 
@@ -296,10 +301,10 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
     case RIGHT_ARROW:
       body_set_velocity(spirit, (vector_t){VELOCITY_RIGHT.x, velocity.y});
       break;
-      if (velocity.y == 0) {
-      case UP_ARROW:
+    case UP_ARROW:
+      if (state->collided) {
         body_set_velocity(spirit, (vector_t){velocity.x, VELOCITY_UP.y});
-        break;
+      break;
       }
     case KEY_1:
       if (state->pause || state->current_screen == HOMEPAGE) {
@@ -364,7 +369,7 @@ void make_platforms(state_t *state, size_t idx) {
     }
     body_t *obstacle = make_obstacle(BRICKS1[i][2], BRICKS1[i][3], coord, "platform");
     scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
+    create_collision(state->scene, state->spirit, obstacle, platform_handler,
                      NULL, 0, NULL);
     asset_make_image_with_body(BRICK_PATH, obstacle);
   }
@@ -381,7 +386,7 @@ void make_platforms(state_t *state, size_t idx) {
     vector_t coord = (vector_t){OBST[i][0], OBST[i][1]};
     body_t *obstacle = make_obstacle(OBST[i][2], OBST[i][3], coord, "obstacle");
     scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
+    create_collision(state->scene, state->spirit, obstacle, platform_handler,
                      NULL, 0, NULL);
     asset_make_image_with_body(BRICK_PATH, obstacle);
   }
@@ -397,12 +402,10 @@ void make_platforms(state_t *state, size_t idx) {
     vector_t coord = (vector_t){EDGES[i][0], EDGES[i][1]};
     body_t *obstacle = make_obstacle(EDGES[i][2], EDGES[i][3], coord, "obstacle");
     scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
+    create_collision(state->scene, state->spirit, obstacle, platform_handler,
                      NULL, 0, NULL);
     asset_make_image_with_body(BRICK_PATH, obstacle);
   }
-
-  
 }
 
 void make_lava(state_t *state) {
@@ -417,6 +420,17 @@ void make_lava(state_t *state) {
   }
 }
 
+bool collision(state_t *state) {
+  body_t *spirit = state->spirit;
+  scene_t *scene = state->scene;
+  for (size_t i = 1; i < scene_bodies(scene); i++) {
+    if (find_collision(spirit, scene_get_body(scene, i)).collided) {
+      return true;
+    }
+  }
+  return false;
+}
+
 state_t *emscripten_init() {
   asset_cache_init();
   sdl_init(MIN, MAX);
@@ -426,6 +440,7 @@ state_t *emscripten_init() {
   state->scene = scene_init();
   state->current_screen = LEVEL1;
   state->pause = false;
+  state->collided = false;
 
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(BACKGROUND_PATH, box);
@@ -446,6 +461,7 @@ state_t *emscripten_init() {
   
   //make water
   sdl_on_key((key_handler_t)on_key);
+
   return state;
 }
 
@@ -457,6 +473,15 @@ bool emscripten_main(state_t *state) {
   for (size_t i = 0; i < list_size(body_assets); i++) {
     asset_render(list_get(body_assets, i));
   }
+
+  // apply gravity
+  state->collided = collision(state);
+  body_t *spirit = state->spirit;
+  vector_t spirit_velocity = body_get_velocity(spirit);
+  if (!(state->collided)) {
+    body_set_velocity(spirit, (vector_t){spirit_velocity.x, spirit_velocity.y - (GRAVITY * dt)});
+  }
+
   sdl_show();
   if (!state->pause) {
     scene_tick(state->scene, dt);
