@@ -37,7 +37,6 @@ void asset_cache_destroy();
  */
 void *asset_cache_obj_get_or_create(asset_type_t ty, const char *filepath);
 
-
 // NOT SURE ABOUT THIS AT ALL
 /**
  *
