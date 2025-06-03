@@ -47,6 +47,14 @@ void *asset_exists(const char *filepath) {
   return NULL;
 }
 
+void *asset_change_texture(const char *filepath, size_t idx){
+  entry_t *entry = (entry_t *) list_get(ASSET_CACHE, idx);
+  SDL_Texture *old_texture = entry->obj;
+  SDL_DestroyTexture(old_texture);
+  entry->obj = sdl_get_image_texture(filepath);
+  return entry->obj;
+}
+
 void *asset_cache_obj_get_or_create(asset_type_t ty, const char *filepath) {
   // Hints: Create a helper function to check if an entry already corresponds to
   // `filepath`. If it does, you're good to go.

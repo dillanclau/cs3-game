@@ -37,4 +37,14 @@ void asset_cache_destroy();
  */
 void *asset_cache_obj_get_or_create(asset_type_t ty, const char *filepath);
 
+
+// NOT SURE ABOUT THIS AT ALL
+/**
+ *
+ * @param filepath the filepath to the asset
+ * @param idx index of the entry in ASSET_CACHE list
+ * @return the object that corresponds to the filepath, as a void*
+ */
+void *asset_change_texture(const char *filepath, size_t idx);
+
 #endif // #ifndef __ASSET_CACHE_H__

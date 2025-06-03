@@ -75,14 +75,17 @@ const vector_t VELOCITY_UP = (vector_t){0, 200};
 // gravity constants
 const double GRAVITY = 250;
 
-
+// assets
 const char *SPIRIT_FRONT_PATH = "assets/waterspiritfront.png";
+const char *SPIRIT_RIGHT_PATH = "assets/waterspiritright.png";
+const char *SPIRIT_LEFT_PATH = "assets/waterspiritleft.png";
 const char *BACKGROUND_PATH = "assets/dungeonbackground.png";
 const char *PAUSE_PATH = "assets/pause.png";
 const char *FONT_FILEPATH = "assets/Cascadia.ttf";
 const char *BRICK_PATH = "assets/brick_texture.png";
 const char *LAVA_PATH = "assets/lava.png";
 const char *HOMEPAGE_PATH = "assets/homepage.png";
+
 
 typedef enum {
   LEVEL1 = 1,
@@ -297,15 +300,19 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
     switch (key) {
     case LEFT_ARROW:
       body_set_velocity(spirit, (vector_t){VELOCITY_LEFT.x, velocity.y});
+      //NOT SURE HOW TO CHANGE THE TEXTURE
+      // asset_change_texture(SPIRIT_LEFT_PATH, 1);
       break;
     case RIGHT_ARROW:
       body_set_velocity(spirit, (vector_t){VELOCITY_RIGHT.x, velocity.y});
+      // asset_change_texture(SPIRIT_RIGHT_PATH, 1);
       break;
     case UP_ARROW:
       if (state->collided) {
         body_set_velocity(spirit, (vector_t){velocity.x, VELOCITY_UP.y});
       break;
       }
+      // asset_change_texture(SPIRIT_FRONT_PATH, 1);
     case KEY_1:
       if (state->pause || state->current_screen == HOMEPAGE) {
         go_to_level1(state);
