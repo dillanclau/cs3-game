@@ -47,7 +47,6 @@ void *asset_exists(const char *filepath) {
   return NULL;
 }
 
-
 void *asset_cache_obj_get_or_create(asset_type_t ty, const char *filepath) {
   // Hints: Create a helper function to check if an entry already corresponds to
   // `filepath`. If it does, you're good to go.
@@ -63,7 +62,7 @@ void *asset_cache_obj_get_or_create(asset_type_t ty, const char *filepath) {
     case ASSET_IMAGE:
       entry->obj = sdl_get_image_texture(filepath);
       break;
-    case ASSET_TEXT: 
+    case ASSET_TEXT:
       entry->obj = TTF_OpenFont(filepath, FONT_SIZE);
       break;
     case ASSET_SPIRIT: // check this!

@@ -9,7 +9,7 @@
 
 #include "body.h"
 
-typedef enum { ASSET_IMAGE, ASSET_TEXT, ASSET_SPIRIT} asset_type_t;
+typedef enum { ASSET_IMAGE, ASSET_TEXT, ASSET_SPIRIT } asset_type_t;
 
 typedef struct asset asset_t;
 

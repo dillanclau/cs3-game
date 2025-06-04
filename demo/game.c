@@ -247,7 +247,7 @@ void make_level2(state_t *state) {
   }
 
   size_t elevator_len = 1;
-  for (size_t i = 0; i < elevator_len; i++){
+  for (size_t i = 0; i < elevator_len; i++) {
     vector_t coord = (vector_t){ELEVATOR2[i][0], ELEVATOR2[i][1]};
     body_t *obstacle =
         make_obstacle(ELEVATOR2[i][2], ELEVATOR2[i][3], coord, "elevator");
@@ -297,8 +297,8 @@ void go_to_homepage(state_t *state) {
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   // asset_make_image(HOMEPAGE_PATH, box);
   asset_make_text(FONT_FILEPATH,
-                  (SDL_Rect){.x = 200, .y = 25, .w = 200, .h = 100},
-                  "HOMEPAGE", TEXT_COLOR);
+                  (SDL_Rect){.x = 200, .y = 25, .w = 200, .h = 100}, "HOMEPAGE",
+                  TEXT_COLOR);
   asset_make_text(FONT_FILEPATH,
                   (SDL_Rect){.x = 200, .y = 150, .w = 300, .h = 50},
                   "Press 1 to go to Level 1", TEXT_COLOR);
@@ -469,7 +469,8 @@ state_t *emscripten_init() {
 
   // spirit -- need to fix this implementation (IGNORE FOR NOW)
   // asset_make_spirit(SPIRIT_FRONT_PATH, state->spirit);
-  // asset_make_spirit(SPIRIT_FRONT_PATH, SPIRIT_LEFT_PATH, SPIRIT_RIGHT_PATH, state->spirit);
+  // asset_make_spirit(SPIRIT_FRONT_PATH, SPIRIT_LEFT_PATH, SPIRIT_RIGHT_PATH,
+  // state->spirit);
 
   // make_level1(state);
   // make_level2(state);

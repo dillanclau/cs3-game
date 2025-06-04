@@ -88,25 +88,28 @@ void asset_make_text(const char *filepath, SDL_Rect bounding_box,
 }
 
 // new asset for the spirit
-void asset_make_spirit(const char* front_filepath, const char* left_filepath, 
-                      const char* right_filepath, body_t *body){
+void asset_make_spirit(const char *front_filepath, const char *left_filepath,
+                       const char *right_filepath, body_t *body) {
   SDL_Rect bounding_box = (SDL_Rect){.x = 0, .y = 0, .w = 0, .h = 0};
   asset_t *asset = asset_init(ASSET_SPIRIT, bounding_box);
-  spirit_asset_t *spirit_asset = (spirit_asset_t *) asset;
-  spirit_asset->front_texture = asset_cache_obj_get_or_create(ASSET_IMAGE, front_filepath);
-  spirit_asset->right_texture = asset_cache_obj_get_or_create(ASSET_IMAGE, right_filepath);
-  spirit_asset->left_texture = asset_cache_obj_get_or_create(ASSET_IMAGE, left_filepath);
+  spirit_asset_t *spirit_asset = (spirit_asset_t *)asset;
+  spirit_asset->front_texture =
+      asset_cache_obj_get_or_create(ASSET_IMAGE, front_filepath);
+  spirit_asset->right_texture =
+      asset_cache_obj_get_or_create(ASSET_IMAGE, right_filepath);
+  spirit_asset->left_texture =
+      asset_cache_obj_get_or_create(ASSET_IMAGE, left_filepath);
   spirit_asset->curr_texture = spirit_asset->front_texture;
   spirit_asset->body = NULL;
-  list_add(ASSET_LIST, (asset_t *) spirit_asset);
+  list_add(ASSET_LIST, (asset_t *)spirit_asset);
 }
 
 void *asset_change_texture(asset_t *asset, size_t idx) {
-  assert (asset->type == ASSET_SPIRIT);
-  spirit_asset_t *spirit_asset = (spirit_asset_t *) asset;
+  assert(asset->type == ASSET_SPIRIT);
+  spirit_asset_t *spirit_asset = (spirit_asset_t *)asset;
   if (idx == 0) {
     spirit_asset->curr_texture = spirit_asset->front_texture;
-  } else if (idx == 1){
+  } else if (idx == 1) {
     spirit_asset->curr_texture = spirit_asset->right_texture;
   } else if (idx == 2) {
     spirit_asset->curr_texture = spirit_asset->left_texture;
@@ -153,8 +156,8 @@ void asset_render(asset_t *asset) {
                     &box);
     break;
   case ASSET_SPIRIT:
-      spirit_asset_t *spirit_asset = (spirit_asset_t *)asset;
-      sdl_render_image(spirit_asset->curr_texture, &box);
+    spirit_asset_t *spirit_asset = (spirit_asset_t *)asset;
+    sdl_render_image(spirit_asset->curr_texture, &box);
   }
 }
 
