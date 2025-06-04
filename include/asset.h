@@ -9,7 +9,7 @@
 
 #include "body.h"
 
-typedef enum { ASSET_IMAGE, ASSET_TEXT } asset_type_t;
+typedef enum { ASSET_IMAGE, ASSET_TEXT, ASSET_SPIRIT} asset_type_t;
 
 typedef struct asset asset_t;
 
@@ -45,6 +45,12 @@ void asset_make_image_with_body(const char *filepath, body_t *body);
  */
 void asset_make_text(const char *filepath, SDL_Rect bounding_box,
                      const char *text, color_t color);
+
+/**
+ * @param asset
+ * @param idx
+ */
+void *asset_change_texture(asset_t *asset, size_t idx);
 
 /**
  * Resets the internal asset list by freeing all assets and creating a new empty

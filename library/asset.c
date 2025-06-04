@@ -28,6 +28,15 @@ typedef struct image_asset {
   body_t *body;
 } image_asset_t;
 
+typedef struct spirit_asset {
+  asset_t base;
+  SDL_Texture *curr_texture;
+  SDL_Texture *front_texture;
+  SDL_Texture *right_texture;
+  SDL_Texture *left_texture;
+  body_t *body;
+} spirit_asset_t;
+
 /**
  * Allocates memory for an asset with the given parameters.
  *
@@ -44,6 +53,7 @@ static asset_t *asset_init(asset_type_t ty, SDL_Rect bounding_box) {
   }
   asset_t *new =
       malloc(ty == ASSET_IMAGE ? sizeof(image_asset_t) : sizeof(text_asset_t));
+  // : sizeof(spirit_asset_t)
   assert(new);
   new->type = ty;
   new->bounding_box = bounding_box;
@@ -75,6 +85,32 @@ void asset_make_text(const char *filepath, SDL_Rect bounding_box,
   text_asset->text = text;
   text_asset->color = color;
   list_add(ASSET_LIST, (asset_t *)text_asset);
+}
+
+// new asset for the spirit
+void asset_make_spirit(const char* front_filepath, const char* left_filepath, 
+                      const char* right_filepath, body_t *body){
+  SDL_Rect bounding_box = (SDL_Rect){.x = 0, .y = 0, .w = 0, .h = 0};
+  asset_t *asset = asset_init(ASSET_SPIRIT, bounding_box);
+  spirit_asset_t *spirit_asset = (spirit_asset_t *) asset;
+  spirit_asset->front_texture = asset_cache_obj_get_or_create(ASSET_IMAGE, front_filepath);
+  spirit_asset->right_texture = asset_cache_obj_get_or_create(ASSET_IMAGE, right_filepath);
+  spirit_asset->left_texture = asset_cache_obj_get_or_create(ASSET_IMAGE, left_filepath);
+  spirit_asset->curr_texture = spirit_asset->front_texture;
+  spirit_asset->body = NULL;
+  list_add(ASSET_LIST, (asset_t *) spirit_asset);
+}
+
+void *asset_change_texture(asset_t *asset, size_t idx) {
+  assert (asset->type == ASSET_SPIRIT);
+  spirit_asset_t *spirit_asset = (spirit_asset_t *) asset;
+  if (idx == 0) {
+    spirit_asset->curr_texture = spirit_asset->front_texture;
+  } else if (idx == 1){
+    spirit_asset->curr_texture = spirit_asset->right_texture;
+  } else if (idx == 2) {
+    spirit_asset->curr_texture = spirit_asset->left_texture;
+  }
 }
 
 void asset_reset_asset_list() {
@@ -116,6 +152,9 @@ void asset_render(asset_t *asset) {
     sdl_render_text(text_asset->text, text_asset->font, text_asset->color,
                     &box);
     break;
+  case ASSET_SPIRIT:
+      spirit_asset_t *spirit_asset = (spirit_asset_t *)asset;
+      sdl_render_image(spirit_asset->curr_texture, &box);
   }
 }
 

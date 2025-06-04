@@ -38,9 +38,10 @@ const size_t BRICK_WIDTH = 20;
 const size_t BRICK_NUM[NUM_MAP] = {14, 11, 12};
 
 // x, y, w, h
+// Bricks for Map 1
 size_t BRICKS1[14][4] = {{375, -500, 750, 30},
-                         {160, 425, 320, BRICK_WIDTH},
-                         {560, 425, 150, BRICK_WIDTH},
+                         {160, 380, 320, BRICK_WIDTH},
+                         {560, 380, 150, BRICK_WIDTH},
                          {425, 300, 650, BRICK_WIDTH},
                          {325, 200, 650, BRICK_WIDTH},
                          {180, 75, 175, BRICK_WIDTH},
@@ -53,30 +54,31 @@ size_t BRICKS1[14][4] = {{375, -500, 750, 30},
                          {0, 250, 30, 500},
                          {750, 250, 30, 500}};
 
-size_t BRICKS2[11][4] = {{100, 425, 200, BRICK_WIDTH}, // where the door is
-                        {450, 400, 300, BRICK_WIDTH},
-                        {350, 300, 350, BRICK_WIDTH}, // next row
-                        {630, 280, 300, BRICK_WIDTH},
-                        {225, 200, 450, BRICK_WIDTH}, // third row
-                        {500, 130, 300, BRICK_WIDTH},
-                        {100, 80, 200, BRICK_WIDTH}, // starting platform
-                        {710, 30, 80, 60}, // misc sq
-                        {375, 0, 750, 30}, // border
-                        {0, 250, 30, 500},
-                        {750, 250, 30, 500}};
+// Bricks for Map 2
+size_t BRICKS2[11][4] = {{100, 390, 200, BRICK_WIDTH}, // where the door is
+                         {450, 385, 300, BRICK_WIDTH},
+                         {350, 290, 350, BRICK_WIDTH}, // next row
+                         {630, 270, 300, BRICK_WIDTH},
+                         {225, 200, 450, BRICK_WIDTH}, // third row
+                         {500, 130, 300, BRICK_WIDTH},
+                         {100, 80, 200, BRICK_WIDTH}, // starting platform
+                         {710, 30, 80, 60},           // misc sq
+                         {375, 0, 750, 30},           // border
+                         {0, 250, 30, 500},
+                         {750, 250, 30, 500}};
 
-size_t BRICKS3[12][4] = {{50, 425, 100, BRICK_WIDTH}, // where the door is
-                        {185, 275, BRICK_WIDTH, 200}, // left column
-                        {375, 250, BRICK_WIDTH, 250}, //second column
-                        {435, 330, 120, BRICK_WIDTH},
-                        {580, 250, 90, BRICK_WIDTH},
-                        {690, 425, 120, BRICK_WIDTH},
-                        {240, 250, 90, BRICK_WIDTH},
-                        {140, 325, 90, BRICK_WIDTH},
-                        {325, 120, 650, BRICK_WIDTH}, // starting platform
-                        {375, 0, 750, 30}, // border
-                        {0, 250, 30, 500},
-                        {750, 250, 30, 500}};
+size_t BRICKS3[12][4] = {{50, 390, 100, BRICK_WIDTH},  // where the door is
+                         {185, 275, BRICK_WIDTH, 200}, // left column
+                         {375, 250, BRICK_WIDTH, 250}, // second column
+                         {435, 315, 120, BRICK_WIDTH},
+                         {580, 230, 90, BRICK_WIDTH},
+                         {690, 370, 120, BRICK_WIDTH},
+                         {240, 230, 90, BRICK_WIDTH},
+                         {140, 325, 90, BRICK_WIDTH},
+                         {325, 120, 650, BRICK_WIDTH}, // starting platform
+                         {375, 0, 750, 30},            // border
+                         {0, 250, 30, 500},
+                         {750, 250, 30, 500}};
 
 const size_t LAVA_WIDTH = 7;
 const size_t LAVA_NUM[NUM_MAP] = {4, 0, 0};
@@ -84,6 +86,8 @@ size_t LAVA1[4][4] = {{180, 20, 165, LAVA_WIDTH},
                       {500, 90, 165, LAVA_WIDTH},
                       {500, 310, 100, LAVA_WIDTH},
                       {250, 310, 175, LAVA_WIDTH}};
+
+size_t ELEVATOR2[1][4] = {{50, 220, 70, BRICK_WIDTH}};
 
 const int16_t H_STEP = 50;
 const int16_t V_STEP = 30;
@@ -109,6 +113,7 @@ const char *FONT_FILEPATH = "assets/Cascadia.ttf";
 const char *BRICK_PATH = "assets/brick_texture.png";
 const char *LAVA_PATH = "assets/lava.png";
 const char *HOMEPAGE_PATH = "assets/homepage.png";
+const char *ELEVATOR_PATH = "assets/elevator.png";
 
 typedef enum {
   LEVEL1 = 1,
@@ -229,7 +234,7 @@ void make_level1(state_t *state) {
   }
 }
 
-void make_level2(state_t *state){
+void make_level2(state_t *state) {
   size_t brick_len = BRICK_NUM[1];
   for (size_t i = 0; i < brick_len; i++) {
     vector_t coord = (vector_t){BRICKS2[i][0], BRICKS2[i][1]};
@@ -240,9 +245,20 @@ void make_level2(state_t *state){
                      NULL, 0, NULL);
     asset_make_image_with_body(BRICK_PATH, obstacle);
   }
+
+  size_t elevator_len = 1;
+  for (size_t i = 0; i < elevator_len; i++){
+    vector_t coord = (vector_t){ELEVATOR2[i][0], ELEVATOR2[i][1]};
+    body_t *obstacle =
+        make_obstacle(ELEVATOR2[i][2], ELEVATOR2[i][3], coord, "elevator");
+    scene_add_body(state->scene, obstacle);
+    create_collision(state->scene, state->spirit, obstacle, platform_handler,
+                     NULL, 0, NULL);
+    asset_make_image_with_body(ELEVATOR_PATH, obstacle);
+  }
 }
 
-void make_level3(state_t *state){
+void make_level3(state_t *state) {
   size_t brick_len = BRICK_NUM[2];
   for (size_t i = 0; i < brick_len; i++) {
     vector_t coord = (vector_t){BRICKS3[i][0], BRICKS3[i][1]};
@@ -279,19 +295,19 @@ void go_to_homepage(state_t *state) {
   asset_reset_asset_list();
   state->current_screen = HOMEPAGE;
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
-  asset_make_image(HOMEPAGE_PATH, box);
-  // asset_make_text(FONT_FILEPATH,
-  //                 (SDL_Rect){.x = 200, .y = 25, .w = 200, .h = 100},
-  //                 "HOMEPAGE", TEXT_COLOR);
-  // asset_make_text(FONT_FILEPATH,
-  //                 (SDL_Rect){.x = 200, .y = 150, .w = 300, .h = 50},
-  //                 "Press 1 to go to Level 1", TEXT_COLOR);
-  // asset_make_text(FONT_FILEPATH,
-  //                 (SDL_Rect){.x = 200, .y = 250, .w = 300, .h = 50},
-  //                 "Press 2 to go to Level 2", TEXT_COLOR);
-  // asset_make_text(FONT_FILEPATH,
-  //                 (SDL_Rect){.x = 200, .y = 350, .w = 300, .h = 50},
-  //                 "Press 3 to go to Level 3", TEXT_COLOR);
+  // asset_make_image(HOMEPAGE_PATH, box);
+  asset_make_text(FONT_FILEPATH,
+                  (SDL_Rect){.x = 200, .y = 25, .w = 200, .h = 100},
+                  "HOMEPAGE", TEXT_COLOR);
+  asset_make_text(FONT_FILEPATH,
+                  (SDL_Rect){.x = 200, .y = 150, .w = 300, .h = 50},
+                  "Press 1 to go to Level 1", TEXT_COLOR);
+  asset_make_text(FONT_FILEPATH,
+                  (SDL_Rect){.x = 200, .y = 250, .w = 300, .h = 50},
+                  "Press 2 to go to Level 2", TEXT_COLOR);
+  asset_make_text(FONT_FILEPATH,
+                  (SDL_Rect){.x = 200, .y = 350, .w = 300, .h = 50},
+                  "Press 3 to go to Level 3", TEXT_COLOR);
 }
 
 void pause(state_t *state) {
@@ -343,15 +359,21 @@ void restart(state_t *state) {
 void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
   body_t *spirit = scene_get_body(state->scene, 0);
   vector_t velocity = body_get_velocity(spirit);
+  list_t *body_assets = asset_get_asset_list();
+  asset_t *asset = list_get(body_assets, 1);
+  // spirit_asset_t *spirit_asset = (spirit_asset_t *) asset;
   if (type == KEY_PRESSED) {
+    // asset_change_texture(spirit_asset, 1);
     switch (key) {
     case LEFT_ARROW:
       body_set_velocity(spirit, (vector_t){VELOCITY_LEFT.x, velocity.y});
+      // asset_change_texture(spirit_asset, 2);
       // NOT SURE HOW TO CHANGE THE TEXTURE
       // asset_change_texture(SPIRIT_LEFT_PATH, 1);
       break;
     case RIGHT_ARROW:
       body_set_velocity(spirit, (vector_t){VELOCITY_RIGHT.x, velocity.y});
+      // asset_change_texture(spirit_asset, 1);
       // asset_change_texture(SPIRIT_RIGHT_PATH, 1);
       break;
     case UP_ARROW:
@@ -414,67 +436,6 @@ double rand_double(double low, double high) {
   return (high - low) * rand() / RAND_MAX + low;
 }
 
-void make_platforms(state_t *state, size_t idx) {
-  size_t len = BRICK_NUM[0];
-  for (size_t i = 0; i < len; i++) {
-    vector_t coord = (vector_t){BRICKS1[i][0], BRICKS1[i][1]};
-    if (BRICKS1[i][3] == 0) {
-      BRICKS1[i][3] = BRICK_WIDTH;
-    }
-    body_t *obstacle =
-        make_obstacle(BRICKS1[i][2], BRICKS1[i][3], coord, "platform");
-    scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, state->spirit, obstacle, platform_handler,
-                     NULL, 0, NULL);
-    asset_make_image_with_body(BRICK_PATH, obstacle);
-  }
-
-  // misc sized blocks
-  // {x, y, width, height}
-  const size_t NUM_OBST = 4;
-  int OBST[NUM_OBST][4] = {{730, 330, 40, 60},
-                           {30, 235, 60, 70},
-                           {730, 90, 40, 60},
-                           {715, 35, 70, 70}};
-
-  for (size_t i = 0; i < NUM_OBST; i++) {
-    vector_t coord = (vector_t){OBST[i][0], OBST[i][1]};
-    body_t *obstacle = make_obstacle(OBST[i][2], OBST[i][3], coord, "obstacle");
-    scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, state->spirit, obstacle, platform_handler,
-                     NULL, 0, NULL);
-    asset_make_image_with_body(BRICK_PATH, obstacle);
-  }
-
-  // boundaries
-  // {x, y, width, height}
-  const size_t BOUNDARIES = 3;
-  int EDGES[BOUNDARIES][4] = {
-      {375, 0, 750, 30}, {0, 250, 30, 500}, {750, 250, 30, 500}};
-
-  for (size_t i = 0; i < BOUNDARIES; i++) {
-    vector_t coord = (vector_t){EDGES[i][0], EDGES[i][1]};
-    body_t *obstacle =
-        make_obstacle(EDGES[i][2], EDGES[i][3], coord, "obstacle");
-    scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, state->spirit, obstacle, platform_handler,
-                     NULL, 0, NULL);
-    asset_make_image_with_body(BRICK_PATH, obstacle);
-  }
-}
-
-void make_lava(state_t *state) {
-  size_t len = LAVA_NUM[0];
-  for (size_t i = 0; i < len; i++) {
-    vector_t coord = (vector_t){LAVA1[i][0], LAVA1[i][1]};
-    body_t *obstacle = make_obstacle(LAVA1[i][2], LAVA1[i][3], coord, "lava");
-    scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
-                     NULL, 0, NULL);
-    asset_make_image_with_body(LAVA_PATH, obstacle);
-  }
-}
-
 bool collision(state_t *state) {
   body_t *spirit = state->spirit;
   scene_t *scene = state->scene;
@@ -504,14 +465,15 @@ state_t *emscripten_init() {
   body_set_centroid(spirit, START_POS);
   state->spirit = spirit;
   scene_add_body(state->scene, spirit);
-
-  // spirit
   asset_make_image_with_body(SPIRIT_FRONT_PATH, state->spirit);
 
-  // make level
-  make_level1(state);
-  // make_level3(state);
+  // spirit -- need to fix this implementation (IGNORE FOR NOW)
+  // asset_make_spirit(SPIRIT_FRONT_PATH, state->spirit);
+  // asset_make_spirit(SPIRIT_FRONT_PATH, SPIRIT_LEFT_PATH, SPIRIT_RIGHT_PATH, state->spirit);
 
+  // make_level1(state);
+  // make_level2(state);
+  make_level3(state);
 
   // make water
   sdl_on_key((key_handler_t)on_key);
