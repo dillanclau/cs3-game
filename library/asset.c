@@ -61,27 +61,33 @@ static asset_t *asset_init(asset_type_t ty, SDL_Rect bounding_box) {
 }
 
 void asset_make_image_with_body(const char *filepath, body_t *body) {
-  SDL_Rect bounding_box = (SDL_Rect){.x = 0, .y = 0, .w = 0, .h = 0};
+  SDL_Rect bounding_box = sdl_get_bounding_box(body);
+  SDL_Texture *image_texture =
+      (SDL_Texture *)asset_cache_obj_get_or_create(ASSET_IMAGE, filepath);
   asset_t *asset = asset_init(ASSET_IMAGE, bounding_box);
   image_asset_t *image_asset = (image_asset_t *)asset;
-  image_asset->texture = asset_cache_obj_get_or_create(ASSET_IMAGE, filepath);
+  image_asset->texture = image_texture;
   image_asset->body = body;
   list_add(ASSET_LIST, (asset_t *)image_asset);
 }
 
 void asset_make_image(const char *filepath, SDL_Rect bounding_box) {
+  SDL_Texture *image_texture =
+      (SDL_Texture *)asset_cache_obj_get_or_create(ASSET_IMAGE, filepath);
   asset_t *asset = asset_init(ASSET_IMAGE, bounding_box);
   image_asset_t *image_asset = (image_asset_t *)asset;
-  image_asset->texture = asset_cache_obj_get_or_create(ASSET_IMAGE, filepath);
+  image_asset->texture = image_texture;
   image_asset->body = NULL;
   list_add(ASSET_LIST, (asset_t *)image_asset);
 }
 
 void asset_make_text(const char *filepath, SDL_Rect bounding_box,
                      const char *text, color_t color) {
+  TTF_Font *text_font =
+      (TTF_Font *)asset_cache_obj_get_or_create(ASSET_TEXT, filepath);
   asset_t *asset = asset_init(ASSET_TEXT, bounding_box);
   text_asset_t *text_asset = (text_asset_t *)asset;
-  text_asset->font = asset_cache_obj_get_or_create(ASSET_TEXT, filepath);
+  text_asset->font = text_font;
   text_asset->text = text;
   text_asset->color = color;
   list_add(ASSET_LIST, (asset_t *)text_asset);
@@ -126,27 +132,26 @@ void asset_reset_asset_list() {
 list_t *asset_get_asset_list() { return ASSET_LIST; }
 
 void asset_remove_body(body_t *body) {
-  size_t len = list_size(ASSET_LIST);
-  for (size_t i = 0; i < len; i++) {
+  size_t size = list_size(ASSET_LIST);
+  for (ssize_t i = size - 1; i >= 0; i--) {
     asset_t *asset = list_get(ASSET_LIST, i);
-    if (asset->type == ASSET_IMAGE) {
-      image_asset_t *image_asset = (image_asset_t *)asset;
-      if (image_asset->body == body) {
-        list_remove(ASSET_LIST, i);
-        asset_destroy(asset);
-      }
+    if (asset->type == ASSET_IMAGE &&
+        (((image_asset_t *)asset)->body == body)) {
+      asset = list_remove(ASSET_LIST, i);
+      asset_destroy(asset);
     }
   }
 }
 
 void asset_render(asset_t *asset) {
-  SDL_Rect box = asset->bounding_box;
-  switch (asset->type) {
-  case ASSET_IMAGE:
-    image_asset_t *image = (image_asset_t *)asset;
-    if (image->body != NULL) {
-      box = sdl_get_body_bounding_box(image->body);
+  if (asset->type == ASSET_IMAGE) {
+    if (((image_asset_t *)asset)->body == NULL) {
+      sdl_render_image(((image_asset_t *)asset)->texture, asset->bounding_box);
+    } else {
+      sdl_render_image(((image_asset_t *)asset)->texture,
+                       sdl_get_bounding_box(((image_asset_t *)asset)->body));
     }
+<<<<<<< HEAD
 
     sdl_render_image(image->texture, &box);
     break;
@@ -158,6 +163,13 @@ void asset_render(asset_t *asset) {
   case ASSET_SPIRIT:
     spirit_asset_t *spirit_asset = (spirit_asset_t *)asset;
     sdl_render_image(spirit_asset->curr_texture, &box);
+=======
+  }
+  if (asset->type == ASSET_TEXT) {
+    sdl_render_text(((text_asset_t *)asset)->font,
+                    ((char *)((text_asset_t *)asset)->text),
+                    &(asset->bounding_box), ((text_asset_t *)asset)->color);
+>>>>>>> refs/remotes/origin/master
   }
 }
 

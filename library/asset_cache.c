@@ -11,8 +11,6 @@ static list_t *ASSET_CACHE;
 const size_t FONT_SIZE = 18;
 const size_t INITIAL_CAPACITY = 5;
 
-// copied from olivia's project 5
-
 typedef struct {
   asset_type_t type;
   const char *filepath;
@@ -20,10 +18,10 @@ typedef struct {
 } entry_t;
 
 static void asset_cache_free_entry(entry_t *entry) {
-  switch (entry->type) {
-  case ASSET_IMAGE:
+  if (entry->type == ASSET_IMAGE) {
     SDL_DestroyTexture(entry->obj);
-  case ASSET_TEXT:
+  }
+  if (entry->type == ASSET_TEXT) {
     TTF_CloseFont(entry->obj);
   }
   free(entry);
@@ -36,11 +34,12 @@ void asset_cache_init() {
 
 void asset_cache_destroy() { list_free(ASSET_CACHE); }
 
-void *asset_exists(const char *filepath) {
-  size_t len = list_size(ASSET_CACHE);
-  for (size_t i = 0; i < len; i++) {
-    entry_t *entry = (entry_t *)list_get(ASSET_CACHE, i);
-    if (strcmp(entry->filepath, filepath) == 0) {
+// helper function
+void *entry_corresponds_to_filepath(asset_type_t ty, const char *filepath) {
+  size_t cache_size = list_size(ASSET_CACHE);
+  for (size_t i = 0; i < cache_size; i++) {
+    entry_t *entry = list_get(ASSET_CACHE, i);
+    if (strcmp(entry->filepath, filepath) == 0 && entry->type == ty) {
       return entry->obj;
     }
   }
@@ -48,6 +47,7 @@ void *asset_exists(const char *filepath) {
 }
 
 void *asset_cache_obj_get_or_create(asset_type_t ty, const char *filepath) {
+<<<<<<< HEAD
   // Hints: Create a helper function to check if an entry already corresponds to
   // `filepath`. If it does, you're good to go.
   // Otherwise, you will have to initialize the asset that corresponds to `ty`.
@@ -72,7 +72,21 @@ void *asset_cache_obj_get_or_create(asset_type_t ty, const char *filepath) {
 
     list_add(ASSET_CACHE, entry);
     return entry->obj;
+=======
+  void *get_entry = entry_corresponds_to_filepath(ty, filepath);
+  if (get_entry != NULL) {
+    return get_entry;
+>>>>>>> refs/remotes/origin/master
   }
-
-  return obj;
+  entry_t *new_entry = malloc(sizeof(entry_t));
+  new_entry->type = ty;
+  new_entry->filepath = filepath;
+  if (new_entry->type == ASSET_IMAGE) {
+    new_entry->obj = sdl_get_image_texture(filepath);
+  }
+  if (new_entry->type == ASSET_TEXT) {
+    new_entry->obj = TTF_OpenFont(filepath, FONT_SIZE);
+  }
+  list_add(ASSET_CACHE, new_entry);
+  return new_entry->obj;
 }

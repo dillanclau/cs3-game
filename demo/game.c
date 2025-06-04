@@ -132,107 +132,119 @@ struct state {
 };
 
 body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
-  list_t *c = list_init(4, free);
-  vector_t *v1 = malloc(sizeof(vector_t));
-  *v1 = (vector_t){0, 0};
-  list_add(c, v1);
+  body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
+    list_t *c = list_init(4, free);
+    vector_t *v1 = malloc(sizeof(vector_t));
+    *v1 = (vector_t){0, 0};
+    list_add(c, v1);
+    body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
+      list_t *c = list_init(4, free);
+      vector_t *v1 = malloc(sizeof(vector_t));
+      *v1 = (vector_t){0, 0};
+      list_add(c, v1);
 
-  vector_t *v2 = malloc(sizeof(vector_t));
-  *v2 = (vector_t){w, 0};
-  list_add(c, v2);
+      vector_t *v2 = malloc(sizeof(vector_t));
+      *v2 = (vector_t){w, 0};
+      list_add(c, v2);
 
-  vector_t *v3 = malloc(sizeof(vector_t));
-  *v3 = (vector_t){w, h};
-  list_add(c, v3);
+      vector_t *v3 = malloc(sizeof(vector_t));
+      *v3 = (vector_t){w, h};
+      list_add(c, v3);
 
-  vector_t *v4 = malloc(sizeof(vector_t));
-  *v4 = (vector_t){0, h};
-  list_add(c, v4);
+      vector_t *v4 = malloc(sizeof(vector_t));
+      *v4 = (vector_t){0, h};
+      list_add(c, v4);
 
-  // body_t *obstacle = body_init(c, __DBL_MAX__, OBS_COLOR);
-  body_t *obstacle = body_init_with_info(c, 1e6, OBS_COLOR, info, NULL);
-  body_set_centroid(obstacle, center);
-  return obstacle;
-}
+      // body_t *obstacle = body_init(c, __DBL_MAX__, OBS_COLOR);
+      body_t *obstacle =
+          body_init_with_info(c, __DBL_MAX__, OBS_COLOR, info, NULL);
+      body_set_centroid(obstacle, center);
+      return obstacle;
+    }
 
-body_t *make_spirit(double outer_radius, double inner_radius, vector_t center) {
-  center.y += inner_radius;
-  list_t *c = list_init(SPIRIT_NUM_POINTS, free);
-  for (size_t i = 0; i < SPIRIT_NUM_POINTS; i++) {
-    double angle = 2 * M_PI * i / SPIRIT_NUM_POINTS;
-    vector_t *v = malloc(sizeof(*v));
-    *v = (vector_t){center.x + inner_radius * cos(angle),
-                    center.y + outer_radius * sin(angle)};
-    list_add(c, v);
-  }
-  body_t *spirit = body_init(c, 1, SPIRIT_COLOR);
-  return spirit;
-}
+    body_t *make_spirit(double outer_radius, double inner_radius,
+                        vector_t center) {
+      center.y += inner_radius;
+      list_t *c = list_init(SPIRIT_NUM_POINTS, free);
+      for (size_t i = 0; i < SPIRIT_NUM_POINTS; i++) {
+        double angle = 2 * M_PI * i / SPIRIT_NUM_POINTS;
+        vector_t *v = malloc(sizeof(*v));
+        *v = (vector_t){center.x + inner_radius * cos(angle),
+                        center.y + outer_radius * sin(angle)};
+        list_add(c, v);
+      }
+      body_t *spirit = body_init(c, 1, SPIRIT_COLOR);
+      return spirit;
+    }
 
-void wrap_edges(body_t *body) {
-  vector_t centroid = body_get_centroid(body);
-  if (centroid.x > MAX.x) {
-    body_set_centroid(body, (vector_t){MIN.x, centroid.y});
-  } else if (centroid.x < MIN.x) {
-    body_set_centroid(body, (vector_t){MAX.x, centroid.y});
-  } else if (centroid.y > MAX.y) {
-    body_set_centroid(body, (vector_t){centroid.x, MIN.y});
-  } else if (centroid.y < MIN.y) {
-    body_set_centroid(body, (vector_t){centroid.x, MAX.y});
-  }
-}
+    void wrap_edges(body_t * body) {
+      vector_t centroid = body_get_centroid(body);
+      if (centroid.x > MAX.x) {
+        body_set_centroid(body, (vector_t){MIN.x, centroid.y});
+      } else if (centroid.x < MIN.x) {
+        body_set_centroid(body, (vector_t){MAX.x, centroid.y});
+      } else if (centroid.y > MAX.y) {
+        body_set_centroid(body, (vector_t){centroid.x, MIN.y});
+      } else if (centroid.y < MIN.y) {
+        body_set_centroid(body, (vector_t){centroid.x, MAX.y});
+      }
+    }
 
-void reset_user(body_t *body) { body_set_centroid(body, START_POS); }
+    void reset_user(body_t * body) { body_set_centroid(body, START_POS); }
 
-void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
-                        double force_const) {
-  reset_user(body1);
-}
+    void reset_user_handler(body_t * body1, body_t * body2, vector_t axis,
+                            void *aux, double force_const) {
+      reset_user(body1);
+    }
 
-// handles the collisions between user and platform
-void platform_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
-                      double force_const) {
-  vector_t user_vel = body_get_velocity(body1);
-  vector_t user_pos = body_get_centroid(body1);
-  vector_t plat_pos = body_get_centroid(body2);
-  if ((user_vel.x > 0) && (plat_pos.x > user_pos.x)) {
-    user_vel.x = 0;
-  } else if ((user_vel.x < 0) && (plat_pos.x < user_pos.x)) {
-    user_vel.x = 0;
-  }
+    // handles the collisions between user and platform
+    void platform_handler(body_t * body1, body_t * body2, vector_t axis,
+                          void *aux, double force_const) {
+      vector_t user_vel = body_get_velocity(body1);
+      vector_t user_pos = body_get_centroid(body1);
+      vector_t plat_pos = body_get_centroid(body2);
+      if ((user_vel.x > 0) && (plat_pos.x > user_pos.x)) {
+        user_vel.x = 0;
+      } else if ((user_vel.x < 0) && (plat_pos.x < user_pos.x)) {
+        user_vel.x = 0;
+      }
 
-  if ((user_vel.y > 0) && (plat_pos.y > user_pos.y)) {
-    user_vel.y = -user_vel.y;
-  } else if ((user_vel.y < 0) && (plat_pos.y < user_pos.y)) {
-    user_vel.y = 0;
-  }
-  body_set_velocity(body1, user_vel);
-}
+      if ((user_vel.y > 0) && (plat_pos.y > user_pos.y)) {
+        user_vel.y = -user_vel.y;
+      } else if ((user_vel.y < 0) && (plat_pos.y < user_pos.y)) {
+        user_vel.y = 0;
+      }
+      body_set_velocity(body1, user_vel);
+    }
 
-void make_level1(state_t *state) {
-  // make brick platforms
-  size_t brick_len = BRICK_NUM[0];
-  for (size_t i = 0; i < brick_len; i++) {
-    vector_t coord = (vector_t){BRICKS1[i][0], BRICKS1[i][1]};
-    body_t *obstacle =
-        make_obstacle(BRICKS1[i][2], BRICKS1[i][3], coord, "platform");
-    scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, state->spirit, obstacle, platform_handler,
-                     NULL, 0, NULL);
-    asset_make_image_with_body(BRICK_PATH, obstacle);
-  }
+    void make_level1(state_t * state) {
+      // make brick platforms
+      size_t brick_len = BRICK_NUM[0];
+      for (size_t i = 0; i < brick_len; i++) {
+        vector_t coord = (vector_t){BRICKS1[i][0], BRICKS1[i][1]};
+        if (BRICKS1[i][3] == 0) {
+          BRICKS1[i][3] = BRICK_WIDTH;
+        }
+        body_t *obstacle =
+            make_obstacle(BRICKS1[i][2], BRICKS1[i][3], coord, "platform");
+        scene_add_body(state->scene, obstacle);
+        create_collision(state->scene, state->spirit, obstacle,
+                         platform_handler, NULL, 0, NULL);
+        asset_make_image_with_body(BRICK_PATH, obstacle);
+      }
 
-  // make lava
-  size_t lava_len = LAVA_NUM[0];
-  for (size_t i = 0; i < lava_len; i++) {
-    vector_t coord = (vector_t){LAVA1[i][0], LAVA1[i][1]};
-    body_t *obstacle = make_obstacle(LAVA1[i][2], LAVA1[i][3], coord, "lava");
-    scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
-                     NULL, 0, NULL);
-    asset_make_image_with_body(LAVA_PATH, obstacle);
-  }
-}
+      // make lava
+      size_t lava_len = LAVA_NUM[0];
+      for (size_t i = 0; i < lava_len; i++) {
+        vector_t coord = (vector_t){LAVA1[i][0], LAVA1[i][1]};
+        body_t *obstacle =
+            make_obstacle(LAVA1[i][2], LAVA1[i][3], coord, "lava");
+        scene_add_body(state->scene, obstacle);
+        create_collision(state->scene, state->spirit, obstacle,
+                         reset_user_handler, NULL, 0, NULL);
+        asset_make_image_with_body(LAVA_PATH, obstacle);
+      }
+    }
 
 void make_level2(state_t *state) {
   size_t brick_len = BRICK_NUM[1];
@@ -271,25 +283,25 @@ void make_level3(state_t *state) {
   }
 }
 
-void go_to_level1(state_t *state) {
-  asset_reset_asset_list();
-  state->current_screen = LEVEL1;
+    void go_to_level1(state_t * state) {
+      asset_reset_asset_list();
+      state->current_screen = LEVEL1;
 
-  make_level1(state);
-  return;
-}
+      make_level1(state);
+      return;
+    }
 
-void go_to_level2(state_t *state) {
-  asset_reset_asset_list();
-  state->current_screen = LEVEL2;
-  return;
-}
+    void go_to_level2(state_t * state) {
+      asset_reset_asset_list();
+      state->current_screen = LEVEL2;
+      return;
+    }
 
-void go_to_level3(state_t *state) {
-  asset_reset_asset_list();
-  state->current_screen = LEVEL3;
-  return;
-}
+    void go_to_level3(state_t * state) {
+      asset_reset_asset_list();
+      state->current_screen = LEVEL3;
+      return;
+    }
 
 void go_to_homepage(state_t *state) {
   asset_reset_asset_list();
@@ -310,51 +322,51 @@ void go_to_homepage(state_t *state) {
                   "Press 3 to go to Level 3", TEXT_COLOR);
 }
 
-void pause(state_t *state) {
-  state->pause = true;
-  // list_t *body_list = list_init(4, free);
-  // vector_t *v1 = malloc(sizeof(vector_t));
-  // *v1 = (vector_t){150, 100};
-  // list_add(body_list, v1);
-  // vector_t *v2 = malloc(sizeof(vector_t));
-  // *v2 = (vector_t){600, 400};
-  // list_add(body_list, v2);
-  // vector_t *v3 = malloc(sizeof(vector_t));
-  // *v3 = (vector_t){150, 400};
-  // list_add(body_list, v3);
-  // vector_t *v4 = malloc(sizeof(vector_t));
-  // *v4 = (vector_t){600, 100};
-  // list_add(body_list, v4);
-  // state->pause_body = body_init(body_list, 100, SPIRIT_COLOR);
-  // body_set_centroid(state->pause_body, CENTER);
-  // scene_add_body(state->scene, state->pause_body);
-  // asset_make_image_with_body(PAUSE_FILEPATH, state->pause_body);
-  asset_make_image(PAUSE_PATH,
-                   (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
-}
+    void pause(state_t * state) {
+      state->pause = true;
+      // list_t *body_list = list_init(4, free);
+      // vector_t *v1 = malloc(sizeof(vector_t));
+      // *v1 = (vector_t){150, 100};
+      // list_add(body_list, v1);
+      // vector_t *v2 = malloc(sizeof(vector_t));
+      // *v2 = (vector_t){600, 400};
+      // list_add(body_list, v2);
+      // vector_t *v3 = malloc(sizeof(vector_t));
+      // *v3 = (vector_t){150, 400};
+      // list_add(body_list, v3);
+      // vector_t *v4 = malloc(sizeof(vector_t));
+      // *v4 = (vector_t){600, 100};
+      // list_add(body_list, v4);
+      // state->pause_body = body_init(body_list, 100, SPIRIT_COLOR);
+      // body_set_centroid(state->pause_body, CENTER);
+      // scene_add_body(state->scene, state->pause_body);
+      // asset_make_image_with_body(PAUSE_FILEPATH, state->pause_body);
+      asset_make_image(PAUSE_PATH,
+                       (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
+    }
 
-void unpause(state_t *state) {
-  // if (state->pause_body) {
-  //   asset_remove_body(state->pause_body);
-  //   body_remove(state->pause_body);
-  //   body_free(state->pause_body);
-  // }
-  state->pause = false;
-  list_t *asset_list = asset_get_asset_list();
-  list_remove(asset_list, list_size(asset_list) - 1);
-  list_remove(asset_list, list_size(asset_list) - 1);
-}
+    void unpause(state_t * state) {
+      // if (state->pause_body) {
+      //   asset_remove_body(state->pause_body);
+      //   body_remove(state->pause_body);
+      //   body_free(state->pause_body);
+      // }
+      state->pause = false;
+      list_t *asset_list = asset_get_asset_list();
+      list_remove(asset_list, list_size(asset_list) - 1);
+      list_remove(asset_list, list_size(asset_list) - 1);
+    }
 
-void restart(state_t *state) {
-  unpause(state);
-  if (state->current_screen == LEVEL1) {
-    go_to_level1(state);
-  } else if (state->current_screen == LEVEL2) {
-    go_to_level2(state);
-  } else if (state->current_screen == LEVEL3) {
-    go_to_level3(state);
-  }
-}
+    void restart(state_t * state) {
+      unpause(state);
+      if (state->current_screen == LEVEL1) {
+        go_to_level1(state);
+      } else if (state->current_screen == LEVEL2) {
+        go_to_level2(state);
+      } else if (state->current_screen == LEVEL3) {
+        go_to_level3(state);
+      }
+    }
 
 void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
   body_t *spirit = scene_get_body(state->scene, 0);
@@ -447,19 +459,18 @@ bool collision(state_t *state) {
   return false;
 }
 
-state_t *emscripten_init() {
-  asset_cache_init();
-  sdl_init(MIN, MAX);
-  state_t *state = malloc(sizeof(state_t));
-  state->points = 0;
-  srand(time(NULL));
-  state->scene = scene_init();
-  state->current_screen = LEVEL1;
-  state->pause = false;
-  state->collided = false;
+    state_t *emscripten_init() {
+      asset_cache_init();
+      sdl_init(MIN, MAX);
+      state_t *state = malloc(sizeof(state_t));
+      state->points = 0;
+      srand(time(NULL));
+      state->scene = scene_init();
+      state->current_screen = LEVEL1;
+      state->pause = false;
 
-  SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
-  asset_make_image(BACKGROUND_PATH, box);
+      SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
+      asset_make_image(BACKGROUND_PATH, box);
 
   body_t *spirit = make_spirit(OUTER_RADIUS, INNER_RADIUS, VEC_ZERO);
   body_set_centroid(spirit, START_POS);
@@ -476,40 +487,29 @@ state_t *emscripten_init() {
   // make_level2(state);
   make_level3(state);
 
-  // make water
-  sdl_on_key((key_handler_t)on_key);
+      // make water
+      sdl_on_key((key_handler_t)on_key);
+      return state;
+    }
 
-  return state;
-}
+    bool emscripten_main(state_t * state) {
+      double dt = time_since_last_tick();
+      sdl_clear();
+      sdl_render_scene(state->scene);
+      list_t *body_assets = asset_get_asset_list();
+      for (size_t i = 0; i < list_size(body_assets); i++) {
+        asset_render(list_get(body_assets, i));
+      }
+      sdl_show();
+      if (!state->pause) {
+        scene_tick(state->scene, dt);
+      }
+      return false;
+    }
 
-bool emscripten_main(state_t *state) {
-  double dt = time_since_last_tick();
-  sdl_clear();
-  sdl_render_scene(state->scene);
-  list_t *body_assets = asset_get_asset_list();
-  for (size_t i = 0; i < list_size(body_assets); i++) {
-    asset_render(list_get(body_assets, i));
-  }
-
-  // apply gravity
-  state->collided = collision(state);
-  body_t *spirit = state->spirit;
-  vector_t spirit_velocity = body_get_velocity(spirit);
-  if (!(state->collided)) {
-    body_set_velocity(spirit, (vector_t){spirit_velocity.x,
-                                         spirit_velocity.y - (GRAVITY * dt)});
-  }
-
-  sdl_show();
-  if (!state->pause) {
-    scene_tick(state->scene, dt);
-  }
-  return false;
-}
-
-void emscripten_free(state_t *state) {
-  list_free(asset_get_asset_list());
-  scene_free(state->scene);
-  asset_cache_destroy();
-  free(state);
-}
+    void emscripten_free(state_t * state) {
+      list_free(asset_get_asset_list());
+      scene_free(state->scene);
+      asset_cache_destroy();
+      free(state);
+    }

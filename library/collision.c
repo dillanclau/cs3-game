@@ -3,7 +3,6 @@
 
 #include <assert.h>
 #include <math.h>
-#include <sdl_wrapper.h>
 #include <stdlib.h>
 
 /**
@@ -37,21 +36,23 @@ static list_t *get_edges(list_t *shape) {
  * length and `min` is the minimum projection length.
  */
 static vector_t get_max_min_projections(list_t *shape, vector_t unit_axis) {
+  // TODO: copy and paste your implementation from last week!
   double min = __DBL_MAX__;
   double max = -__DBL_MAX__;
-  double curr = 0;
+
   for (size_t i = 0; i < list_size(shape); i++) {
-    vector_t *vec = list_get(shape, i);
-    curr = vec_dot(*vec, unit_axis);
-    if (curr > max) {
-      max = curr;
+    double length = vec_dot(unit_axis, *(vector_t *)list_get(shape, i));
+
+    if (length > max) {
+      max = length;
     }
-    if (curr < min) {
-      min = curr;
+
+    if (length < min) {
+      min = length;
     }
   }
 
-  return (vector_t){.x = min, .y = max};
+  return (vector_t){.x = max, .y = min};
 }
 
 /**
@@ -66,23 +67,28 @@ static vector_t get_max_min_projections(list_t *shape, vector_t unit_axis) {
  */
 static collision_info_t compare_collision(list_t *shape1, list_t *shape2,
                                           double *min_overlap) {
+  // TODO: copy and paste your implementation from last week here and make the
+  // changes specified in the guide!
   list_t *edges1 = get_edges(shape1);
-  vector_t collision_axis = (vector_t){.x = 0, .y = 0};
+  vector_t collision_axis = VEC_ZERO;
+
   for (size_t i = 0; i < list_size(edges1); i++) {
-    vector_t *curr_edge1 = (vector_t *)list_get(edges1, i);
-    vector_t projection = vec_rotate(*curr_edge1, M_PI / 2);
-    double help = 1 / vec_get_length(projection);
-    vector_t unit_axis = vec_multiply(help, projection);
+    vector_t *edge1 = list_get(edges1, i);
+    vector_t axis = vec_rotate(*edge1, M_PI / 2);
+    vector_t unit_axis = vec_multiply(1 / vec_get_length(axis), axis);
 
-    vector_t max_min1 = get_max_min_projections(shape1, unit_axis);
-    vector_t max_min2 = get_max_min_projections(shape2, unit_axis);
+    vector_t shape1_proj = get_max_min_projections(shape1, unit_axis);
+    vector_t shape2_proj = get_max_min_projections(shape2, unit_axis);
 
-    if ((max_min1.x > max_min2.y) || (max_min2.x > max_min1.y)) {
+    if (shape1_proj.y > shape2_proj.x || shape2_proj.y > shape1_proj.x) {
       list_free(edges1);
-      return (collision_info_t){.collided = false};
-    } else if (vec_dot(max_min1, max_min2) <= *min_overlap) {
-      *min_overlap = vec_dot(max_min1, max_min2);
-      collision_axis = vec_rotate(unit_axis, M_PI / 2);
+      return (collision_info_t){.collided = false, .axis = VEC_ZERO};
+    }
+
+    double overlap = vec_get_length(vec_subtract(shape2_proj, shape1_proj));
+    if (overlap < *min_overlap) {
+      collision_axis = unit_axis;
+      *min_overlap = overlap;
     }
   }
 
@@ -91,11 +97,6 @@ static collision_info_t compare_collision(list_t *shape1, list_t *shape2,
 }
 
 collision_info_t find_collision(body_t *body1, body_t *body2) {
-  // what does find collision do?
-  // TODO: implement checking if it is up, down, right, left
-  // Shape1 is colliding with shape2
-  // Assume shape1 is the sprite, and shape2 is the platform/wall
-
   list_t *shape1 = body_get_shape(body1);
   list_t *shape2 = body_get_shape(body2);
 
