@@ -54,29 +54,29 @@ size_t BRICKS1[14][4] = {{375, -500, 750, 30},
                          {750, 250, 30, 500}};
 
 size_t BRICKS2[11][4] = {{100, 425, 200, BRICK_WIDTH}, // where the door is
-                        {450, 400, 300, BRICK_WIDTH},
-                        {350, 300, 350, BRICK_WIDTH}, // next row
-                        {630, 280, 300, BRICK_WIDTH},
-                        {225, 200, 450, BRICK_WIDTH}, // third row
-                        {500, 130, 300, BRICK_WIDTH},
-                        {100, 80, 200, BRICK_WIDTH}, // starting platform
-                        {710, 30, 80, 60}, // misc sq
-                        {375, 0, 750, 30}, // border
-                        {0, 250, 30, 500},
-                        {750, 250, 30, 500}};
+                         {450, 400, 300, BRICK_WIDTH},
+                         {350, 300, 350, BRICK_WIDTH}, // next row
+                         {630, 280, 300, BRICK_WIDTH},
+                         {225, 200, 450, BRICK_WIDTH}, // third row
+                         {500, 130, 300, BRICK_WIDTH},
+                         {100, 80, 200, BRICK_WIDTH}, // starting platform
+                         {710, 30, 80, 60},           // misc sq
+                         {375, 0, 750, 30},           // border
+                         {0, 250, 30, 500},
+                         {750, 250, 30, 500}};
 
-size_t BRICKS3[12][4] = {{50, 425, 100, BRICK_WIDTH}, // where the door is
-                        {185, 275, BRICK_WIDTH, 200}, // left column
-                        {375, 250, BRICK_WIDTH, 250}, //second column
-                        {435, 330, 120, BRICK_WIDTH},
-                        {580, 250, 90, BRICK_WIDTH},
-                        {690, 425, 120, BRICK_WIDTH},
-                        {240, 250, 90, BRICK_WIDTH},
-                        {140, 325, 90, BRICK_WIDTH},
-                        {325, 120, 650, BRICK_WIDTH}, // starting platform
-                        {375, 0, 750, 30}, // border
-                        {0, 250, 30, 500},
-                        {750, 250, 30, 500}};
+size_t BRICKS3[12][4] = {{50, 425, 100, BRICK_WIDTH},  // where the door is
+                         {185, 275, BRICK_WIDTH, 200}, // left column
+                         {375, 250, BRICK_WIDTH, 250}, // second column
+                         {435, 330, 120, BRICK_WIDTH},
+                         {580, 250, 90, BRICK_WIDTH},
+                         {690, 425, 120, BRICK_WIDTH},
+                         {240, 250, 90, BRICK_WIDTH},
+                         {140, 325, 90, BRICK_WIDTH},
+                         {325, 120, 650, BRICK_WIDTH}, // starting platform
+                         {375, 0, 750, 30},            // border
+                         {0, 250, 30, 500},
+                         {750, 250, 30, 500}};
 
 const size_t LAVA_WIDTH = 7;
 const size_t LAVA_NUM[NUM_MAP] = {4, 0, 0};
@@ -229,7 +229,7 @@ void make_level1(state_t *state) {
   }
 }
 
-void make_level2(state_t *state){
+void make_level2(state_t *state) {
   size_t brick_len = BRICK_NUM[1];
   for (size_t i = 0; i < brick_len; i++) {
     vector_t coord = (vector_t){BRICKS2[i][0], BRICKS2[i][1]};
@@ -242,7 +242,7 @@ void make_level2(state_t *state){
   }
 }
 
-void make_level3(state_t *state){
+void make_level3(state_t *state) {
   size_t brick_len = BRICK_NUM[2];
   for (size_t i = 0; i < brick_len; i++) {
     vector_t coord = (vector_t){BRICKS3[i][0], BRICKS3[i][1]};
@@ -511,7 +511,6 @@ state_t *emscripten_init() {
   // make level
   make_level1(state);
   // make_level3(state);
-
 
   // make water
   sdl_on_key((key_handler_t)on_key);
