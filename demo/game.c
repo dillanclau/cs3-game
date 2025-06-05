@@ -204,7 +204,7 @@ void wrap_edges(body_t *body) {
   }
 }
 
-void move_elevator(body_t *elevator) {
+void move_elevator(body_t *elevator, body_t *spirit) {
   // size_t ELEVATOR2[1][4] = {{50, 220, 70, BRICK_WIDTH}};
   // body_set_velocity(body2, (vector_t){0, 20});
   vector_t centroid = body_get_centroid(elevator);
@@ -212,6 +212,15 @@ void move_elevator(body_t *elevator) {
     body_set_velocity(elevator, (vector_t){0, -20});
   } else if (centroid.y - 10 < 220) {
     body_set_velocity(elevator, (vector_t){0, 20});
+  }
+
+  if (find_collision(elevator, spirit).collided) {
+    if (centroid.y + 10 > 320) {
+      body_set_velocity(spirit, (vector_t){0, -20});
+    } else if (centroid.y - 10 < 220) {
+      body_set_velocity(spirit, (vector_t){0, 20});
+  }
+
   }
   // if (centroid.x > MAX.x) {
   //   body_set_centroid(body, (vector_t){MIN.x, centroid.y});
@@ -234,45 +243,43 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
 
 // TODO: jumping velocity implementation matters for when platofrm elevator
 // TODO: collision??? handles the collisions between user and platform
-void elevator_user_handler(body_t *body1, body_t *body2, vector_t axis,
-                           void *aux, double force_const) {
-  vector_t vel = body_get_velocity(body1);
-  vector_t cen = body_get_centroid(body1);
-  list_t *pts = body_get_shape(body2);
+// void elevator_user_handler(body_t *body1, body_t *body2, vector_t axis,
+//                            void *aux, double force_const) {
+//   vector_t vel = body_get_velocity(body1);
+//   vector_t cen = body_get_centroid(body1);
+//   list_t *pts = body_get_shape(body2);
 
-  vector_t *v1 = list_get(pts, 0);
-  vector_t *v2 = list_get(pts, 1);
-  vector_t *v3 = list_get(pts, 2);
-  vector_t *v4 = list_get(pts, 3);
+//   vector_t *v1 = list_get(pts, 0);
+//   vector_t *v2 = list_get(pts, 1);
+//   vector_t *v3 = list_get(pts, 2);
+//   vector_t *v4 = list_get(pts, 3);
 
-  // vector_t user_vel = body_get_velocity(body1);
-  // vector_t user_pos = body_get_centroid(body1);
-  vector_t plat_vel = body_get_velocity(body2);
-  vector_t plat_pos = body_get_centroid(body2);
+//   // vector_t user_vel = body_get_velocity(body1);
+//   // vector_t user_pos = body_get_centroid(body1);
+//   vector_t plat_vel = body_get_velocity(body2);
+//   vector_t plat_pos = body_get_centroid(body2);
 
-  if (cen.x > v4->x - INNER_RADIUS && cen.x < v3->x + INNER_RADIUS &&
-      cen.y - (INNER_RADIUS - 8) >= v4->y) {
-    printf("%zu\n", vel.y);
-    vel.y = plat_vel.y;
-    printf("%zu\n\n", vel.y);
-  }
+//   if (cen.x > v4->x - INNER_RADIUS && cen.x < v3->x + INNER_RADIUS) {
+//     // vector_t new_pos = (vector_t){cen.x, plat_pos.y + INNER_RADIUS + 8};
+//     vel.y = plat_vel.y;
+//   }
 
-  if (cen.x > v1->x - INNER_RADIUS && cen.x < v2->x + INNER_RADIUS &&
-      cen.y < v1->y) {
-    vel.y = -vel.y;
-  }
+//   if (cen.x > v1->x - INNER_RADIUS && cen.x < v2->x + INNER_RADIUS &&
+//       cen.y < v1->y) {
+//     vel.y = -vel.y;
+//   }
 
-  if (cen.y > v1->y - OUTER_RADIUS && cen.y < v4->y + OUTER_RADIUS &&
-      cen.x < v1->x) {
-    vel.x = 0;
-  }
+//   if (cen.y > v1->y - OUTER_RADIUS && cen.y < v4->y + OUTER_RADIUS &&
+//       cen.x < v1->x) {
+//     vel.x = 0;
+//   }
 
-  if (cen.y > v2->y - OUTER_RADIUS && cen.y < v3->y + OUTER_RADIUS &&
-      cen.x > v2->x) {
-    vel.x = 0;
-  }
-  body_set_velocity(body1, vel);
-}
+//   if (cen.y > v2->y - OUTER_RADIUS && cen.y < v3->y + OUTER_RADIUS &&
+//       cen.x > v2->x) {
+//     vel.x = 0;
+//   }
+//   body_set_velocity(body1, vel);
+// }
 
 void gem_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
                       double force_const) {
@@ -293,7 +300,7 @@ void platform_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
 
   if (cen.x > v4->x - INNER_RADIUS && cen.x < v3->x + INNER_RADIUS &&
       cen.y - (INNER_RADIUS - 8) >= v4->y) {
-    vel.y = 0;
+    vel.y = body_get_velocity(body2).y;
   }
 
   if (cen.x > v1->x - INNER_RADIUS && cen.x < v2->x + INNER_RADIUS &&
@@ -365,7 +372,7 @@ void make_level2(state_t *state) {
     scene_add_body(state->scene, obstacle);
     body_set_velocity(obstacle, (vector_t){0, 20}); // change this later
     create_collision(state->scene, state->spirit, obstacle,
-                     elevator_user_handler, NULL, 0, NULL);
+                     platform_handler, NULL, 0, NULL);
     asset_make_image_with_body(ELEVATOR_PATH, obstacle);
   }
 
@@ -667,7 +674,7 @@ collision_type_t collision(state_t *state) {
     vector_t *v4 = list_get(pts, 3); // top left
 
     if (cen.x > v4->x - INNER_RADIUS && cen.x < v3->x + INNER_RADIUS &&
-        cen.y - (INNER_RADIUS - 8) >= v4->y) {
+        cen.y - (INNER_RADIUS - 3) >= v4->y) {
       res += UP_COLLISION;
       continue;
     }
@@ -733,7 +740,7 @@ bool emscripten_main(state_t *state) {
     asset_render(list_get(body_assets, i));
   }
   body_t *elevator = scene_get_body(state->scene, 1);
-  move_elevator(elevator);
+  move_elevator(elevator, state->spirit);
 
   state->collision_type = collision(state);
 
@@ -747,6 +754,8 @@ bool emscripten_main(state_t *state) {
     body_set_velocity(spirit, (vector_t){spirit_velocity.x,
                                          spirit_velocity.y - (GRAVITY * dt)});
   }
+
+  printf("collision = %d\n", (int)state->collision_type);
 
   sdl_show();
   if (!state->pause) {
