@@ -236,16 +236,42 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
 // TODO: collision??? handles the collisions between user and platform
 void elevator_user_handler(body_t *body1, body_t *body2, vector_t axis,
                            void *aux, double force_const) {
-  body_set_velocity(body2, (vector_t){0, 20});
-  vector_t user_vel = body_get_velocity(body1);
-  vector_t user_pos = body_get_centroid(body1);
+  vector_t vel = body_get_velocity(body1);
+  vector_t cen = body_get_centroid(body1);
+  list_t *pts = body_get_shape(body2);
+
+  vector_t *v1 = list_get(pts, 0);
+  vector_t *v2 = list_get(pts, 1);
+  vector_t *v3 = list_get(pts, 2);
+  vector_t *v4 = list_get(pts, 3);
+
+  // vector_t user_vel = body_get_velocity(body1);
+  // vector_t user_pos = body_get_centroid(body1);
   vector_t plat_vel = body_get_velocity(body2);
   vector_t plat_pos = body_get_centroid(body2);
 
-  if ((user_vel.y < 0) && (plat_pos.y < user_pos.y)) {
-    user_vel.y = plat_vel.y;
+  if (cen.x > v4->x - INNER_RADIUS && cen.x < v3->x + INNER_RADIUS &&
+      cen.y - (INNER_RADIUS - 8) >= v4->y) {
+    printf("%zu\n", vel.y);
+    vel.y = plat_vel.y;
+    printf("%zu\n\n", vel.y);
   }
-  body_set_velocity(body1, user_vel);
+
+  if (cen.x > v1->x - INNER_RADIUS && cen.x < v2->x + INNER_RADIUS &&
+      cen.y < v1->y) {
+    vel.y = -vel.y;
+  }
+
+  if (cen.y > v1->y - OUTER_RADIUS && cen.y < v4->y + OUTER_RADIUS &&
+      cen.x < v1->x) {
+    vel.x = 0;
+  }
+
+  if (cen.y > v2->y - OUTER_RADIUS && cen.y < v3->y + OUTER_RADIUS &&
+      cen.x > v2->x) {
+    vel.x = 0;
+  }
+  body_set_velocity(body1, vel);
 }
 
 void gem_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
@@ -337,6 +363,7 @@ void make_level2(state_t *state) {
     body_t *obstacle =
         make_obstacle(ELEVATOR2[i][2], ELEVATOR2[i][3], coord, "elevator");
     scene_add_body(state->scene, obstacle);
+    body_set_velocity(obstacle, (vector_t){0, 20}); // change this later
     create_collision(state->scene, state->spirit, obstacle,
                      elevator_user_handler, NULL, 0, NULL);
     asset_make_image_with_body(ELEVATOR_PATH, obstacle);
@@ -624,7 +651,7 @@ collision_type_t collision(state_t *state) {
   for (size_t i = 1; i < scene_bodies(scene); i++) {
     body_t *platform = scene_get_body(scene, i);
 
-    if (strcmp(body_get_info(platform), "platform") != 0) {
+    if ((strcmp(body_get_info(platform), "platform")) != 0 && (strcmp(body_get_info(platform), "elevator") != 0)) {
       continue;
     }
 
