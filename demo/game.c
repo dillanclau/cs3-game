@@ -87,6 +87,8 @@ size_t LAVA1[4][4] = {{180, 20, 165, LAVA_WIDTH},
                       {500, 310, 100, LAVA_WIDTH},
                       {250, 310, 175, LAVA_WIDTH}};
 
+size_t ELEVATOR2[1][4] = {{50, 220, 70, BRICK_WIDTH}};
+
 const int16_t H_STEP = 50;
 const int16_t V_STEP = 30;
 const size_t ROWS = 50;
@@ -205,8 +207,15 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
 
 // jumping velocity implementation matters for when platofrm elevator
 // collision??? handles the collisions between user and platform
+
+void elevator_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
+                      double force_const) {
+  // reset_user(body1);
+  body_remove(body2);
+}
+
 void gem_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
-                        double force_const) {
+                      double force_const) {
   // reset_user(body1);
   body_remove(body2);
 }
@@ -258,7 +267,8 @@ void make_level1(state_t *state) {
   vector_t center = (vector_t){.x = 100, .y = 100};
   body_t *gem = make_gem(OUTER_RADIUS, INNER_RADIUS, center);
   scene_add_body(state->scene, gem);
-  create_collision(state->scene, state->spirit, gem, gem_user_handler, NULL, 0, NULL);
+  create_collision(state->scene, state->spirit, gem, gem_user_handler, NULL, 0,
+                   NULL);
   asset_make_image_with_body(GEM_PATH, gem);
 }
 
@@ -272,6 +282,18 @@ void make_level2(state_t *state) {
     create_collision(state->scene, state->spirit, obstacle, platform_handler,
                      NULL, 0, NULL);
     asset_make_image_with_body(BRICK_PATH, obstacle);
+  }
+
+  //testing elevator
+  size_t elevator_len = 1;
+  for (size_t i = 0; i < elevator_len; i++) {
+    vector_t coord = (vector_t){ELEVATOR2[i][0], ELEVATOR2[i][1]};
+    body_t *obstacle =
+        make_obstacle(ELEVATOR2[i][2], ELEVATOR2[i][3], coord, "elevator");
+    scene_add_body(state->scene, obstacle);
+    create_collision(state->scene, state->spirit, obstacle, platform_handler,
+                     NULL, 0, NULL);
+    asset_make_image_with_body(ELEVATOR_PATH, obstacle);
   }
 }
 
@@ -547,7 +569,8 @@ state_t *emscripten_init() {
                     spirit);
 
   // make level
-  make_level1(state);
+  // make_level1(state);
+  make_level2(state);
   // make_level3(state);
 
   // make water
