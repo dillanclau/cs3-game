@@ -211,6 +211,22 @@ void elevator_user_handler(body_t *body1, body_t *body2, vector_t axis,
                            void *aux, double force_const) {
   // reset_user(body1);
   body_set_velocity(body2, (vector_t){0, 20});
+  vector_t user_vel = body_get_velocity(body1);
+  vector_t user_pos = body_get_centroid(body1);
+  vector_t plat_vel = body_get_velocity(body2);
+  vector_t plat_pos = body_get_centroid(body2);
+  // if ((user_vel.x > 0) && (plat_pos.x > user_pos.x)) {
+  //   user_vel.x = 0;
+  // } else if ((user_vel.x < 0) && (plat_pos.x < user_pos.x)) {
+  //   user_vel.x = 0;
+  // }
+
+  if ((user_vel.y > 0) && (plat_pos.y > user_pos.y)) {
+    // user_vel.y = -user_vel.y;
+  } else if ((user_vel.y < 0) && (plat_pos.y < user_pos.y)) {
+    user_vel.y = plat_vel.y;
+  }
+  body_set_velocity(body1, user_vel);
 }
 
 void gem_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
@@ -290,8 +306,8 @@ void make_level2(state_t *state) {
     body_t *obstacle =
         make_obstacle(ELEVATOR2[i][2], ELEVATOR2[i][3], coord, "elevator");
     scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, state->spirit, obstacle, elevator_user_handler,
-                     NULL, 0, NULL);
+    create_collision(state->scene, state->spirit, obstacle,
+                     elevator_user_handler, NULL, 0, NULL);
     asset_make_image_with_body(ELEVATOR_PATH, obstacle);
   }
 }
