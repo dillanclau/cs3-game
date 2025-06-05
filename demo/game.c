@@ -203,8 +203,14 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   reset_user(body1);
 }
 
-// jumping velocity uimplementation matters for when platofrm elevator collision???
-// handles the collisions between user and platform
+// jumping velocity implementation matters for when platofrm elevator
+// collision??? handles the collisions between user and platform
+void gem_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
+                        double force_const) {
+  // reset_user(body1);
+  body_remove(body2);
+}
+
 void platform_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
                       double force_const) {
   vector_t user_vel = body_get_velocity(body1);
@@ -252,10 +258,7 @@ void make_level1(state_t *state) {
   vector_t center = (vector_t){.x = 100, .y = 100};
   body_t *gem = make_gem(OUTER_RADIUS, INNER_RADIUS, center);
   scene_add_body(state->scene, gem);
-  create_destructive_collision(state->scene, state->spirit, gem);
-  // the destructive collision is strange for some reason
-  // create_collision(state->scene, state->spirit, gem, reset_user_handler, NULL,
-  //                  0, NULL);
+  create_collision(state->scene, state->spirit, gem, gem_user_handler, NULL, 0, NULL);
   asset_make_image_with_body(GEM_PATH, gem);
 }
 
@@ -375,18 +378,11 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
   vector_t velocity = body_get_velocity(spirit);
   list_t *asset_list = asset_get_asset_list();
   asset_t *spirit_asset = list_get(asset_list, 1);
-  // spirit_asset_t *spirit_asset = (spirit_asset_t*) first;
-  // check the info
-  // the info stores the direction it is storing
-  // look at info and then change the direction
-
-  // printf("%s\n", spirit_asset->type);
 
   if (type == KEY_PRESSED) {
     switch (key) {
     case LEFT_ARROW:
       body_set_velocity(spirit, (vector_t){VELOCITY_LEFT.x, velocity.y});
-      // NOT SURE HOW TO CHANGE THE TEXTURE
       asset_change_texture(spirit_asset, key);
       break;
     case RIGHT_ARROW:
@@ -547,8 +543,8 @@ state_t *emscripten_init() {
   scene_add_body(state->scene, spirit);
 
   // spirit
-  asset_make_spirit(SPIRIT_FRONT_PATH, SPIRIT_LEFT_PATH, SPIRIT_RIGHT_PATH, spirit);
-  // asset_make_image_with_body(SPIRIT_FRONT_PATH, state->spirit);
+  asset_make_spirit(SPIRIT_FRONT_PATH, SPIRIT_LEFT_PATH, SPIRIT_RIGHT_PATH,
+                    spirit);
 
   // make level
   make_level1(state);

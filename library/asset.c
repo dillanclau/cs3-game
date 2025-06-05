@@ -52,17 +52,17 @@ static asset_t *asset_init(asset_type_t ty, SDL_Rect bounding_box) {
     ASSET_LIST = list_init(INIT_CAPACITY, (free_func_t)asset_destroy);
   }
   asset_t *new = NULL;
-  switch (ty){
-    case ASSET_IMAGE:
-      new = malloc(sizeof(image_asset_t));
-      break;
-    case ASSET_TEXT:
-      new = malloc(sizeof(text_asset_t));
-      break;
-    case ASSET_SPIRIT:
-      new = malloc(sizeof(spirit_asset_t));
-      break;
-    // case 
+  switch (ty) {
+  case ASSET_IMAGE:
+    new = malloc(sizeof(image_asset_t));
+    break;
+  case ASSET_TEXT:
+    new = malloc(sizeof(text_asset_t));
+    break;
+  case ASSET_SPIRIT:
+    new = malloc(sizeof(spirit_asset_t));
+    break;
+    // case
   }
   assert(new);
   new->type = ty;
@@ -100,7 +100,7 @@ void asset_make_text(const char *filepath, SDL_Rect bounding_box,
 // new asset for the spirit
 void asset_make_spirit(const char *front_filepath, const char *left_filepath,
                        const char *right_filepath, body_t *body) {
-  SDL_Rect bounding_box = {.x = 0, .y = 0, .w= 0, .h=0 };
+  SDL_Rect bounding_box = {.x = 0, .y = 0, .w = 0, .h = 0};
   asset_t *asset = asset_init(ASSET_SPIRIT, bounding_box);
   spirit_asset_t *spirit_asset = (spirit_asset_t *)asset;
   spirit_asset->front_texture =
@@ -116,18 +116,18 @@ void asset_make_spirit(const char *front_filepath, const char *left_filepath,
 
 void asset_change_texture(asset_t *asset, char key) {
   // pass in the key instead
-  assert(asset->type == ASSET_SPIRIT); 
+  assert(asset->type == ASSET_SPIRIT);
   spirit_asset_t *spirit_asset = (spirit_asset_t *)asset;
   switch (key) {
-    case LEFT_ARROW:
-      spirit_asset->curr_texture = spirit_asset->left_texture;
-      break;
-    case RIGHT_ARROW:
-      spirit_asset->curr_texture = spirit_asset->right_texture;
-      break;
-    case UP_ARROW:
-      spirit_asset->curr_texture = spirit_asset->front_texture;
-      break;
+  case LEFT_ARROW:
+    spirit_asset->curr_texture = spirit_asset->left_texture;
+    break;
+  case RIGHT_ARROW:
+    spirit_asset->curr_texture = spirit_asset->right_texture;
+    break;
+  case UP_ARROW:
+    spirit_asset->curr_texture = spirit_asset->front_texture;
+    break;
   }
 }
 
