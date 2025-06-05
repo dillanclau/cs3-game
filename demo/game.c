@@ -253,7 +253,7 @@ void elevator_user_handler(body_t *body1, body_t *body2, vector_t axis,
   if (cen.x > v4->x - INNER_RADIUS && cen.x < v3->x + INNER_RADIUS &&
       cen.y - (INNER_RADIUS - 8) >= v4->y) {
     printf("%zu\n", vel.y);
-    vel.y = plat_vel.y;
+    vel.y = 20;
     printf("%zu\n\n", vel.y);
   }
 
@@ -361,7 +361,7 @@ void make_level2(state_t *state) {
   for (size_t i = 0; i < elevator_len; i++) {
     vector_t coord = (vector_t){ELEVATOR2[i][0], ELEVATOR2[i][1]};
     body_t *obstacle =
-        make_obstacle(ELEVATOR2[i][2], ELEVATOR2[i][3], coord, "elevator");
+        make_obstacle(ELEVATOR2[i][2], ELEVATOR2[i][3], coord, "platform");
     scene_add_body(state->scene, obstacle);
     body_set_velocity(obstacle, (vector_t){0, 20}); // change this later
     create_collision(state->scene, state->spirit, obstacle,
@@ -650,8 +650,8 @@ collision_type_t collision(state_t *state) {
 
   for (size_t i = 1; i < scene_bodies(scene); i++) {
     body_t *platform = scene_get_body(scene, i);
-
-    if ((strcmp(body_get_info(platform), "platform")) != 0 && (strcmp(body_get_info(platform), "elevator") != 0)) {
+    
+    if ((strcmp(body_get_info(platform), "platform")) != 0) {
       continue;
     }
 
@@ -714,7 +714,7 @@ state_t *emscripten_init() {
                     spirit);
 
   // make level
-  // make_level3(state);
+  // make_level1(state);
   make_level2(state);
   // make_level3(state);
 
