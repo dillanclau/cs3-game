@@ -198,7 +198,7 @@ void wrap_edges(body_t *body) {
   }
 }
 
-void move_elevator(body_t *elevator){
+void move_elevator(body_t *elevator) {
   // size_t ELEVATOR2[1][4] = {{50, 220, 70, BRICK_WIDTH}};
   // body_set_velocity(body2, (vector_t){0, 20});
   vector_t centroid = body_get_centroid(elevator);
@@ -323,8 +323,6 @@ void make_level2(state_t *state) {
                      NULL, 0, NULL);
     asset_make_image_with_body(BRICK_PATH, obstacle);
   }
-
-  
 }
 
 void make_level3(state_t *state) {
