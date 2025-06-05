@@ -219,8 +219,7 @@ void move_elevator(body_t *elevator, body_t *spirit) {
       body_set_velocity(spirit, (vector_t){0, -20});
     } else if (centroid.y - 10 < 220) {
       body_set_velocity(spirit, (vector_t){0, 20});
-  }
-
+    }
   }
   // if (centroid.x > MAX.x) {
   //   body_set_centroid(body, (vector_t){MIN.x, centroid.y});
@@ -371,8 +370,8 @@ void make_level2(state_t *state) {
         make_obstacle(ELEVATOR2[i][2], ELEVATOR2[i][3], coord, "elevator");
     scene_add_body(state->scene, obstacle);
     body_set_velocity(obstacle, (vector_t){0, 20}); // change this later
-    create_collision(state->scene, state->spirit, obstacle,
-                     platform_handler, NULL, 0, NULL);
+    create_collision(state->scene, state->spirit, obstacle, platform_handler,
+                     NULL, 0, NULL);
     asset_make_image_with_body(ELEVATOR_PATH, obstacle);
   }
 
@@ -658,7 +657,8 @@ collision_type_t collision(state_t *state) {
   for (size_t i = 1; i < scene_bodies(scene); i++) {
     body_t *platform = scene_get_body(scene, i);
 
-    if ((strcmp(body_get_info(platform), "platform")) != 0 && (strcmp(body_get_info(platform), "elevator") != 0)) {
+    if ((strcmp(body_get_info(platform), "platform")) != 0 &&
+        (strcmp(body_get_info(platform), "elevator") != 0)) {
       continue;
     }
 
