@@ -315,7 +315,11 @@ body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
       asset_make_text(FONT_FILEPATH,
                       (SDL_Rect){.x = 200, .y = 350, .w = 300, .h = 50},
                       "Press 3 to go to Level 3", TEXT_COLOR);
-      SDL_Rect level_gem_box[3] = [(SDL_Rect) {.x = 100, .y = 500, .w = 50, .h = 50}, (SDL_Rect) {.x = 200, .y = 500, .w = 50, .h = 50}, (SDL_Rect) {.x = 300, .y = 500, .w = 50, .h = 50}];
+      SDL_Rect level_gem_box[3] = [
+        (SDL_Rect){.x = 100, .y = 500, .w = 50, .h = 50},
+        (SDL_Rect){.x = 200, .y = 500, .w = 50, .h = 50},
+        (SDL_Rect){.x = 300, .y = 500, .w = 50, .h = 50}
+      ];
       // for (size_t i = 0; i < NUMBER_OF_LEVELS; i++) {
       //   if (state->level_points[i] > GREEN_THRESHOLD) {
       //     asset_make_image(GREEN_GEM_PATH, level_gem_box[i]);
@@ -565,4 +569,3 @@ body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
       asset_cache_destroy();
       free(state);
     }
-  
