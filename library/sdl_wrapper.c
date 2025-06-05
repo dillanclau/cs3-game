@@ -239,6 +239,7 @@ void sdl_draw_body(body_t *body) {
   sdl_show();
   free(x_points);
   free(y_points);
+  list_free(points); // this is added by olivia
 }
 
 SDL_Texture *sdl_get_image_texture(const char *image_path) {

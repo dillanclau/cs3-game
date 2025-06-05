@@ -6,11 +6,11 @@
 #include "scene.h"
 #include "state.h"
 #include "vector.h"
+#include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_ttf.h>
 #include <stdbool.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
 
 // Values passed to a key handler when the given arrow key is pressed
 typedef enum {
