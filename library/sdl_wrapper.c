@@ -2,12 +2,12 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_ttf.h>
 #include <assert.h>
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
-#include <SDL2/SDL_mixer.h>
 
 const char WINDOW_TITLE[] = "CS 3";
 const size_t WINDOW_WIDTH = 750;

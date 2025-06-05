@@ -248,16 +248,6 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   reset_user(body1);
   asset_make_image(GAME_OVER_PATH,
                    (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
-  if (state->current_screen == LEVEL1) {
-    state->level_points[0] = 0;
-    go_to_level1();
-  } else if (state->current_screen == LEVEL2) {
-    state->level_points[1] = 0;
-    go_to_level2();
-  } else if (state->current_screen == LEVEL3) {
-    state->level_points[2] = 0;
-    go_to_level3();
-  }
 }
 
 // TODO: jumping velocity implementation matters for when platofrm elevator
