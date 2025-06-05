@@ -47,8 +47,8 @@ size_t GREEN_THRESHOLD = 75;
 // x, y, w, h
 // Bricks for Map 1
 size_t BRICKS1[14][4] = {{375, -500, 750, 30},
-                         {160, 380, 320, BRICK_WIDTH},
-                         {560, 380, 150, BRICK_WIDTH},
+                         {160, 425, 320, BRICK_WIDTH},
+                         {560, 425, 150, BRICK_WIDTH},
                          {425, 300, 650, BRICK_WIDTH},
                          {325, 200, 650, BRICK_WIDTH},
                          {180, 75, 175, BRICK_WIDTH},
@@ -87,7 +87,7 @@ size_t BRICKS3[12][4] = {{50, 390, 100, BRICK_WIDTH},  // where the door is
                          {0, 250, 30, 500},
                          {750, 250, 30, 500}};
 
-const size_t LAVA_WIDTH = 7;
+const size_t LAVA_WIDTH = 11;
 const size_t LAVA_NUM[NUM_MAP] = {4, 0, 0};
 size_t LAVA1[4][4] = {{180, 20, 165, LAVA_WIDTH},
                       {500, 90, 165, LAVA_WIDTH},
@@ -123,7 +123,7 @@ const char *BACKGROUND_PATH = "assets/dungeonbackground.png";
 const char *PAUSE_PATH = "assets/pause.png";
 const char *FONT_FILEPATH = "assets/Cascadia.ttf";
 const char *BRICK_PATH = "assets/brick_texture.png";
-// const char *LAVA_PATH = "assets/lava.png";
+const char *LAVA_PATH = "assets/lava.png";
 const char *HOMEPAGE_PATH = "assets/homepage.png";
 const char *ELEVATOR_PATH = "assets/elevator.png";
 const char *DOOR_PATH = "assets/door.png";
@@ -131,10 +131,7 @@ const char *GEM_PATH = "assets/gem.png";
 const char *RED_GEM_PATH = "assets/red_gem.png";
 const char *ORANGE_GEM_PATH = "assets/orange_gem.png";
 const char *GREEN_GEM_PATH = "assets/green_gem.png";
-const char *ELEVATOR_PATH = "assets/elevator.png";
-const char *DOOR_PATH = "assets/door.png";
 const char *EXIT_DOOR_PATH = "assets/exit_door.png";
-const char *GEM_PATH = "assets/gem.png";
 const char *LAVA1_PATH = "assets/lavaframe1.png";
 const char *LAVA2_PATH = "assets/lavaframe2.png";
 
@@ -153,6 +150,7 @@ struct state {
   collision_type_t collision_type;
   bool pause;
   size_t level_points[3];
+  double time;
 };
 
 body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
@@ -246,15 +244,14 @@ void reset_user(body_t *body) { body_set_centroid(body, START_POS); }
 void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
                         double force_const) {
   reset_user(body1);
-  asset_make_image(GAME_OVER_PATH,
-                   (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
-  if (state->current_screen == LEVEL1) {
-    state->level_points[0] = 0;
-  } else if (state->current_screen == LEVEL2) {
-    state->level_points[1] = 0;
-  } else if (state->current_screen == LEVEL3) {
-    state->level_points[2] = 0;
-  }
+  // asset_make_image(GAME_OVER_PATH, (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
+  // if (state->current_screen == LEVEL1) {
+  //   state->level_points[0] = 0;
+  // } else if (state->current_screen == LEVEL2) {
+  //   state->level_points[1] = 0;
+  // } else if (state->current_screen == LEVEL3) {
+  //   state->level_points[2] = 0;
+  // }
 }
 
 // TODO: jumping velocity implementation matters for when platofrm elevator
@@ -360,7 +357,7 @@ void make_level1(state_t *state) {
     scene_add_body(state->scene, obstacle);
     create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
                      NULL, 0, NULL);
-    asset_make_image_with_body(LAVA1_PATH, obstacle);
+    asset_make_anim(LAVA1_PATH, LAVA2_PATH, obstacle);
   }
 
   // make gem
@@ -471,11 +468,11 @@ void go_to_homepage(state_t *state) {
   asset_make_text(FONT_FILEPATH,
                   (SDL_Rect){.x = 200, .y = 350, .w = 300, .h = 50},
                   "Press 3 to go to Level 3", TEXT_COLOR);
-  SDL_Rect level_gem_box[3] = [
+  SDL_Rect level_gem_box[3] = {
     (SDL_Rect){.x = 100, .y = 500, .w = 50, .h = 50},
     (SDL_Rect){.x = 200, .y = 500, .w = 50, .h = 50},
     (SDL_Rect){.x = 300, .y = 500, .w = 50, .h = 50}
-  ];
+  };
   for (size_t i = 0; i < NUMBER_OF_LEVELS; i++) {
     if (state->level_points[i] > GREEN_THRESHOLD) {
       asset_make_image(GREEN_GEM_PATH, level_gem_box[i]);
@@ -522,7 +519,7 @@ void unpause(state_t *state) {
   state->pause = false;
   list_t *asset_list = asset_get_asset_list();
   list_remove(asset_list, list_size(asset_list) - 1);
-  list_remove(asset_list, list_size(asset_list) - 1);
+  // list_remove(asset_list, list_size(asset_list) - 1);
 }
 
 void restart(state_t *state) {
@@ -745,7 +742,8 @@ state_t *emscripten_init() {
   state->level_points[0] = 0; // for level 1
   state->level_points[1] = 0; // for level 2
   state->level_points[2] = 0; // for level 3
-  state->collided = false;
+  state->collision_type = NO_COLLISION;
+  state->time = 0;
 
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(BACKGROUND_PATH, box);
@@ -760,8 +758,8 @@ state_t *emscripten_init() {
                     spirit);
 
   // make level
-  // make_level1(state);
-  make_level2(state);
+  make_level1(state);
+  // make_level2(state);
   // make_level3(state);
 
   // make water
@@ -776,10 +774,13 @@ bool emscripten_main(state_t *state) {
   sdl_render_scene(state->scene);
   list_t *body_assets = asset_get_asset_list();
   for (size_t i = 0; i < list_size(body_assets); i++) {
+    asset_t *asset = list_get(body_assets, i);
+    asset_animate(asset, state->time);
     asset_render(list_get(body_assets, i));
   }
-  body_t *elevator = scene_get_body(state->scene, 1);
-  move_elevator(elevator);
+  // body_t *elevator = scene_get_body(state->scene, 1);
+  // move_elevator(elevator);
+
 
   state->collision_type = collision(state);
 
@@ -793,6 +794,8 @@ bool emscripten_main(state_t *state) {
     body_set_velocity(spirit, (vector_t){spirit_velocity.x,
                                          spirit_velocity.y - (GRAVITY * dt)});
   }
+
+  state->time += dt;
 
   sdl_show();
   if (!state->pause) {
