@@ -691,7 +691,8 @@ collision_type_t collision(state_t *state) {
   for (size_t i = 1; i < scene_bodies(scene); i++) {
     body_t *platform = scene_get_body(scene, i);
 
-    if ((strcmp(body_get_info(platform), "platform")) != 0 && (strcmp(body_get_info(platform), "elevator") != 0)) {
+    if ((strcmp(body_get_info(platform), "platform")) != 0 &&
+        (strcmp(body_get_info(platform), "elevator") != 0)) {
       continue;
     }
 
