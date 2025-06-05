@@ -39,6 +39,11 @@ const size_t BRICK_NUM[NUM_MAP] = {14, 11, 12};
 
 const size_t NUMBER_OF_LEVELS = 3;
 
+// point range thresholds
+size_t RED_THRESHOLD = 25;
+size_t YELLOW_THRESHOLD = 50;
+size_t GREEN_THRESHOLD = 75;
+
 // x, y, w, h
 size_t BRICKS1[14][4] = {{375, -500, 750, 30},
                          {160, 425, 320, BRICK_WIDTH},
@@ -111,6 +116,9 @@ const char *FONT_FILEPATH = "assets/Cascadia.ttf";
 const char *BRICK_PATH = "assets/brick_texture.png";
 const char *LAVA_PATH = "assets/lava.png";
 const char *HOMEPAGE_PATH = "assets/homepage.png";
+// const char *RED_GEM_PATH = ;
+// const char *YELLOW_GEM_PATH = ;
+// const char *GREEN_GEM_PATH = ;
 
 typedef enum {
   LEVEL1 = 1,
@@ -295,29 +303,31 @@ body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
       state->current_screen = HOMEPAGE;
       SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
       asset_make_image(HOMEPAGE_PATH, box);
-      // asset_make_text(FONT_FILEPATH,
-      //                 (SDL_Rect){.x = 200, .y = 25, .w = 200, .h = 100},
-      //                 "HOMEPAGE", TEXT_COLOR);
-      // asset_make_text(FONT_FILEPATH,
-      //                 (SDL_Rect){.x = 200, .y = 150, .w = 300, .h = 50},
-      //                 "Press 1 to go to Level 1", TEXT_COLOR);
-      // asset_make_text(FONT_FILEPATH,
-      //                 (SDL_Rect){.x = 200, .y = 250, .w = 300, .h = 50},
-      //                 "Press 2 to go to Level 2", TEXT_COLOR);
-      // asset_make_text(FONT_FILEPATH,
-      //                 (SDL_Rect){.x = 200, .y = 350, .w = 300, .h = 50},
-      //                 "Press 3 to go to Level 3", TEXT_COLOR);
-      for (size_t i = 0; i < NUMBER_OF_LEVELS; i++) {
-        if (state->level_points[i] > GREEN_THRESHOLD) {
-          break;
-        }
-        else if (state->level_points[i] > YELLOW_THRESHOLD) {
-          break;
-        }
-        else if (state->level_points[i] > RED_THRESHOLD) {
-          break;
-        }
-      }
+      asset_make_text(FONT_FILEPATH,
+                      (SDL_Rect){.x = 200, .y = 25, .w = 200, .h = 100},
+                      "HOMEPAGE", TEXT_COLOR);
+      asset_make_text(FONT_FILEPATH,
+                      (SDL_Rect){.x = 200, .y = 150, .w = 300, .h = 50},
+                      "Press 1 to go to Level 1", TEXT_COLOR);
+      asset_make_text(FONT_FILEPATH,
+                      (SDL_Rect){.x = 200, .y = 250, .w = 300, .h = 50},
+                      "Press 2 to go to Level 2", TEXT_COLOR);
+      asset_make_text(FONT_FILEPATH,
+                      (SDL_Rect){.x = 200, .y = 350, .w = 300, .h = 50},
+                      "Press 3 to go to Level 3", TEXT_COLOR);
+      SDL_Rect level_gem_box[3] = [(SDL_Rect) {.x = 100, .y = 500, .w = 50, .h = 50}, (SDL_Rect) {.x = 200, .y = 500, .w = 50, .h = 50}, (SDL_Rect) {.x = 300, .y = 500, .w = 50, .h = 50}];
+      // for (size_t i = 0; i < NUMBER_OF_LEVELS; i++) {
+      //   if (state->level_points[i] > GREEN_THRESHOLD) {
+      //     asset_make_image(GREEN_GEM_PATH, level_gem_box[i]);
+      //     break;
+      //   } else if (state->level_points[i] > YELLOW_THRESHOLD) {
+      //     asset_make_image(YELLOW_GEM_PATH, level_gem_box[i]);
+      //     break;
+      //   } else if (state->level_points[i] > RED_THRESHOLD) {
+      //     asset_make_image(RED_GEM_PATH, level_gem_box[i]);
+      //     break;
+      //   }
+      // }
     }
 
     void pause(state_t * state) {
@@ -555,3 +565,4 @@ body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
       asset_cache_destroy();
       free(state);
     }
+  
