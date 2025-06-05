@@ -208,8 +208,8 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
 // jumping velocity implementation matters for when platofrm elevator
 // collision??? handles the collisions between user and platform
 
-void elevator_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
-                      double force_const) {
+void elevator_user_handler(body_t *body1, body_t *body2, vector_t axis,
+                           void *aux, double force_const) {
   // reset_user(body1);
   body_remove(body2);
 }
@@ -284,7 +284,7 @@ void make_level2(state_t *state) {
     asset_make_image_with_body(BRICK_PATH, obstacle);
   }
 
-  //testing elevator
+  // testing elevator
   size_t elevator_len = 1;
   for (size_t i = 0; i < elevator_len; i++) {
     vector_t coord = (vector_t){ELEVATOR2[i][0], ELEVATOR2[i][1]};
@@ -416,7 +416,7 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
         body_set_velocity(spirit, (vector_t){velocity.x, VELOCITY_UP.y});
         break;
       }
-      asset_change_texture(spirit_asset, 1);
+      asset_change_texture(spirit_asset, key);
       break;
     case KEY_1:
       if (state->pause || state->current_screen == HOMEPAGE) {
