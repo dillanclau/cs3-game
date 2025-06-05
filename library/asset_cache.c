@@ -47,6 +47,31 @@ void *entry_corresponds_to_filepath(asset_type_t ty, const char *filepath) {
 }
 
 void *asset_cache_obj_get_or_create(asset_type_t ty, const char *filepath) {
+  // Hints: Create a helper function to check if an entry already corresponds to
+  // `filepath`. If it does, you're good to go.
+  // Otherwise, you will have to initialize the asset that corresponds to `ty`.
+  // What file helps us with initializing assets?
+  // You should NOT be returning a pointer to an `entry_t`!
+  void *obj = entry_corresponds_to_filepath(ty, filepath); // unsure
+  if (obj == NULL) {
+    entry_t *entry = malloc(sizeof(entry_t));
+    entry->type = ty;
+    entry->filepath = filepath;
+    switch (ty) {
+    case ASSET_IMAGE:
+      entry->obj = sdl_get_image_texture(filepath);
+      break;
+    case ASSET_TEXT:
+      entry->obj = TTF_OpenFont(filepath, FONT_SIZE);
+      break;
+    case ASSET_SPIRIT: // check this!
+      entry->obj = sdl_get_image_texture(filepath);
+      break;
+    }
+    list_add(ASSET_CACHE, entry);
+    return entry->obj;
+  }
+
   void *get_entry = entry_corresponds_to_filepath(ty, filepath);
   if (get_entry != NULL) {
     return get_entry;
