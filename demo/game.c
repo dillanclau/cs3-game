@@ -96,10 +96,10 @@ const size_t BODY_ASSETS = 2;
 // velocity constants
 const vector_t VELOCITY_LEFT = (vector_t){-200, 0};
 const vector_t VELOCITY_RIGHT = (vector_t){200, 0};
-const vector_t VELOCITY_UP = (vector_t){0, 200};
+const vector_t VELOCITY_UP = (vector_t){0, 225};
 
 // gravity constants
-const double GRAVITY = 250;
+const double GRAVITY = 300;
 
 // assets
 const char *SPIRIT_FRONT_PATH = "assets/waterspiritfront.png";
@@ -127,7 +127,7 @@ struct state {
   scene_t *scene;
   int16_t points;
   screen_t current_screen;
-  bool collided;
+  collision_type_t collision_type;
   bool pause;
 };
 
@@ -150,7 +150,7 @@ body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
   list_add(c, v4);
 
   // body_t *obstacle = body_init(c, __DBL_MAX__, OBS_COLOR);
-  body_t *obstacle = body_init_with_info(c, 1e6, OBS_COLOR, info, NULL);
+  body_t *obstacle = body_init_with_info(c, __DBL_MAX__, OBS_COLOR, info, NULL);
   body_set_centroid(obstacle, center);
   return obstacle;
 }
@@ -200,27 +200,37 @@ void reset_user(body_t *body) { body_set_centroid(body, START_POS); }
 
 void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
                         double force_const) {
-  reset_user(body1);
 }
 
 // handles the collisions between user and platform
 void platform_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
                       double force_const) {
-  vector_t user_vel = body_get_velocity(body1);
-  vector_t user_pos = body_get_centroid(body1);
-  vector_t plat_pos = body_get_centroid(body2);
-  if ((user_vel.x > 0) && (plat_pos.x > user_pos.x)) {
-    user_vel.x = 0;
-  } else if ((user_vel.x < 0) && (plat_pos.x < user_pos.x)) {
-    user_vel.x = 0;
+  
+  vector_t vel = body_get_velocity(body1);
+  vector_t cen = body_get_centroid(body1);
+  list_t *pts = body_get_shape(body2);
+  vector_t *v1 = list_get(pts, 0);
+  vector_t *v2 = list_get(pts, 1);
+  vector_t *v3 = list_get(pts, 2);
+  vector_t *v4 = list_get(pts, 3);
+
+  if (cen.x > v4->x - INNER_RADIUS && cen.x < v3->x + INNER_RADIUS && cen.y - (INNER_RADIUS - 8) >= v4->y) {
+    vel.y = 0;
   }
 
-  if ((user_vel.y > 0) && (plat_pos.y > user_pos.y)) {
-    user_vel.y = -user_vel.y;
-  } else if ((user_vel.y < 0) && (plat_pos.y < user_pos.y)) {
-    user_vel.y = 0;
+  if (cen.x > v1->x - INNER_RADIUS && cen.x < v2->x + INNER_RADIUS && cen.y < v1->y) {
+    vel.y = -vel.y;
   }
-  body_set_velocity(body1, user_vel);
+
+  if (cen.y > v1->y - OUTER_RADIUS && cen.y < v4->y + OUTER_RADIUS && cen.x < v1->x) {
+    vel.x = 0;
+  }
+
+  if (cen.y > v2->y - OUTER_RADIUS && cen.y < v3->y + OUTER_RADIUS && cen.x > v2->x) {
+    vel.x = 0;
+  }
+
+  body_set_velocity(body1, vel);
 }
 
 void make_level1(state_t *state) {
@@ -372,19 +382,24 @@ void restart(state_t *state) {
 void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
   body_t *spirit = scene_get_body(state->scene, 0);
   vector_t velocity = body_get_velocity(spirit);
+  collision_type_t collision_type = state->collision_type;
   if (type == KEY_PRESSED) {
     switch (key) {
     case LEFT_ARROW:
-      body_set_velocity(spirit, (vector_t){VELOCITY_LEFT.x, velocity.y});
+      if (!(collision_type == RIGHT_COLLISION || collision_type == UP_RIGHT_COLLISION || collision_type == DOWN_RIGHT_COLLISION)) {
+        body_set_velocity(spirit, (vector_t){VELOCITY_LEFT.x, velocity.y});
+      }
       // NOT SURE HOW TO CHANGE THE TEXTURE
       // asset_change_texture(SPIRIT_LEFT_PATH, 1);
       break;
     case RIGHT_ARROW:
-      body_set_velocity(spirit, (vector_t){VELOCITY_RIGHT.x, velocity.y});
+      if (!(collision_type == LEFT_COLLISION || collision_type == UP_LEFT_COLLISION || collision_type == DOWN_LEFT_COLLISION)) {
+        body_set_velocity(spirit, (vector_t){VELOCITY_RIGHT.x, velocity.y});
+      }
       // asset_change_texture(SPIRIT_RIGHT_PATH, 1);
       break;
     case UP_ARROW:
-      if (state->collided) {
+      if (collision_type == UP_COLLISION || collision_type == UP_LEFT_COLLISION || collision_type == UP_RIGHT_COLLISION) {
         body_set_velocity(spirit, (vector_t){velocity.x, VELOCITY_UP.y});
         break;
       }
@@ -403,7 +418,6 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
       if (state->pause || state->current_screen == HOMEPAGE) {
         go_to_level3(state);
       }
-      break;
       break;
     case KEY_H:
       if (state->pause) {
@@ -504,16 +518,49 @@ void make_lava(state_t *state) {
   }
 }
 
-bool collision(state_t *state) {
-  body_t *spirit = state->spirit;
-  scene_t *scene = state->scene;
-  for (size_t i = 1; i < scene_bodies(scene); i++) {
-    if (find_collision(spirit, scene_get_body(scene, i)).collided) {
-      return true;
+collision_type_t collision(state_t *state) {
+    body_t *spirit = state->spirit;
+    scene_t *scene = state->scene;
+    collision_type_t res = NO_COLLISION;
+
+    for (size_t i = 1; i < scene_bodies(scene); i++) {
+        body_t *platform = scene_get_body(scene, i);
+
+        if (strcmp(body_get_info(platform), "platform") != 0) {
+          continue;
+        }
+
+        if (!find_collision(spirit, platform).collided) {
+            continue;                      
+        }
+
+        vector_t cen = body_get_centroid(spirit);
+        list_t *pts = body_get_shape(platform);
+        vector_t *v1 = list_get(pts, 0); // bottom left
+        vector_t *v2 = list_get(pts, 1); // bottom right
+        vector_t *v3 = list_get(pts, 2); // top right
+        vector_t *v4 = list_get(pts, 3); // top left
+
+        if (cen.x > v4->x - INNER_RADIUS && cen.x < v3->x + INNER_RADIUS && cen.y - (INNER_RADIUS - 8) >= v4->y) {
+            res += UP_COLLISION;
+            continue;
+        }
+        if (cen.x > v1->x - INNER_RADIUS && cen.x < v2->x + INNER_RADIUS && cen.y < v1->y) {
+            res += DOWN_COLLISION;
+            continue;
+        }
+        if (cen.y > v1->y - OUTER_RADIUS && cen.y < v4->y + OUTER_RADIUS && cen.x < v1->x) {
+            res += LEFT_COLLISION;
+            continue;
+        }
+        if (cen.y > v2->y - OUTER_RADIUS && cen.y < v3->y + OUTER_RADIUS && cen.x > v2->x) {
+            res += RIGHT_COLLISION;
+            continue;
+        }
     }
-  }
-  return false;
+    return res;
 }
+
 
 state_t *emscripten_init() {
   asset_cache_init();
@@ -524,7 +571,7 @@ state_t *emscripten_init() {
   state->scene = scene_init();
   state->current_screen = LEVEL1;
   state->pause = false;
-  state->collided = false;
+  state->collision_type = NO_COLLISION;
 
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(BACKGROUND_PATH, box);
@@ -556,11 +603,12 @@ bool emscripten_main(state_t *state) {
     asset_render(list_get(body_assets, i));
   }
 
+  state->collision_type = collision(state);
+
   // apply gravity
-  state->collided = collision(state);
   body_t *spirit = state->spirit;
   vector_t spirit_velocity = body_get_velocity(spirit);
-  if (!(state->collided)) {
+  if (!(state->collision_type == UP_COLLISION || state->collision_type == UP_LEFT_COLLISION || state->collision_type == UP_RIGHT_COLLISION)) { // only apply if on platform
     body_set_velocity(spirit, (vector_t){spirit_velocity.x,
                                          spirit_velocity.y - (GRAVITY * dt)});
   }
