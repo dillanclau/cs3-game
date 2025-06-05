@@ -136,6 +136,8 @@ const char *DOOR_PATH = "assets/door.png";
 const char *EXIT_DOOR_PATH = "assets/exit_door.png";
 const char *GEM_PATH = "assets/gem.png";
 
+const char *BACKGROUND_MUSIC_PATH = "assets/background_music.mp3";
+
 typedef enum {
   LEVEL1 = 1,
   LEVEL2 = 2,
@@ -248,10 +250,13 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
                    (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
   if (state->current_screen == LEVEL1) {
     state->level_points[0] = 0;
+    go_to_level1();
   } else if (state->current_screen == LEVEL2) {
     state->level_points[1] = 0;
+    go_to_level2();
   } else if (state->current_screen == LEVEL3) {
     state->level_points[2] = 0;
+    go_to_level3();
   }
 }
 
@@ -734,6 +739,7 @@ collision_type_t collision(state_t *state) {
 state_t *emscripten_init() {
   asset_cache_init();
   sdl_init(MIN, MAX);
+  sdl_play_music(BACKGROUND_MUSIC_PATH);
   state_t *state = malloc(sizeof(state_t));
   state->points = 0;
   srand(time(NULL));
@@ -800,6 +806,7 @@ bool emscripten_main(state_t *state) {
 }
 
 void emscripten_free(state_t *state) {
+  sdl_quit(); // added by Natalie
   list_free(asset_get_asset_list());
   scene_free(state->scene);
   asset_cache_destroy();
