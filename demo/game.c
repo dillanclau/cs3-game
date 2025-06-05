@@ -37,11 +37,18 @@ const size_t NUM_MAP = 3;
 const size_t BRICK_WIDTH = 20;
 const size_t BRICK_NUM[NUM_MAP] = {14, 11, 12};
 
+const size_t NUMBER_OF_LEVELS = 3;
+
+// point range thresholds
+size_t RED_THRESHOLD = 25;
+size_t ORANGE_THRESHOLD = 50;
+size_t GREEN_THRESHOLD = 75;
+
 // x, y, w, h
 // Bricks for Map 1
 size_t BRICKS1[14][4] = {{375, -500, 750, 30},
-                         {160, 425, 320, BRICK_WIDTH},
-                         {560, 425, 150, BRICK_WIDTH},
+                         {160, 380, 320, BRICK_WIDTH},
+                         {560, 380, 150, BRICK_WIDTH},
                          {425, 300, 650, BRICK_WIDTH},
                          {325, 200, 650, BRICK_WIDTH},
                          {180, 75, 175, BRICK_WIDTH},
@@ -120,6 +127,12 @@ const char *LAVA_PATH = "assets/lava.png";
 const char *HOMEPAGE_PATH = "assets/homepage.png";
 const char *ELEVATOR_PATH = "assets/elevator.png";
 const char *DOOR_PATH = "assets/door.png";
+const char *GEM_PATH = "assets/gem.png";
+const char *RED_GEM_PATH = "assets/red_gem.png";
+const char *ORANGE_GEM_PATH = "assets/orange_gem.png";
+const char *GREEN_GEM_PATH = "assets/green_gem.png";
+const char *ELEVATOR_PATH = "assets/elevator.png";
+const char *DOOR_PATH = "assets/door.png";
 const char *EXIT_DOOR_PATH = "assets/exit_door.png";
 const char *GEM_PATH = "assets/gem.png";
 
@@ -137,6 +150,7 @@ struct state {
   screen_t current_screen;
   collision_type_t collision_type;
   bool pause;
+  size_t level_points[3];
 };
 
 body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
@@ -230,6 +244,15 @@ void reset_user(body_t *body) { body_set_centroid(body, START_POS); }
 void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
                         double force_const) {
   reset_user(body1);
+  asset_make_image(GAME_OVER_PATH,
+                   (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
+  if (state->current_screen == LEVEL1) {
+    state->level_points[0] = 0;
+  } else if (state->current_screen == LEVEL2) {
+    state->level_points[1] = 0;
+  } else if (state->current_screen == LEVEL3) {
+    state->level_points[2] = 0;
+  }
 }
 
 // TODO: jumping velocity implementation matters for when platofrm elevator
@@ -434,18 +457,35 @@ void go_to_homepage(state_t *state) {
   state->current_screen = HOMEPAGE;
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(HOMEPAGE_PATH, box);
-  // asset_make_text(FONT_FILEPATH,
-  //                 (SDL_Rect){.x = 200, .y = 25, .w = 200, .h = 100},
-  //                 "HOMEPAGE", TEXT_COLOR);
-  // asset_make_text(FONT_FILEPATH,
-  //                 (SDL_Rect){.x = 200, .y = 150, .w = 300, .h = 50},
-  //                 "Press 1 to go to Level 1", TEXT_COLOR);
-  // asset_make_text(FONT_FILEPATH,
-  //                 (SDL_Rect){.x = 200, .y = 250, .w = 300, .h = 50},
-  //                 "Press 2 to go to Level 2", TEXT_COLOR);
-  // asset_make_text(FONT_FILEPATH,
-  //                 (SDL_Rect){.x = 200, .y = 350, .w = 300, .h = 50},
-  //                 "Press 3 to go to Level 3", TEXT_COLOR);
+  asset_make_text(FONT_FILEPATH,
+                  (SDL_Rect){.x = 200, .y = 25, .w = 200, .h = 100}, "HOMEPAGE",
+                  TEXT_COLOR);
+  asset_make_text(FONT_FILEPATH,
+                  (SDL_Rect){.x = 200, .y = 150, .w = 300, .h = 50},
+                  "Press 1 to go to Level 1", TEXT_COLOR);
+  asset_make_text(FONT_FILEPATH,
+                  (SDL_Rect){.x = 200, .y = 250, .w = 300, .h = 50},
+                  "Press 2 to go to Level 2", TEXT_COLOR);
+  asset_make_text(FONT_FILEPATH,
+                  (SDL_Rect){.x = 200, .y = 350, .w = 300, .h = 50},
+                  "Press 3 to go to Level 3", TEXT_COLOR);
+  SDL_Rect level_gem_box[3] = [
+    (SDL_Rect){.x = 100, .y = 500, .w = 50, .h = 50},
+    (SDL_Rect){.x = 200, .y = 500, .w = 50, .h = 50},
+    (SDL_Rect){.x = 300, .y = 500, .w = 50, .h = 50}
+  ];
+  for (size_t i = 0; i < NUMBER_OF_LEVELS; i++) {
+    if (state->level_points[i] > GREEN_THRESHOLD) {
+      asset_make_image(GREEN_GEM_PATH, level_gem_box[i]);
+      break;
+    } else if (state->level_points[i] > ORANGE_THRESHOLD) {
+      asset_make_image(ORANGE_GEM_PATH, level_gem_box[i]);
+      break;
+    } else if (state->level_points[i] > RED_THRESHOLD) {
+      asset_make_image(RED_GEM_PATH, level_gem_box[i]);
+      break;
+    }
+  }
 }
 
 void pause(state_t *state) {
@@ -651,7 +691,8 @@ collision_type_t collision(state_t *state) {
   for (size_t i = 1; i < scene_bodies(scene); i++) {
     body_t *platform = scene_get_body(scene, i);
 
-    if ((strcmp(body_get_info(platform), "platform")) != 0) {
+    if ((strcmp(body_get_info(platform), "platform")) != 0 &&
+        (strcmp(body_get_info(platform), "elevator") != 0)) {
       continue;
     }
 
@@ -699,7 +740,10 @@ state_t *emscripten_init() {
   state->scene = scene_init();
   state->current_screen = LEVEL1;
   state->pause = false;
-  state->collision_type = NO_COLLISION;
+  state->level_points[0] = 0; // for level 1
+  state->level_points[1] = 0; // for level 2
+  state->level_points[2] = 0; // for level 3
+  state->collided = false;
 
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(BACKGROUND_PATH, box);

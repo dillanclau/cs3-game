@@ -130,6 +130,11 @@ void sdl_init(vector_t min, vector_t max) {
   center = vec_multiply(0.5, vec_add(min, max));
   max_diff = vec_subtract(max, center);
   SDL_Init(SDL_INIT_EVERYTHING);
+  TTF_Init();
+
+  // initializing the music functionality
+  Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
+
   window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED,
                             SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT,
                             SDL_WINDOW_RESIZABLE);
