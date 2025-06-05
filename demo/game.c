@@ -198,6 +198,27 @@ void wrap_edges(body_t *body) {
   }
 }
 
+void move_elevator(body_t *elevator){
+  // size_t ELEVATOR2[1][4] = {{50, 220, 70, BRICK_WIDTH}};
+  // body_set_velocity(body2, (vector_t){0, 20});
+  vector_t centroid = body_get_centroid(elevator);
+  if (centroid.y + 10 > 320) {
+    body_set_velocity(elevator, (vector_t){0, -20});
+  } else if (centroid.y - 10 < 220) {
+    body_set_velocity(elevator, (vector_t){0, 20});
+  }
+  // if (centroid.x > MAX.x) {
+  //   body_set_centroid(body, (vector_t){MIN.x, centroid.y});
+  // } else if (centroid.x < MIN.x) {
+  //   body_set_centroid(body, (vector_t){MAX.x, centroid.y});
+  // } else if (centroid.y > MAX.y) {
+  //   body_set_centroid(body, (vector_t){centroid.x, MIN.y});
+  // } else if (centroid.y < MIN.y) {
+  //   body_set_centroid(body, (vector_t){centroid.x, MAX.y});
+  // }
+}
+
+// Handlers
 void reset_user(body_t *body) { body_set_centroid(body, START_POS); }
 
 void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
@@ -209,21 +230,13 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
 // TODO: collision??? handles the collisions between user and platform
 void elevator_user_handler(body_t *body1, body_t *body2, vector_t axis,
                            void *aux, double force_const) {
-  // reset_user(body1);
   body_set_velocity(body2, (vector_t){0, 20});
   vector_t user_vel = body_get_velocity(body1);
   vector_t user_pos = body_get_centroid(body1);
   vector_t plat_vel = body_get_velocity(body2);
   vector_t plat_pos = body_get_centroid(body2);
-  // if ((user_vel.x > 0) && (plat_pos.x > user_pos.x)) {
-  //   user_vel.x = 0;
-  // } else if ((user_vel.x < 0) && (plat_pos.x < user_pos.x)) {
-  //   user_vel.x = 0;
-  // }
 
-  if ((user_vel.y > 0) && (plat_pos.y > user_pos.y)) {
-    // user_vel.y = -user_vel.y;
-  } else if ((user_vel.y < 0) && (plat_pos.y < user_pos.y)) {
+  if ((user_vel.y < 0) && (plat_pos.y < user_pos.y)) {
     user_vel.y = plat_vel.y;
   }
   body_set_velocity(body1, user_vel);
@@ -288,17 +301,6 @@ void make_level1(state_t *state) {
 }
 
 void make_level2(state_t *state) {
-  size_t brick_len = BRICK_NUM[1];
-  for (size_t i = 0; i < brick_len; i++) {
-    vector_t coord = (vector_t){BRICKS2[i][0], BRICKS2[i][1]};
-    body_t *obstacle =
-        make_obstacle(BRICKS2[i][2], BRICKS2[i][3], coord, "platform");
-    scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, state->spirit, obstacle, platform_handler,
-                     NULL, 0, NULL);
-    asset_make_image_with_body(BRICK_PATH, obstacle);
-  }
-
   // testing elevator
   size_t elevator_len = 1;
   for (size_t i = 0; i < elevator_len; i++) {
@@ -310,6 +312,19 @@ void make_level2(state_t *state) {
                      elevator_user_handler, NULL, 0, NULL);
     asset_make_image_with_body(ELEVATOR_PATH, obstacle);
   }
+
+  size_t brick_len = BRICK_NUM[1];
+  for (size_t i = 0; i < brick_len; i++) {
+    vector_t coord = (vector_t){BRICKS2[i][0], BRICKS2[i][1]};
+    body_t *obstacle =
+        make_obstacle(BRICKS2[i][2], BRICKS2[i][3], coord, "platform");
+    scene_add_body(state->scene, obstacle);
+    create_collision(state->scene, state->spirit, obstacle, platform_handler,
+                     NULL, 0, NULL);
+    asset_make_image_with_body(BRICK_PATH, obstacle);
+  }
+
+  
 }
 
 void make_level3(state_t *state) {
@@ -602,6 +617,8 @@ bool emscripten_main(state_t *state) {
   for (size_t i = 0; i < list_size(body_assets); i++) {
     asset_render(list_get(body_assets, i));
   }
+  body_t *elevator = scene_get_body(state->scene, 1);
+  move_elevator(elevator);
 
   // apply gravity
   state->collided = collision(state);
