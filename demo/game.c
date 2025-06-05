@@ -205,13 +205,12 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   reset_user(body1);
 }
 
-// jumping velocity implementation matters for when platofrm elevator
-// collision??? handles the collisions between user and platform
-
+// TODO: jumping velocity implementation matters for when platofrm elevator
+// TODO: collision??? handles the collisions between user and platform
 void elevator_user_handler(body_t *body1, body_t *body2, vector_t axis,
                            void *aux, double force_const) {
   // reset_user(body1);
-  body_remove(body2);
+  body_set_velocity(body2, (vector_t){0, 20});
 }
 
 void gem_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
@@ -291,7 +290,7 @@ void make_level2(state_t *state) {
     body_t *obstacle =
         make_obstacle(ELEVATOR2[i][2], ELEVATOR2[i][3], coord, "elevator");
     scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, state->spirit, obstacle, platform_handler,
+    create_collision(state->scene, state->spirit, obstacle, elevator_user_handler,
                      NULL, 0, NULL);
     asset_make_image_with_body(ELEVATOR_PATH, obstacle);
   }
