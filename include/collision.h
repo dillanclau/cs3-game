@@ -6,6 +6,18 @@
 #include "vector.h"
 #include <stdbool.h>
 
+typedef enum {
+  NO_COLLISION = 0,
+  RIGHT_COLLISION = 1,
+  LEFT_COLLISION = 2,
+  UP_COLLISION = 3,
+  UP_RIGHT_COLLISION = 4,
+  UP_LEFT_COLLISION = 5,
+  DOWN_COLLISION = 6,
+  DOWN_RIGHT_COLLISION = 7,
+  DOWN_LEFT_COLLISION = 8
+} collision_type_t;
+
 /**
  * Represents the status of a collision between two shapes.
  * The shapes are either not colliding, or they are colliding along some axis.
