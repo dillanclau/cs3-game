@@ -123,7 +123,7 @@ const char *BACKGROUND_PATH = "assets/dungeonbackground.png";
 const char *PAUSE_PATH = "assets/pause.png";
 const char *FONT_FILEPATH = "assets/Cascadia.ttf";
 const char *BRICK_PATH = "assets/brick_texture.png";
-const char *LAVA_PATH = "assets/lava.png";
+// const char *LAVA_PATH = "assets/lava.png";
 const char *HOMEPAGE_PATH = "assets/homepage.png";
 const char *ELEVATOR_PATH = "assets/elevator.png";
 const char *DOOR_PATH = "assets/door.png";
@@ -135,6 +135,8 @@ const char *ELEVATOR_PATH = "assets/elevator.png";
 const char *DOOR_PATH = "assets/door.png";
 const char *EXIT_DOOR_PATH = "assets/exit_door.png";
 const char *GEM_PATH = "assets/gem.png";
+const char *LAVA1_PATH = "assets/lavaframe1.png";
+const char *LAVA2_PATH = "assets/lavaframe2.png";
 
 typedef enum {
   LEVEL1 = 1,
@@ -358,7 +360,7 @@ void make_level1(state_t *state) {
     scene_add_body(state->scene, obstacle);
     create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
                      NULL, 0, NULL);
-    asset_make_image_with_body(LAVA_PATH, obstacle);
+    asset_make_image_with_body(LAVA1_PATH, obstacle);
   }
 
   // make gem
