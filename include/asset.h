@@ -50,7 +50,10 @@ void asset_make_text(const char *filepath, SDL_Rect bounding_box,
  * @param asset
  * @param idx
  */
-void *asset_change_texture(asset_t *asset, size_t idx);
+void asset_change_texture(asset_t *asset, char key);
+
+void asset_make_spirit(const char *front_filepath, const char *left_filepath,
+                       const char *right_filepath, body_t *body);
 
 /**
  * Resets the internal asset list by freeing all assets and creating a new empty

@@ -51,9 +51,19 @@ static asset_t *asset_init(asset_type_t ty, SDL_Rect bounding_box) {
   if (ASSET_LIST == NULL) {
     ASSET_LIST = list_init(INIT_CAPACITY, (free_func_t)asset_destroy);
   }
-  asset_t *new =
-      malloc(ty == ASSET_IMAGE ? sizeof(image_asset_t) : sizeof(text_asset_t));
-  // : sizeof(spirit_asset_t)
+  asset_t *new = NULL;
+  switch (ty){
+    case ASSET_IMAGE:
+      new = malloc(sizeof(image_asset_t));
+      break;
+    case ASSET_TEXT:
+      new = malloc(sizeof(text_asset_t));
+      break;
+    case ASSET_SPIRIT:
+      new = malloc(sizeof(spirit_asset_t));
+      break;
+    // case 
+  }
   assert(new);
   new->type = ty;
   new->bounding_box = bounding_box;
@@ -90,7 +100,7 @@ void asset_make_text(const char *filepath, SDL_Rect bounding_box,
 // new asset for the spirit
 void asset_make_spirit(const char *front_filepath, const char *left_filepath,
                        const char *right_filepath, body_t *body) {
-  SDL_Rect bounding_box = (SDL_Rect){.x = 0, .y = 0, .w = 0, .h = 0};
+  SDL_Rect bounding_box = {.x = 0, .y = 0, .w= 0, .h=0 };
   asset_t *asset = asset_init(ASSET_SPIRIT, bounding_box);
   spirit_asset_t *spirit_asset = (spirit_asset_t *)asset;
   spirit_asset->front_texture =
@@ -100,19 +110,24 @@ void asset_make_spirit(const char *front_filepath, const char *left_filepath,
   spirit_asset->left_texture =
       asset_cache_obj_get_or_create(ASSET_IMAGE, left_filepath);
   spirit_asset->curr_texture = spirit_asset->front_texture;
-  spirit_asset->body = NULL;
+  spirit_asset->body = body;
   list_add(ASSET_LIST, (asset_t *)spirit_asset);
 }
 
-void *asset_change_texture(asset_t *asset, size_t idx) {
-  assert(asset->type == ASSET_SPIRIT);
+void asset_change_texture(asset_t *asset, char key) {
+  // pass in the key instead
+  assert(asset->type == ASSET_SPIRIT); 
   spirit_asset_t *spirit_asset = (spirit_asset_t *)asset;
-  if (idx == 0) {
-    spirit_asset->curr_texture = spirit_asset->front_texture;
-  } else if (idx == 1) {
-    spirit_asset->curr_texture = spirit_asset->right_texture;
-  } else if (idx == 2) {
-    spirit_asset->curr_texture = spirit_asset->left_texture;
+  switch (key) {
+    case LEFT_ARROW:
+      spirit_asset->curr_texture = spirit_asset->left_texture;
+      break;
+    case RIGHT_ARROW:
+      spirit_asset->curr_texture = spirit_asset->right_texture;
+      break;
+    case UP_ARROW:
+      spirit_asset->curr_texture = spirit_asset->front_texture;
+      break;
   }
 }
 
@@ -127,6 +142,7 @@ list_t *asset_get_asset_list() { return ASSET_LIST; }
 
 void asset_remove_body(body_t *body) {
   size_t len = list_size(ASSET_LIST);
+  printf("%zu\n", len);
   for (size_t i = 0; i < len; i++) {
     asset_t *asset = list_get(ASSET_LIST, i);
     if (asset->type == ASSET_IMAGE) {
@@ -134,6 +150,8 @@ void asset_remove_body(body_t *body) {
       if (image_asset->body == body) {
         list_remove(ASSET_LIST, i);
         asset_destroy(asset);
+        i--;
+        len--;
       }
     }
   }
@@ -157,7 +175,11 @@ void asset_render(asset_t *asset) {
     break;
   case ASSET_SPIRIT:
     spirit_asset_t *spirit_asset = (spirit_asset_t *)asset;
+    if (spirit_asset->body != NULL) {
+      box = sdl_get_body_bounding_box(spirit_asset->body);
+    }
     sdl_render_image(spirit_asset->curr_texture, &box);
+    break;
   }
 }
 
