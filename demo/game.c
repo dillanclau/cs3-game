@@ -41,7 +41,7 @@ const size_t NUMBER_OF_LEVELS = 3;
 
 // point range thresholds
 size_t RED_THRESHOLD = 25;
-size_t YELLOW_THRESHOLD = 50;
+size_t ORANGE_THRESHOLD = 50;
 size_t GREEN_THRESHOLD = 75;
 
 // x, y, w, h
@@ -121,9 +121,9 @@ const char *HOMEPAGE_PATH = "assets/homepage.png";
 const char *ELEVATOR_PATH = "assets/elevator.png";
 const char *DOOR_PATH = "assets/door.png";
 const char *GEM_PATH = "assets/gem.png";
-// const char *RED_GEM_PATH = ;
-// const char *YELLOW_GEM_PATH = ;
-// const char *GREEN_GEM_PATH = ;
+const char *RED_GEM_PATH = "assets/red_gem.png";
+const char *ORANGE_GEM_PATH = "assets/orange_gem.png";
+const char *GREEN_GEM_PATH = "assets/green_gem.png";
 
 typedef enum {
   LEVEL1 = 1,
@@ -212,14 +212,13 @@ void reset_user(body_t *body) { body_set_centroid(body, START_POS); }
 void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
                         double force_const) {
   reset_user(body1);
-  asset_make_image(GAME_OVER_PATH, (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
+  asset_make_image(GAME_OVER_PATH,
+                   (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
   if (state->current_screen == LEVEL1) {
     state->level_points[0] = 0;
-  }
-  else if (state->current_screen == LEVEL2) {
+  } else if (state->current_screen == LEVEL2) {
     state->level_points[1] = 0;
-  }
-  else if (state->current_screen == LEVEL3) {
+  } else if (state->current_screen == LEVEL3) {
     state->level_points[2] = 0;
   }
 }
@@ -269,13 +268,13 @@ void make_level1(state_t *state) {
   }
 
   // make gem
-  vector_t center = (vector_t) {.x = 100, .y = 100};
+  vector_t center = (vector_t){.x = 100, .y = 100};
   body_t *gem = make_gem(OUTER_RADIUS, INNER_RADIUS, center);
   scene_add_body(state->scene, gem);
   // create_destructive_collision(state->scene, state->spirit, gem);
   // the destructive collision is strange for some reason
-  create_collision(state->scene, state->spirit, gem, reset_user_handler,
-                     NULL, 0, NULL);
+  create_collision(state->scene, state->spirit, gem, reset_user_handler, NULL,
+                   0, NULL);
   asset_make_image_with_body(GEM_PATH, gem);
 }
 
@@ -331,8 +330,8 @@ void go_to_homepage(state_t *state) {
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(HOMEPAGE_PATH, box);
   asset_make_text(FONT_FILEPATH,
-                  (SDL_Rect){.x = 200, .y = 25, .w = 200, .h = 100},
-                  "HOMEPAGE", TEXT_COLOR);
+                  (SDL_Rect){.x = 200, .y = 25, .w = 200, .h = 100}, "HOMEPAGE",
+                  TEXT_COLOR);
   asset_make_text(FONT_FILEPATH,
                   (SDL_Rect){.x = 200, .y = 150, .w = 300, .h = 50},
                   "Press 1 to go to Level 1", TEXT_COLOR);
@@ -342,23 +341,23 @@ void go_to_homepage(state_t *state) {
   asset_make_text(FONT_FILEPATH,
                   (SDL_Rect){.x = 200, .y = 350, .w = 300, .h = 50},
                   "Press 3 to go to Level 3", TEXT_COLOR);
-      // SDL_Rect level_gem_box[3] = [
-      //   (SDL_Rect){.x = 100, .y = 500, .w = 50, .h = 50},
-      //   (SDL_Rect){.x = 200, .y = 500, .w = 50, .h = 50},
-      //   (SDL_Rect){.x = 300, .y = 500, .w = 50, .h = 50}
-      // ];
-      // for (size_t i = 0; i < NUMBER_OF_LEVELS; i++) {
-      //   if (state->level_points[i] > GREEN_THRESHOLD) {
-      //     asset_make_image(GREEN_GEM_PATH, level_gem_box[i]);
-      //     break;
-      //   } else if (state->level_points[i] > YELLOW_THRESHOLD) {
-      //     asset_make_image(YELLOW_GEM_PATH, level_gem_box[i]);
-      //     break;
-      //   } else if (state->level_points[i] > RED_THRESHOLD) {
-      //     asset_make_image(RED_GEM_PATH, level_gem_box[i]);
-      //     break;
-      //   }
-      // }
+  SDL_Rect level_gem_box[3] = [
+    (SDL_Rect){.x = 100, .y = 500, .w = 50, .h = 50},
+    (SDL_Rect){.x = 200, .y = 500, .w = 50, .h = 50},
+    (SDL_Rect){.x = 300, .y = 500, .w = 50, .h = 50}
+  ];
+  for (size_t i = 0; i < NUMBER_OF_LEVELS; i++) {
+    if (state->level_points[i] > GREEN_THRESHOLD) {
+      asset_make_image(GREEN_GEM_PATH, level_gem_box[i]);
+      break;
+    } else if (state->level_points[i] > ORANGE_THRESHOLD) {
+      asset_make_image(ORANGE_GEM_PATH, level_gem_box[i]);
+      break;
+    } else if (state->level_points[i] > RED_THRESHOLD) {
+      asset_make_image(RED_GEM_PATH, level_gem_box[i]);
+      break;
+    }
+  }
 }
 
 void pause(state_t *state) {
@@ -562,9 +561,9 @@ state_t *emscripten_init() {
   state->scene = scene_init();
   state->current_screen = LEVEL1;
   state->pause = false;
-      // state->level_points[0] = 0; // for level 1
-      // state->level_points[1] = 0; // for level 2
-      // state->level_points[2] = 0; // for level 3
+  state->level_points[0] = 0; // for level 1
+  state->level_points[1] = 0; // for level 2
+  state->level_points[2] = 0; // for level 3
   state->collided = false;
 
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
