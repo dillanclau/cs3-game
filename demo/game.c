@@ -256,7 +256,7 @@ void gem_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
 
 void platform_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
                       double force_const) {
-  
+
   vector_t vel = body_get_velocity(body1);
   vector_t cen = body_get_centroid(body1);
   list_t *pts = body_get_shape(body2);
@@ -265,19 +265,23 @@ void platform_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   vector_t *v3 = list_get(pts, 2);
   vector_t *v4 = list_get(pts, 3);
 
-  if (cen.x > v4->x - INNER_RADIUS && cen.x < v3->x + INNER_RADIUS && cen.y - (INNER_RADIUS - 8) >= v4->y) {
+  if (cen.x > v4->x - INNER_RADIUS && cen.x < v3->x + INNER_RADIUS &&
+      cen.y - (INNER_RADIUS - 8) >= v4->y) {
     vel.y = 0;
   }
 
-  if (cen.x > v1->x - INNER_RADIUS && cen.x < v2->x + INNER_RADIUS && cen.y < v1->y) {
+  if (cen.x > v1->x - INNER_RADIUS && cen.x < v2->x + INNER_RADIUS &&
+      cen.y < v1->y) {
     vel.y = -vel.y;
   }
 
-  if (cen.y > v1->y - OUTER_RADIUS && cen.y < v4->y + OUTER_RADIUS && cen.x < v1->x) {
+  if (cen.y > v1->y - OUTER_RADIUS && cen.y < v4->y + OUTER_RADIUS &&
+      cen.x < v1->x) {
     vel.x = 0;
   }
 
-  if (cen.y > v2->y - OUTER_RADIUS && cen.y < v3->y + OUTER_RADIUS && cen.x > v2->x) {
+  if (cen.y > v2->y - OUTER_RADIUS && cen.y < v3->y + OUTER_RADIUS &&
+      cen.x > v2->x) {
     vel.x = 0;
   }
 
@@ -320,8 +324,8 @@ void make_level1(state_t *state) {
   vector_t coord = (vector_t){DOORS[0][0], DOORS[0][1]};
   body_t *door = make_obstacle(DOORS[0][2], DOORS[0][3], coord, "door");
   scene_add_body(state->scene, door);
-  create_collision(state->scene, state->spirit, door, reset_user_handler,
-                     NULL, 0, NULL);
+  create_collision(state->scene, state->spirit, door, reset_user_handler, NULL,
+                   0, NULL);
   asset_make_image_with_body(EXIT_DOOR_PATH, door);
 }
 
@@ -353,8 +357,8 @@ void make_level2(state_t *state) {
   vector_t coord = (vector_t){DOORS[1][0], DOORS[1][1]};
   body_t *door = make_obstacle(DOORS[1][2], DOORS[1][3], coord, "door");
   scene_add_body(state->scene, door);
-  create_collision(state->scene, state->spirit, door, reset_user_handler,
-                     NULL, 0, NULL);
+  create_collision(state->scene, state->spirit, door, reset_user_handler, NULL,
+                   0, NULL);
   asset_make_image_with_body(EXIT_DOOR_PATH, door);
 }
 
@@ -373,8 +377,8 @@ void make_level3(state_t *state) {
   vector_t coord = (vector_t){DOORS[2][0], DOORS[2][1]};
   body_t *door = make_obstacle(DOORS[2][2], DOORS[2][3], coord, "door");
   scene_add_body(state->scene, door);
-  create_collision(state->scene, state->spirit, door, reset_user_handler,
-                    NULL, 0, NULL);
+  create_collision(state->scene, state->spirit, door, reset_user_handler, NULL,
+                   0, NULL);
   asset_make_image_with_body(EXIT_DOOR_PATH, door);
 }
 
@@ -473,19 +477,25 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
   if (type == KEY_PRESSED) {
     switch (key) {
     case LEFT_ARROW:
-      if (!(collision_type == RIGHT_COLLISION || collision_type == UP_RIGHT_COLLISION || collision_type == DOWN_RIGHT_COLLISION)) {
+      if (!(collision_type == RIGHT_COLLISION ||
+            collision_type == UP_RIGHT_COLLISION ||
+            collision_type == DOWN_RIGHT_COLLISION)) {
         body_set_velocity(spirit, (vector_t){VELOCITY_LEFT.x, velocity.y});
       }
       asset_change_texture(spirit_asset, key);
       break;
     case RIGHT_ARROW:
-      if (!(collision_type == LEFT_COLLISION || collision_type == UP_LEFT_COLLISION || collision_type == DOWN_LEFT_COLLISION)) {
+      if (!(collision_type == LEFT_COLLISION ||
+            collision_type == UP_LEFT_COLLISION ||
+            collision_type == DOWN_LEFT_COLLISION)) {
         body_set_velocity(spirit, (vector_t){VELOCITY_RIGHT.x, velocity.y});
       }
       asset_change_texture(spirit_asset, key);
       break;
     case UP_ARROW:
-      if (collision_type == UP_COLLISION || collision_type == UP_LEFT_COLLISION || collision_type == UP_RIGHT_COLLISION) {
+      if (collision_type == UP_COLLISION ||
+          collision_type == UP_LEFT_COLLISION ||
+          collision_type == UP_RIGHT_COLLISION) {
         body_set_velocity(spirit, (vector_t){velocity.x, VELOCITY_UP.y});
         break;
       }
@@ -607,48 +617,51 @@ void make_lava(state_t *state) {
 }
 
 collision_type_t collision(state_t *state) {
-    body_t *spirit = state->spirit;
-    scene_t *scene = state->scene;
-    collision_type_t res = NO_COLLISION;
+  body_t *spirit = state->spirit;
+  scene_t *scene = state->scene;
+  collision_type_t res = NO_COLLISION;
 
-    for (size_t i = 1; i < scene_bodies(scene); i++) {
-        body_t *platform = scene_get_body(scene, i);
+  for (size_t i = 1; i < scene_bodies(scene); i++) {
+    body_t *platform = scene_get_body(scene, i);
 
-        if (strcmp(body_get_info(platform), "platform") != 0) {
-          continue;
-        }
-
-        if (!find_collision(spirit, platform).collided) {
-            continue;                      
-        }
-
-        vector_t cen = body_get_centroid(spirit);
-        list_t *pts = body_get_shape(platform);
-        vector_t *v1 = list_get(pts, 0); // bottom left
-        vector_t *v2 = list_get(pts, 1); // bottom right
-        vector_t *v3 = list_get(pts, 2); // top right
-        vector_t *v4 = list_get(pts, 3); // top left
-
-        if (cen.x > v4->x - INNER_RADIUS && cen.x < v3->x + INNER_RADIUS && cen.y - (INNER_RADIUS - 8) >= v4->y) {
-            res += UP_COLLISION;
-            continue;
-        }
-        if (cen.x > v1->x - INNER_RADIUS && cen.x < v2->x + INNER_RADIUS && cen.y < v1->y) {
-            res += DOWN_COLLISION;
-            continue;
-        }
-        if (cen.y > v1->y - OUTER_RADIUS && cen.y < v4->y + OUTER_RADIUS && cen.x < v1->x) {
-            res += LEFT_COLLISION;
-            continue;
-        }
-        if (cen.y > v2->y - OUTER_RADIUS && cen.y < v3->y + OUTER_RADIUS && cen.x > v2->x) {
-            res += RIGHT_COLLISION;
-            continue;
-        }
+    if (strcmp(body_get_info(platform), "platform") != 0) {
+      continue;
     }
-    return res;
-}
 
+    if (!find_collision(spirit, platform).collided) {
+      continue;
+    }
+
+    vector_t cen = body_get_centroid(spirit);
+    list_t *pts = body_get_shape(platform);
+    vector_t *v1 = list_get(pts, 0); // bottom left
+    vector_t *v2 = list_get(pts, 1); // bottom right
+    vector_t *v3 = list_get(pts, 2); // top right
+    vector_t *v4 = list_get(pts, 3); // top left
+
+    if (cen.x > v4->x - INNER_RADIUS && cen.x < v3->x + INNER_RADIUS &&
+        cen.y - (INNER_RADIUS - 8) >= v4->y) {
+      res += UP_COLLISION;
+      continue;
+    }
+    if (cen.x > v1->x - INNER_RADIUS && cen.x < v2->x + INNER_RADIUS &&
+        cen.y < v1->y) {
+      res += DOWN_COLLISION;
+      continue;
+    }
+    if (cen.y > v1->y - OUTER_RADIUS && cen.y < v4->y + OUTER_RADIUS &&
+        cen.x < v1->x) {
+      res += LEFT_COLLISION;
+      continue;
+    }
+    if (cen.y > v2->y - OUTER_RADIUS && cen.y < v3->y + OUTER_RADIUS &&
+        cen.x > v2->x) {
+      res += RIGHT_COLLISION;
+      continue;
+    }
+  }
+  return res;
+}
 
 state_t *emscripten_init() {
   asset_cache_init();
@@ -700,7 +713,10 @@ bool emscripten_main(state_t *state) {
   // apply gravity
   body_t *spirit = state->spirit;
   vector_t spirit_velocity = body_get_velocity(spirit);
-  if (!(state->collision_type == UP_COLLISION || state->collision_type == UP_LEFT_COLLISION || state->collision_type == UP_RIGHT_COLLISION)) { // only apply if on platform
+  if (!(state->collision_type == UP_COLLISION ||
+        state->collision_type == UP_LEFT_COLLISION ||
+        state->collision_type ==
+            UP_RIGHT_COLLISION)) { // only apply if on platform
     body_set_velocity(spirit, (vector_t){spirit_velocity.x,
                                          spirit_velocity.y - (GRAVITY * dt)});
   }
