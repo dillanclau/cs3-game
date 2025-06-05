@@ -40,8 +40,8 @@ const size_t BRICK_NUM[NUM_MAP] = {14, 11, 12};
 // x, y, w, h
 // Bricks for Map 1
 size_t BRICKS1[14][4] = {{375, -500, 750, 30},
-                         {160, 380, 320, BRICK_WIDTH},
-                         {560, 380, 150, BRICK_WIDTH},
+                         {160, 425, 320, BRICK_WIDTH},
+                         {560, 425, 150, BRICK_WIDTH},
                          {425, 300, 650, BRICK_WIDTH},
                          {325, 200, 650, BRICK_WIDTH},
                          {180, 75, 175, BRICK_WIDTH},
@@ -87,7 +87,12 @@ size_t LAVA1[4][4] = {{180, 20, 165, LAVA_WIDTH},
                       {500, 310, 100, LAVA_WIDTH},
                       {250, 310, 175, LAVA_WIDTH}};
 
-const int16_t H_STEP = 50;
+const size_t DOOR_NUM[NUM_MAP] = {3, 0, 0};
+size_t DOORS[3][4] = {{60, 458, INNER_RADIUS * 3, OUTER_RADIUS * 3},
+                      {60, 424, INNER_RADIUS * 3, OUTER_RADIUS * 3},
+                      {60, 424, INNER_RADIUS * 3, OUTER_RADIUS * 3}};
+
+const int16_t H_STEP = 507;
 const int16_t V_STEP = 30;
 const size_t ROWS = 50;
 
@@ -96,7 +101,7 @@ const size_t BODY_ASSETS = 2;
 // velocity constants
 const vector_t VELOCITY_LEFT = (vector_t){-200, 0};
 const vector_t VELOCITY_RIGHT = (vector_t){200, 0};
-const vector_t VELOCITY_UP = (vector_t){0, 225};
+const vector_t VELOCITY_UP = (vector_t){0, 230};
 
 // gravity constants
 const double GRAVITY = 300;
@@ -113,6 +118,7 @@ const char *LAVA_PATH = "assets/lava.png";
 const char *HOMEPAGE_PATH = "assets/homepage.png";
 const char *ELEVATOR_PATH = "assets/elevator.png";
 const char *DOOR_PATH = "assets/door.png";
+const char *EXIT_DOOR_PATH = "assets/exit_door.png";
 const char *GEM_PATH = "assets/gem.png";
 
 typedef enum {
@@ -200,6 +206,7 @@ void reset_user(body_t *body) { body_set_centroid(body, START_POS); }
 
 void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
                         double force_const) {
+  reset_user(body1);
 }
 
 // handles the collisions between user and platform
@@ -266,6 +273,14 @@ void make_level1(state_t *state) {
   create_collision(state->scene, state->spirit, gem, reset_user_handler,
                      NULL, 0, NULL);
   asset_make_image_with_body(GEM_PATH, gem);
+
+  // make door
+  vector_t coord = (vector_t){DOORS[0][0], DOORS[0][1]};
+  body_t *door = make_obstacle(DOORS[0][2], DOORS[0][3], coord, "door");
+  scene_add_body(state->scene, door);
+  create_collision(state->scene, state->spirit, door, reset_user_handler,
+                     NULL, 0, NULL);
+  asset_make_image_with_body(EXIT_DOOR_PATH, door);
 }
 
 void make_level2(state_t *state) {
@@ -279,6 +294,14 @@ void make_level2(state_t *state) {
                      NULL, 0, NULL);
     asset_make_image_with_body(BRICK_PATH, obstacle);
   }
+
+  // make door
+  vector_t coord = (vector_t){DOORS[1][0], DOORS[1][1]};
+  body_t *door = make_obstacle(DOORS[1][2], DOORS[1][3], coord, "door");
+  scene_add_body(state->scene, door);
+  create_collision(state->scene, state->spirit, door, reset_user_handler,
+                     NULL, 0, NULL);
+  asset_make_image_with_body(EXIT_DOOR_PATH, door);
 }
 
 void make_level3(state_t *state) {
@@ -292,6 +315,13 @@ void make_level3(state_t *state) {
                      NULL, 0, NULL);
     asset_make_image_with_body(BRICK_PATH, obstacle);
   }
+  // make door
+  vector_t coord = (vector_t){DOORS[2][0], DOORS[2][1]};
+  body_t *door = make_obstacle(DOORS[2][2], DOORS[2][3], coord, "door");
+  scene_add_body(state->scene, door);
+  create_collision(state->scene, state->spirit, door, reset_user_handler,
+                    NULL, 0, NULL);
+  asset_make_image_with_body(EXIT_DOOR_PATH, door);
 }
 
 void go_to_level1(state_t *state) {
@@ -585,7 +615,7 @@ state_t *emscripten_init() {
   asset_make_image_with_body(SPIRIT_FRONT_PATH, state->spirit);
 
   // make level
-  make_level1(state);
+  make_level3(state);
   // make_level3(state);
 
   // make water
