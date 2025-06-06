@@ -731,7 +731,6 @@ collision_type_t collision(state_t *state) {
 state_t *emscripten_init() {
   asset_cache_init();
   sdl_init(MIN, MAX);
-  sdl_play_music(BACKGROUND_MUSIC_PATH);
   state_t *state = malloc(sizeof(state_t));
   state->points = 0;
   srand(time(NULL));
@@ -778,6 +777,11 @@ bool emscripten_main(state_t *state) {
   move_elevator(elevator, state->spirit);
 
   state->collision_type = collision(state);
+
+  size_t time = (size_t)state->time;
+  if (time % 10 == 0) {
+    sdl_play_music(BACKGROUND_MUSIC_PATH);
+  }
 
   // apply gravity
   body_t *spirit = state->spirit;
