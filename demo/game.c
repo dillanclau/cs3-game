@@ -99,8 +99,7 @@ size_t LAVA2[4][4] = {{500, 15, 160, LAVA_WIDTH},
                       {510, 400, 60, LAVA_WIDTH},
                       {390, 400, 60, LAVA_WIDTH}};
 
-size_t LAVA3[2][4] = {{500, 15, 120, LAVA_WIDTH},
-                      {225, 240, 50, LAVA_WIDTH}};
+size_t LAVA3[2][4] = {{500, 15, 120, LAVA_WIDTH}, {225, 240, 50, LAVA_WIDTH}};
 
 const size_t WATER_NUM[NUM_MAP] = {2, 2, 2};
 size_t WATER1[2][4] = {{500, 210, 165, LAVA_WIDTH},
@@ -108,8 +107,7 @@ size_t WATER1[2][4] = {{500, 210, 165, LAVA_WIDTH},
 
 size_t WATER2[2][4] = {{300, 300, 120, LAVA_WIDTH}, {110, 90, 100, LAVA_WIDTH}};
 
-size_t WATER3[2][4] = {{280, 15, 160, LAVA_WIDTH},
-                      {670, 380, 70, LAVA_WIDTH}};
+size_t WATER3[2][4] = {{280, 15, 160, LAVA_WIDTH}, {670, 380, 70, LAVA_WIDTH}};
 
 const size_t DOOR_NUM[NUM_MAP] = {3, 0, 0};
 size_t DOORS[3][4] = {{60, 458, INNER_RADIUS * 3, OUTER_RADIUS * 3},
@@ -832,6 +830,14 @@ collision_type_t collision(state_t *state) {
   return res;
 }
 
+// change this to be better later
+const size_t TEXT_SIZE = 50;
+const size_t TEXT_HEIGHT_SCALE = 2;
+
+vector_t get_dimensions_for_text(char *text) {
+  return (vector_t){strlen(text) * TEXT_SIZE, TEXT_SIZE * TEXT_HEIGHT_SCALE};
+}
+
 state_t *emscripten_init() {
   asset_cache_init();
   sdl_init(MIN, MAX);
@@ -861,10 +867,24 @@ state_t *emscripten_init() {
 
   // make level
   // make_level1(state);
-  // make_level2(state);
-  make_level3(state);
+  make_level2(state);
+  // make_level3(state);
 
-  // make water
+  // try to do timer
+  // char text[100];
+  // sprintf(text, "Clock:  %.0f", floor(state->time));
+  // SDL_Rect box = {.x=365, .y=700, .w=100, .h=50};
+  // char *text = "Clock: 0";
+
+  asset_make_text(FONT_FILEPATH,
+                  (SDL_Rect){.x = 365, .y = 700, .w = 200, .h = 100}, "HELLO",
+                  TEXT_COLOR);
+  // vector_t text_dim = get_dimensions_for_text(text);
+  //   SDL_Rect text_box =
+  //       (SDL_Rect){.x = 365, .y = 365, .w = text_dim.x, .h = text_dim.y};
+  // asset_make_text(FONT_FILEPATH, text_box, text, TEXT_COLOR);
+  // // list_add(meme, text_asset);
+  // printf("%s\n", "help");
   sdl_on_key((key_handler_t)on_key);
 
   return state;
@@ -895,6 +915,21 @@ bool emscripten_main(state_t *state) {
     body_set_velocity(spirit, (vector_t){spirit_velocity.x,
                                          spirit_velocity.y - (GRAVITY * dt)});
   }
+
+  list_t* asset_list = asset_get_asset_list();
+  size_t len = list_size(asset_list);
+  asset_t *clock = list_get(asset_list, len-1);
+  asset_destroy(clock);
+
+  // char text[100];
+  // sprintf(text, "Clock:  %.0f", floor(state->time));
+  // SDL_Rect box = {.x=365, .y=700, .w=100, .h=50};
+  // char *text = "Clock: 0";
+  // vector_t text_dim = get_dimensions_for_text(text);
+  //   SDL_Rect text_box =
+  //       (SDL_Rect){.x = 365, .y = 700, .w = text_dim.x, .h = text_dim.y};
+  // asset_make_text(FONT_FILEPATH, text_box, text, OBS_COLOR);
+  
 
   state->time += dt;
 
