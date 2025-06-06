@@ -132,6 +132,7 @@ const char *RED_GEM_PATH = "assets/red_gem.png";
 const char *ORANGE_GEM_PATH = "assets/orange_gem.png";
 const char *GREEN_GEM_PATH = "assets/green_gem.png";
 const char *EXIT_DOOR_PATH = "assets/exit_door.png";
+const char *GAME_OVER_PATH = "assets/game_over.png";
 
 const char *BACKGROUND_MUSIC_PATH = "assets/background_music.mp3";
 
@@ -150,6 +151,7 @@ struct state {
   collision_type_t collision_type;
   bool pause;
   size_t level_points[3];
+  bool music_played;
   double time;
 };
 
@@ -252,8 +254,8 @@ void reset_user(body_t *body) { body_set_centroid(body, START_POS); }
 void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
                         double force_const) {
   reset_user(body1);
-  // asset_make_image(GAME_OVER_PATH,
-  //  (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
+  asset_make_image(GAME_OVER_PATH,
+   (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
 }
 
 // TODO: jumping velocity implementation matters for when platofrm elevator
@@ -782,9 +784,13 @@ bool emscripten_main(state_t *state) {
   state->collision_type = collision(state);
 
   size_t time = (size_t)state->time;
-  if (time % 10 == 0) {
+  if (time % 10 != 0) {
+    state->music_played = false;
+  }
+  if ((time % 10 == 0) && (!(state->music_played))) {
     sdl_play_music(BACKGROUND_MUSIC_PATH);
     printf("%s\n", "music playing");
+    state->music_played = true;
   }
 
   // apply gravity
@@ -798,7 +804,7 @@ bool emscripten_main(state_t *state) {
                                          spirit_velocity.y - (GRAVITY * dt)});
   }
 
-  printf("collision = %d\n", (int)state->collision_type);
+  // printf("collision = %d\n", (int)state->collision_type);
 
   sdl_show();
   if (!state->pause) {
