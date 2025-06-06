@@ -10,41 +10,6 @@
 static list_t *ASSET_LIST = NULL;
 const size_t INIT_CAPACITY = 5;
 
-typedef struct asset {
-  asset_type_t type;
-  SDL_Rect bounding_box;
-} asset_t;
-
-typedef struct text_asset {
-  asset_t base;
-  TTF_Font *font;
-  const char *text;
-  color_t color;
-} text_asset_t;
-
-typedef struct image_asset {
-  asset_t base;
-  SDL_Texture *texture;
-  body_t *body;
-} image_asset_t;
-
-typedef struct spirit_asset {
-  asset_t base;
-  SDL_Texture *curr_texture;
-  SDL_Texture *front_texture;
-  SDL_Texture *right_texture;
-  SDL_Texture *left_texture;
-  body_t *body;
-} spirit_asset_t;
-
-typedef struct button_asset {
-  asset_t base;
-  SDL_Texture *curr_texture;
-  SDL_Texture *unpressed_texture;
-  SDL_Texture *pressed_texture;
-  body_t *body;
-} button_asset_t;
-
 /**
  * Allocates memory for an asset with the given parameters.
  *
@@ -70,7 +35,9 @@ static asset_t *asset_init(asset_type_t ty, SDL_Rect bounding_box) {
   case ASSET_SPIRIT:
     new = malloc(sizeof(spirit_asset_t));
     break;
-    // case
+  case ASSET_BUTTON:
+    new = malloc(sizeof(button_asset_t));
+    break;
   }
   assert(new);
   new->type = ty;
@@ -139,12 +106,15 @@ void asset_change_texture(asset_t *asset, char key) {
   }
 }
 
-void asset_make_button(const char *unpressed_filepath, const char *pressed_filepath, body_t *body) {
+void asset_make_button(const char *unpressed_filepath,
+                       const char *pressed_filepath, body_t *body) {
   SDL_Rect bounding_box = {.x = 0, .y = 0, .w = 0, .h = 0};
   asset_t *asset = asset_init(ASSET_BUTTON, bounding_box);
   button_asset_t *button_asset = (button_asset_t *)asset;
-  button_asset->unpressed_texture = asset_cache_obj_get_or_create(ASSET_IMAGE, unpressed_filepath);
-  button_asset->pressed_texture = asset_cache_obj_get_or_create(ASSET_IMAGE, pressed_filepath);
+  button_asset->unpressed_texture =
+      asset_cache_obj_get_or_create(ASSET_IMAGE, unpressed_filepath);
+  button_asset->pressed_texture =
+      asset_cache_obj_get_or_create(ASSET_IMAGE, pressed_filepath);
   button_asset->curr_texture = button_asset->unpressed_texture;
   button_asset->body = body;
   list_add(ASSET_LIST, (asset_t *)button_asset);
@@ -190,7 +160,6 @@ void asset_render(asset_t *asset) {
     if (image->body != NULL) {
       box = sdl_get_body_bounding_box(image->body);
     }
-
     sdl_render_image(image->texture, &box);
     break;
   case ASSET_TEXT:
@@ -204,6 +173,13 @@ void asset_render(asset_t *asset) {
       box = sdl_get_body_bounding_box(spirit_asset->body);
     }
     sdl_render_image(spirit_asset->curr_texture, &box);
+    break;
+  case ASSET_BUTTON:
+    button_asset_t *button_asset = (button_asset_t *)asset;
+    if (button_asset->body != NULL)  {
+      box = sdl_get_body_bounding_box(button_asset->body);
+    }
+    sdl_render_image(button_asset->curr_texture, &box);
     break;
   }
 }
