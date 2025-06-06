@@ -306,17 +306,17 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
 //   vector_t plat_vel = body_get_velocity(body2);
 //   vector_t plat_pos = body_get_centroid(body2);
 
-  if (cen.x > v4->x - INNER_RADIUS && cen.x < v3->x + INNER_RADIUS &&
-      cen.y - (INNER_RADIUS - 8) >= v4->y) {
-    printf("%zu\n", vel.y);
-    vel.y = 20;
-    printf("%zu\n\n", vel.y);
-  }
+if (cen.x > v4->x - INNER_RADIUS && cen.x < v3->x + INNER_RADIUS &&
+    cen.y - (INNER_RADIUS - 8) >= v4->y) {
+  printf("%zu\n", vel.y);
+  vel.y = 20;
+  printf("%zu\n\n", vel.y);
+}
 
-  if (cen.x > v1->x - INNER_RADIUS && cen.x < v2->x + INNER_RADIUS &&
-      cen.y < v1->y) {
-    vel.y = -vel.y;
-  }
+if (cen.x > v1->x - INNER_RADIUS && cen.x < v2->x + INNER_RADIUS &&
+    cen.y < v1->y) {
+  vel.y = -vel.y;
+}
 
 //   if (cen.y > v1->y - OUTER_RADIUS && cen.y < v4->y + OUTER_RADIUS &&
 //       cen.x < v1->x) {
