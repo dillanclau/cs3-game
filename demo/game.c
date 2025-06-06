@@ -135,6 +135,9 @@ const char *EXIT_DOOR_PATH = "assets/exit_door.png";
 const char *GAME_OVER_PATH = "assets/game_over.png";
 
 const char *BACKGROUND_MUSIC_PATH = "assets/background_music.mp3";
+// const char *GEM_OBTAINMENT_SOUND = ;
+// const char *LEVEL_COMPLETED_SOUND = ;
+// const char *LEVEL_FAILED_SOUND = ;
 
 typedef enum {
   LEVEL1 = 1,
@@ -255,7 +258,7 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
                         double force_const) {
   reset_user(body1);
   asset_make_image(GAME_OVER_PATH,
-   (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
+                   (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
 }
 
 // TODO: jumping velocity implementation matters for when platofrm elevator
