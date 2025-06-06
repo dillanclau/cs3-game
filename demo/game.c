@@ -371,7 +371,7 @@ void platform_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   body_set_velocity(body1, vel);
 }
 
-void init_bgd_player(state_t *state){
+void init_bgd_player(state_t *state) {
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(BACKGROUND_PATH, box);
 
@@ -578,7 +578,6 @@ void make_level3(state_t *state) {
 void go_to_level1(state_t *state) {
   // asset_reset_asset_list();
   state->current_screen = LEVEL1;
-
   make_level1(state);
   return;
 }
@@ -603,18 +602,7 @@ void go_to_homepage(state_t *state) {
   state->current_screen = HOMEPAGE;
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(HOMEPAGE_PATH, box);
-  // asset_make_text(FONT_FILEPATH,
-  //                 (SDL_Rect){.x = 200, .y = 25, .w = 200, .h = 100}, "HOMEPAGE",
-  //                 TEXT_COLOR);
-  // asset_make_text(FONT_FILEPATH,
-  //                 (SDL_Rect){.x = 200, .y = 150, .w = 300, .h = 50},
-  //                 "Press 1 to go to Level 1", TEXT_COLOR);
-  // asset_make_text(FONT_FILEPATH,
-  //                 (SDL_Rect){.x = 200, .y = 250, .w = 300, .h = 50},
-  //                 "Press 2 to go to Level 2", TEXT_COLOR);
-  // asset_make_text(FONT_FILEPATH,
-  //                 (SDL_Rect){.x = 200, .y = 350, .w = 300, .h = 50},
-  //                 "Press 3 to go to Level 3", TEXT_COLOR);
+
   SDL_Rect level_gem_box[3] = {
       (SDL_Rect){.x = 100, .y = 500, .w = 50, .h = 50},
       (SDL_Rect){.x = 200, .y = 500, .w = 50, .h = 50},
@@ -681,11 +669,19 @@ void restart(state_t *state) {
   }
 }
 
+// need to fix this so that the screen transitions work well
+// handle the if else cases correcly
 void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
-  body_t *spirit = scene_get_body(state->scene, 0);
-  vector_t velocity = body_get_velocity(spirit);
+  body_t *spirit = NULL;
+  vector_t velocity = {0, 0};
+  asset_t *spirit_asset = NULL;
   list_t *asset_list = asset_get_asset_list();
-  asset_t *spirit_asset = list_get(asset_list, 1);
+  if (state->current_screen != HOMEPAGE){
+    spirit = scene_get_body(state->scene, 0);
+    velocity = body_get_velocity(spirit);
+    spirit_asset = list_get(asset_list, 1);
+  }
+  
 
   collision_type_t collision_type = state->collision_type;
   if (type == KEY_PRESSED) {
@@ -717,6 +713,7 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
       break;
     case KEY_1:
       if (state->pause || state->current_screen == HOMEPAGE) {
+        asset_reset_asset_list();
         go_to_level1(state);
       }
       break;
@@ -894,7 +891,7 @@ bool emscripten_main(state_t *state) {
   //       state->collision_type ==
   //           UP_RIGHT_COLLISION)) { // only apply if on platform
   //   body_set_velocity(spirit, (vector_t){spirit_velocity.x,
-                                        //  spirit_velocity.y - (GRAVITY * dt)});
+  //  spirit_velocity.y - (GRAVITY * dt)});
   // }
 
   // clocks
