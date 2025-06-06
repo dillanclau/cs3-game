@@ -44,7 +44,6 @@ size_t RED_THRESHOLD = 25;
 size_t ORANGE_THRESHOLD = 50;
 size_t GREEN_THRESHOLD = 75;
 
-
 // x, y, w, h
 // Bricks for Map 1
 size_t BRICKS1[14][4] = {{375, -500, 750, 30},
@@ -122,7 +121,7 @@ const size_t GEM1[3][2] = {{180, 100}, {560, 450}, {375, 325}};
 const size_t GEM2[3][2] = {{120, 100}, {430, 310}, {450, 410}};
 const size_t GEM3[3][2] = {{670, 390}, {580, 250}, {135, 345}};
 
-const vector_t CLOCK_POS = {.x=375, .y=10};
+const vector_t CLOCK_POS = {.x = 375, .y = 10};
 const color_t CLOCK_COL = {1, 1, .5};
 const size_t TEXT_SIZE = 14;
 const size_t TEXT_HEIGHT_SCALE = 2;
@@ -836,6 +835,17 @@ vector_t get_dimensions_for_text(char *text) {
   return (vector_t){strlen(text) * TEXT_SIZE, TEXT_SIZE * TEXT_HEIGHT_SCALE};
 }
 
+void make_clock(state_t *state){
+  char text[10000];
+  sprintf(text, "Clock:%.0f", floor(state->time));
+  vector_t text_dim = get_dimensions_for_text(text);
+  SDL_Rect text_box = (SDL_Rect){.x = CLOCK_POS.x - (text_dim.x / 2),
+                                 .y = CLOCK_POS.y,
+                                 .w = text_dim.x,
+                                 .h = text_dim.y};
+  asset_make_text(FONT_FILEPATH, text_box, text, CLOCK_COL);
+}
+
 state_t *emscripten_init() {
   asset_cache_init();
   sdl_init(MIN, MAX);
@@ -864,16 +874,12 @@ state_t *emscripten_init() {
                     spirit);
 
   // make level
-  make_level1(state);
+  // make_level1(state);
   // make_level2(state);
-  // make_level3(state);
+  make_level3(state);
 
-  char text[10000];
-  sprintf(text, "Clock%.0f", floor(state->time));
-  vector_t text_dim = get_dimensions_for_text(text);
-  SDL_Rect text_box =
-        (SDL_Rect){.x=CLOCK_POS.x - (text_dim.x/2), .y=CLOCK_POS.y, .w = text_dim.x, .h = text_dim.y};
-  asset_make_text(FONT_FILEPATH, text_box, text, CLOCK_COL);
+  make_clock(state);
+  
   sdl_on_key((key_handler_t)on_key);
 
   return state;
@@ -906,15 +912,10 @@ bool emscripten_main(state_t *state) {
                                          spirit_velocity.y - (GRAVITY * dt)});
   }
 
-  // clock
+  // clocks
   asset_t *clock = list_get(body_assets, len - 1);
   asset_destroy(clock);
-  char text[10000];
-  sprintf(text, "Clock:%.0f", floor(state->time));;
-  vector_t text_dim = get_dimensions_for_text(text);
-  SDL_Rect text_box =
-        (SDL_Rect){.x=CLOCK_POS.x - (text_dim.x/2), .y=CLOCK_POS.y, .w = text_dim.x, .h = text_dim.y};
-  asset_make_text(FONT_FILEPATH, text_box, text, CLOCK_COL);
+  make_clock(state);
 
   state->time += dt;
 
