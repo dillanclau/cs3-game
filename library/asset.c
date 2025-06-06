@@ -111,11 +111,7 @@ void asset_make_text(const char *filepath, SDL_Rect bounding_box,
 // new asset for the spirit
 void asset_make_spirit(const char *front_filepath, const char *left_filepath,
                        const char *right_filepath, body_t *body) {
-<<<<<<< HEAD
   SDL_Rect bounding_box = (SDL_Rect){.x = 0, .y = 0, .w = 0, .h = 0};
-=======
-  SDL_Rect bounding_box = {.x = 0, .y = 0, .w = 0, .h = 0};
->>>>>>> origin
   asset_t *asset = asset_init(ASSET_SPIRIT, bounding_box);
   spirit_asset_t *spirit_asset = (spirit_asset_t *)asset;
   spirit_asset->front_texture =
