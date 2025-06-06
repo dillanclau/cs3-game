@@ -731,67 +731,6 @@ double rand_double(double low, double high) {
   return (high - low) * rand() / RAND_MAX + low;
 }
 
-void make_platforms(state_t *state, size_t idx) {
-  size_t len = BRICK_NUM[0];
-  for (size_t i = 0; i < len; i++) {
-    vector_t coord = (vector_t){BRICKS1[i][0], BRICKS1[i][1]};
-    if (BRICKS1[i][3] == 0) {
-      BRICKS1[i][3] = BRICK_WIDTH;
-    }
-    body_t *obstacle =
-        make_obstacle(BRICKS1[i][2], BRICKS1[i][3], coord, "platform");
-    scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, state->spirit, obstacle, platform_handler,
-                     NULL, 0, NULL);
-    asset_make_image_with_body(BRICK_PATH, obstacle);
-  }
-
-  // misc sized blocks
-  // {x, y, width, height}
-  const size_t NUM_OBST = 4;
-  int OBST[NUM_OBST][4] = {{730, 330, 40, 60},
-                           {30, 235, 60, 70},
-                           {730, 90, 40, 60},
-                           {715, 35, 70, 70}};
-
-  for (size_t i = 0; i < NUM_OBST; i++) {
-    vector_t coord = (vector_t){OBST[i][0], OBST[i][1]};
-    body_t *obstacle = make_obstacle(OBST[i][2], OBST[i][3], coord, "obstacle");
-    scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, state->spirit, obstacle, platform_handler,
-                     NULL, 0, NULL);
-    asset_make_image_with_body(BRICK_PATH, obstacle);
-  }
-
-  // boundaries
-  // {x, y, width, height}
-  const size_t BOUNDARIES = 3;
-  int EDGES[BOUNDARIES][4] = {
-      {375, 0, 750, 30}, {0, 250, 30, 500}, {750, 250, 30, 500}};
-
-  for (size_t i = 0; i < BOUNDARIES; i++) {
-    vector_t coord = (vector_t){EDGES[i][0], EDGES[i][1]};
-    body_t *obstacle =
-        make_obstacle(EDGES[i][2], EDGES[i][3], coord, "obstacle");
-    scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, state->spirit, obstacle, platform_handler,
-                     NULL, 0, NULL);
-    asset_make_image_with_body(BRICK_PATH, obstacle);
-  }
-}
-
-void make_lava(state_t *state) {
-  size_t len = LAVA_NUM[0];
-  for (size_t i = 0; i < len; i++) {
-    vector_t coord = (vector_t){LAVA1[i][0], LAVA1[i][1]};
-    body_t *obstacle = make_obstacle(LAVA1[i][2], LAVA1[i][3], coord, "lava");
-    scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
-                     NULL, 0, NULL);
-    asset_make_image_with_body(LAVA_PATH, obstacle);
-  }
-}
-
 collision_type_t collision(state_t *state) {
   body_t *spirit = state->spirit;
   scene_t *scene = state->scene;
