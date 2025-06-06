@@ -150,6 +150,7 @@ struct state {
   collision_type_t collision_type;
   bool pause;
   size_t level_points[3];
+  double time;
 };
 
 body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
@@ -741,6 +742,7 @@ state_t *emscripten_init() {
   state->level_points[1] = 0; // for level 2
   state->level_points[2] = 0; // for level 3
   state->collision_type = NO_COLLISION;
+  state->time = 0;
 
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(BACKGROUND_PATH, box);
@@ -767,6 +769,7 @@ state_t *emscripten_init() {
 
 bool emscripten_main(state_t *state) {
   double dt = time_since_last_tick();
+  state->time = (state->time) + dt;
   sdl_clear();
   sdl_render_scene(state->scene);
   list_t *body_assets = asset_get_asset_list();
@@ -781,6 +784,7 @@ bool emscripten_main(state_t *state) {
   size_t time = (size_t)state->time;
   if (time % 10 == 0) {
     sdl_play_music(BACKGROUND_MUSIC_PATH);
+    printf("%s\n", "music playing");
   }
 
   // apply gravity

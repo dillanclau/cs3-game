@@ -137,6 +137,7 @@ void sdl_init(vector_t min, vector_t max) {
   // initializing the music functionality
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
   if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+    printf("%s\n", "music initialized");
     SDL_Log("Mix_OpenAudio: %s", Mix_GetError());
   }
 
