@@ -177,4 +177,9 @@ void sdl_on_key(key_handler_t handler);
  */
 double time_since_last_tick(void);
 
+void sdl_play_music(const char *path);
+
+// added by Natalie
+void sdl_quit();
+
 #endif // #ifndef __SDL_WRAPPER_H__

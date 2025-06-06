@@ -131,10 +131,13 @@ const char *GEM_PATH = "assets/gem.png";
 const char *RED_GEM_PATH = "assets/red_gem.png";
 const char *ORANGE_GEM_PATH = "assets/orange_gem.png";
 const char *GREEN_GEM_PATH = "assets/green_gem.png";
-const char *ELEVATOR_PATH = "assets/elevator.png";
-const char *DOOR_PATH = "assets/door.png";
 const char *EXIT_DOOR_PATH = "assets/exit_door.png";
-const char *GEM_PATH = "assets/gem.png";
+const char *GAME_OVER_PATH = "assets/game_over.png";
+
+const char *BACKGROUND_MUSIC_PATH = "assets/background_music.mp3";
+// const char *GEM_OBTAINMENT_SOUND = ;
+// const char *LEVEL_COMPLETED_SOUND = ;
+// const char *LEVEL_FAILED_SOUND = ;
 
 typedef enum {
   LEVEL1 = 1,
@@ -151,6 +154,8 @@ struct state {
   collision_type_t collision_type;
   bool pause;
   size_t level_points[3];
+  bool music_played;
+  double time;
 };
 
 body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
@@ -218,7 +223,7 @@ void wrap_edges(body_t *body) {
   }
 }
 
-void move_elevator(body_t *elevator) {
+void move_elevator(body_t *elevator, body_t *spirit) {
   // size_t ELEVATOR2[1][4] = {{50, 220, 70, BRICK_WIDTH}};
   // body_set_velocity(body2, (vector_t){0, 20});
   vector_t centroid = body_get_centroid(elevator);
@@ -226,6 +231,14 @@ void move_elevator(body_t *elevator) {
     body_set_velocity(elevator, (vector_t){0, -20});
   } else if (centroid.y - 10 < 220) {
     body_set_velocity(elevator, (vector_t){0, 20});
+  }
+
+  if (find_collision(elevator, spirit).collided) {
+    if (centroid.y + 10 > 320) {
+      body_set_velocity(spirit, (vector_t){0, -20});
+    } else if (centroid.y - 10 < 220) {
+      body_set_velocity(spirit, (vector_t){0, 20});
+    }
   }
   // if (centroid.x > MAX.x) {
   //   body_set_centroid(body, (vector_t){MIN.x, centroid.y});
@@ -246,32 +259,25 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   reset_user(body1);
   asset_make_image(GAME_OVER_PATH,
                    (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
-  if (state->current_screen == LEVEL1) {
-    state->level_points[0] = 0;
-  } else if (state->current_screen == LEVEL2) {
-    state->level_points[1] = 0;
-  } else if (state->current_screen == LEVEL3) {
-    state->level_points[2] = 0;
-  }
 }
 
 // TODO: jumping velocity implementation matters for when platofrm elevator
 // TODO: collision??? handles the collisions between user and platform
-void elevator_user_handler(body_t *body1, body_t *body2, vector_t axis,
-                           void *aux, double force_const) {
-  vector_t vel = body_get_velocity(body1);
-  vector_t cen = body_get_centroid(body1);
-  list_t *pts = body_get_shape(body2);
+// void elevator_user_handler(body_t *body1, body_t *body2, vector_t axis,
+//                            void *aux, double force_const) {
+//   vector_t vel = body_get_velocity(body1);
+//   vector_t cen = body_get_centroid(body1);
+//   list_t *pts = body_get_shape(body2);
 
-  vector_t *v1 = list_get(pts, 0);
-  vector_t *v2 = list_get(pts, 1);
-  vector_t *v3 = list_get(pts, 2);
-  vector_t *v4 = list_get(pts, 3);
+//   vector_t *v1 = list_get(pts, 0);
+//   vector_t *v2 = list_get(pts, 1);
+//   vector_t *v3 = list_get(pts, 2);
+//   vector_t *v4 = list_get(pts, 3);
 
-  // vector_t user_vel = body_get_velocity(body1);
-  // vector_t user_pos = body_get_centroid(body1);
-  vector_t plat_vel = body_get_velocity(body2);
-  vector_t plat_pos = body_get_centroid(body2);
+//   // vector_t user_vel = body_get_velocity(body1);
+//   // vector_t user_pos = body_get_centroid(body1);
+//   vector_t plat_vel = body_get_velocity(body2);
+//   vector_t plat_pos = body_get_centroid(body2);
 
   if (cen.x > v4->x - INNER_RADIUS && cen.x < v3->x + INNER_RADIUS &&
       cen.y - (INNER_RADIUS - 8) >= v4->y) {
@@ -285,17 +291,17 @@ void elevator_user_handler(body_t *body1, body_t *body2, vector_t axis,
     vel.y = -vel.y;
   }
 
-  if (cen.y > v1->y - OUTER_RADIUS && cen.y < v4->y + OUTER_RADIUS &&
-      cen.x < v1->x) {
-    vel.x = 0;
-  }
+//   if (cen.y > v1->y - OUTER_RADIUS && cen.y < v4->y + OUTER_RADIUS &&
+//       cen.x < v1->x) {
+//     vel.x = 0;
+//   }
 
-  if (cen.y > v2->y - OUTER_RADIUS && cen.y < v3->y + OUTER_RADIUS &&
-      cen.x > v2->x) {
-    vel.x = 0;
-  }
-  body_set_velocity(body1, vel);
-}
+//   if (cen.y > v2->y - OUTER_RADIUS && cen.y < v3->y + OUTER_RADIUS &&
+//       cen.x > v2->x) {
+//     vel.x = 0;
+//   }
+//   body_set_velocity(body1, vel);
+// }
 
 void gem_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
                       double force_const) {
@@ -316,7 +322,7 @@ void platform_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
 
   if (cen.x > v4->x - INNER_RADIUS && cen.x < v3->x + INNER_RADIUS &&
       cen.y - (INNER_RADIUS - 8) >= v4->y) {
-    vel.y = 0;
+    vel.y = body_get_velocity(body2).y;
   }
 
   if (cen.x > v1->x - INNER_RADIUS && cen.x < v2->x + INNER_RADIUS &&
@@ -387,8 +393,8 @@ void make_level2(state_t *state) {
         make_obstacle(ELEVATOR2[i][2], ELEVATOR2[i][3], coord, "platform");
     scene_add_body(state->scene, obstacle);
     body_set_velocity(obstacle, (vector_t){0, 20}); // change this later
-    create_collision(state->scene, state->spirit, obstacle,
-                     elevator_user_handler, NULL, 0, NULL);
+    create_collision(state->scene, state->spirit, obstacle, platform_handler,
+                     NULL, 0, NULL);
     asset_make_image_with_body(ELEVATOR_PATH, obstacle);
   }
 
@@ -469,11 +475,10 @@ void go_to_homepage(state_t *state) {
   asset_make_text(FONT_FILEPATH,
                   (SDL_Rect){.x = 200, .y = 350, .w = 300, .h = 50},
                   "Press 3 to go to Level 3", TEXT_COLOR);
-  SDL_Rect level_gem_box[3] = [
-    (SDL_Rect){.x = 100, .y = 500, .w = 50, .h = 50},
-    (SDL_Rect){.x = 200, .y = 500, .w = 50, .h = 50},
-    (SDL_Rect){.x = 300, .y = 500, .w = 50, .h = 50}
-  ];
+  SDL_Rect level_gem_box[3] = {
+      (SDL_Rect){.x = 100, .y = 500, .w = 50, .h = 50},
+      (SDL_Rect){.x = 200, .y = 500, .w = 50, .h = 50},
+      (SDL_Rect){.x = 300, .y = 500, .w = 50, .h = 50}};
   for (size_t i = 0; i < NUMBER_OF_LEVELS; i++) {
     if (state->level_points[i] > GREEN_THRESHOLD) {
       asset_make_image(GREEN_GEM_PATH, level_gem_box[i]);
@@ -708,7 +713,7 @@ collision_type_t collision(state_t *state) {
     vector_t *v4 = list_get(pts, 3); // top left
 
     if (cen.x > v4->x - INNER_RADIUS && cen.x < v3->x + INNER_RADIUS &&
-        cen.y - (INNER_RADIUS - 8) >= v4->y) {
+        cen.y - (INNER_RADIUS - 3) >= v4->y) {
       res += UP_COLLISION;
       continue;
     }
@@ -740,10 +745,11 @@ state_t *emscripten_init() {
   state->scene = scene_init();
   state->current_screen = LEVEL1;
   state->pause = false;
-  state->level_points[0] = 0; // for level 1
+  state->level_points[0] = 0; // for leFvel 1
   state->level_points[1] = 0; // for level 2
   state->level_points[2] = 0; // for level 3
-  state->collided = false;
+  state->collision_type = NO_COLLISION;
+  state->time = 0;
 
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(BACKGROUND_PATH, box);
@@ -770,6 +776,7 @@ state_t *emscripten_init() {
 
 bool emscripten_main(state_t *state) {
   double dt = time_since_last_tick();
+  state->time = (state->time) + dt;
   sdl_clear();
   sdl_render_scene(state->scene);
   list_t *body_assets = asset_get_asset_list();
@@ -777,9 +784,19 @@ bool emscripten_main(state_t *state) {
     asset_render(list_get(body_assets, i));
   }
   body_t *elevator = scene_get_body(state->scene, 1);
-  move_elevator(elevator);
+  move_elevator(elevator, state->spirit);
 
   state->collision_type = collision(state);
+
+  size_t time = (size_t)state->time;
+  if (time % 10 != 0) {
+    state->music_played = false;
+  }
+  if ((time % 10 == 0) && (!(state->music_played))) {
+    sdl_play_music(BACKGROUND_MUSIC_PATH);
+    printf("%s\n", "music playing");
+    state->music_played = true;
+  }
 
   // apply gravity
   body_t *spirit = state->spirit;
@@ -792,6 +809,8 @@ bool emscripten_main(state_t *state) {
                                          spirit_velocity.y - (GRAVITY * dt)});
   }
 
+  // printf("collision = %d\n", (int)state->collision_type);
+
   sdl_show();
   if (!state->pause) {
     scene_tick(state->scene, dt);
@@ -800,6 +819,7 @@ bool emscripten_main(state_t *state) {
 }
 
 void emscripten_free(state_t *state) {
+  sdl_quit(); // added by Natalie
   list_free(asset_get_asset_list());
   scene_free(state->scene);
   asset_cache_destroy();

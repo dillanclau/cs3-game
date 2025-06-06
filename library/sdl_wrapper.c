@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_ttf.h>
 #include <assert.h>
 #include <math.h>
@@ -15,6 +16,7 @@ const SDL_Color SDL_BLACK = {0, 0, 0};
 const int8_t FONT_HEIGHT_SCALE = 2;
 // const double MS_PER_S = 1000.0;
 const double MS_PER_S = 100000;
+static Mix_Music *background_music = NULL;
 
 /**
  * The coordinate at the center of the screen.
@@ -133,7 +135,11 @@ void sdl_init(vector_t min, vector_t max) {
   TTF_Init();
 
   // initializing the music functionality
-  Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
+  SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+  if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+    printf("%s\n", "music initialized");
+    SDL_Log("Mix_OpenAudio: %s", Mix_GetError());
+  }
 
   window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED,
                             SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT,
@@ -312,4 +318,24 @@ double time_since_last_tick(void) {
                           : 0.0; // return 0 the first time this is called
   last_clock = now;
   return difference;
+}
+
+void sdl_play_music(const char *path) {
+  if (!background_music) {
+    background_music = Mix_LoadMUS(path);
+    if (!background_music) {
+      SDL_Log("Mix_LoadMUS: %s", Mix_GetError());
+      return;
+    }
+  }
+  Mix_PlayMusic(background_music, -1);
+}
+
+// added by Natalie
+void sdl_quit() {
+  if (background_music) {
+    Mix_FreeMusic(background_music);
+    Mix_CloseAudio();
+    SDL_Quit();
+  }
 }
