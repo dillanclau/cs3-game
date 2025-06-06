@@ -37,6 +37,15 @@ typedef struct spirit_asset {
   body_t *body;
 } spirit_asset_t;
 
+typedef struct anim_asset {
+  asset_t base;
+  SDL_Texture *curr_texture;
+  SDL_Texture *frame1_texture;
+  SDL_Texture *frame2_texture;
+  SDL_Texture *frame3_texture;
+  body_t *body;
+} anim_asset_t;
+
 /**
  * Allocates memory for an asset with the given parameters.
  *
@@ -62,7 +71,9 @@ static asset_t *asset_init(asset_type_t ty, SDL_Rect bounding_box) {
   case ASSET_SPIRIT:
     new = malloc(sizeof(spirit_asset_t));
     break;
-    // case
+  case ASSET_ANIM:
+    new = malloc(sizeof(anim_asset_t));
+    break;
   }
   assert(new);
   new->type = ty;
@@ -100,7 +111,11 @@ void asset_make_text(const char *filepath, SDL_Rect bounding_box,
 // new asset for the spirit
 void asset_make_spirit(const char *front_filepath, const char *left_filepath,
                        const char *right_filepath, body_t *body) {
+<<<<<<< HEAD
+  SDL_Rect bounding_box = (SDL_Rect){.x = 0, .y = 0, .w = 0, .h = 0};
+=======
   SDL_Rect bounding_box = {.x = 0, .y = 0, .w = 0, .h = 0};
+>>>>>>> origin
   asset_t *asset = asset_init(ASSET_SPIRIT, bounding_box);
   spirit_asset_t *spirit_asset = (spirit_asset_t *)asset;
   spirit_asset->front_texture =
@@ -112,6 +127,25 @@ void asset_make_spirit(const char *front_filepath, const char *left_filepath,
   spirit_asset->curr_texture = spirit_asset->front_texture;
   spirit_asset->body = body;
   list_add(ASSET_LIST, (asset_t *)spirit_asset);
+<<<<<<< HEAD
+}
+
+void asset_make_anim(const char *frame1_filepath, const char *frame2_filepath,
+                     const char *frame3_filepath, body_t *body) {
+  SDL_Rect bounding_box = (SDL_Rect){.x = 0, .y = 0, .w = 0, .h = 0};
+  asset_t *asset = asset_init(ASSET_ANIM, bounding_box);
+  anim_asset_t *anim_asset = (anim_asset_t *)asset;
+  anim_asset->frame1_texture =
+      asset_cache_obj_get_or_create(ASSET_IMAGE, frame1_filepath);
+  anim_asset->frame2_texture =
+      asset_cache_obj_get_or_create(ASSET_IMAGE, frame2_filepath);
+  anim_asset->frame3_texture =
+      asset_cache_obj_get_or_create(ASSET_IMAGE, frame3_filepath);
+  anim_asset->curr_texture = anim_asset->frame1_texture;
+  anim_asset->body = body;
+  list_add(ASSET_LIST, (asset_t *)anim_asset);
+=======
+>>>>>>> origin
 }
 
 void asset_change_texture(asset_t *asset, char key) {
@@ -128,6 +162,25 @@ void asset_change_texture(asset_t *asset, char key) {
   case UP_ARROW:
     spirit_asset->curr_texture = spirit_asset->front_texture;
     break;
+<<<<<<< HEAD
+  }
+}
+
+void asset_animate(asset_t *asset, double time) {
+  // pass in the key instead
+  // assert(asset->type == ASSET_ANIM);
+  if (asset->type == ASSET_ANIM) {
+    anim_asset_t *anim_asset = (anim_asset_t *)asset;
+    int val = ((int)floor(time) / 1) % 3;
+    if (val == 0) {
+      anim_asset->curr_texture = anim_asset->frame1_texture;
+    } else if (val == 1) {
+      anim_asset->curr_texture = anim_asset->frame2_texture;
+    } else {
+      anim_asset->curr_texture = anim_asset->frame3_texture;
+    }
+=======
+>>>>>>> origin
   }
 }
 
@@ -180,6 +233,16 @@ void asset_render(asset_t *asset) {
     }
     sdl_render_image(spirit_asset->curr_texture, &box);
     break;
+<<<<<<< HEAD
+  case ASSET_ANIM:
+    anim_asset_t *anim_asset = (anim_asset_t *)asset;
+    if (anim_asset->body != NULL) {
+      box = sdl_get_body_bounding_box(anim_asset->body);
+    }
+    sdl_render_image(anim_asset->curr_texture, &box);
+    break;
+=======
+>>>>>>> origin
   }
 }
 
