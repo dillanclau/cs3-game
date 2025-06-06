@@ -101,13 +101,14 @@ size_t LAVA2[4][4] = {{500, 15, 160, LAVA_WIDTH},
 
 size_t LAVA3[1][4] = {{500, 15, 160, LAVA_WIDTH}};
 
-const size_t WATER_NUM[NUM_MAP] = {2, 0, 0};
+const size_t WATER_NUM[NUM_MAP] = {2, 2, 0};
 size_t WATER1[2][4] = {{500, 210, 165, LAVA_WIDTH},
                       {220, 210, 120, LAVA_WIDTH}};
 
-size_t WATER2[4][4] = {};
+size_t WATER2[2][4] = {{300, 300, 120, LAVA_WIDTH},
+                      {110, 90, 100, LAVA_WIDTH}};
 
-// size_t LAVA3[1][4] = {};
+// size_t WATER3[1][4] = {};
 
 const size_t DOOR_NUM[NUM_MAP] = {3, 0, 0};
 size_t DOORS[3][4] = {{60, 458, INNER_RADIUS * 3, OUTER_RADIUS * 3},
@@ -389,7 +390,8 @@ void make_level1(state_t *state) {
   size_t water_len = WATER_NUM[0];
   for (size_t i = 0; i < water_len; i++) {
     vector_t coord = (vector_t){WATER1[i][0], WATER1[i][1]};
-    body_t *obstacle = make_obstacle(WATER1[i][2], WATER1[i][3], coord, "water");
+    body_t *obstacle =
+        make_obstacle(WATER1[i][2], WATER1[i][3], coord, "water");
     scene_add_body(state->scene, obstacle);
     asset_make_anim(WATER1_PATH, WATER2_PATH, WATER3_PATH, obstacle);
   }
@@ -448,6 +450,15 @@ void make_level2(state_t *state) {
     create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
                      NULL, 0, NULL);
     asset_make_anim(LAVA1_PATH, LAVA2_PATH, LAVA3_PATH, obstacle);
+  }
+
+  size_t water_len = WATER_NUM[1];
+  for (size_t i = 0; i < water_len; i++) {
+    vector_t coord = (vector_t){WATER2[i][0], WATER2[i][1]};
+    body_t *obstacle =
+        make_obstacle(WATER2[i][2], WATER2[i][3], coord, "water");
+    scene_add_body(state->scene, obstacle);
+    asset_make_anim(WATER1_PATH, WATER2_PATH, WATER3_PATH, obstacle);
   }
 
   // make gem
@@ -828,8 +839,8 @@ state_t *emscripten_init() {
                     spirit);
 
   // make level
-  make_level1(state);
-  // make_level2(state);
+  // make_level1(state);
+  make_level2(state);
   // make_level3(state);
 
   // make water
