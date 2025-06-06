@@ -49,7 +49,7 @@ void asset_make_text(const char *filepath, SDL_Rect bounding_box,
 /**
  * Allocates memory for a spirit asset with the given parameters and adds it
  * to the internal asset list.
- * 
+ *
  * @param front_filepath filepath to .png for front view of spirit
  * @param left_filepath filepath to .png for left view of spirit
  * @param right_filepath filepath to lpng for right view of spirit
@@ -58,9 +58,9 @@ void asset_make_text(const char *filepath, SDL_Rect bounding_box,
 void asset_make_spirit(const char *front_filepath, const char *left_filepath,
                        const char *right_filepath, body_t *body);
 /**
- * Allocates memory for an animation asset with the given parameters and 
+ * Allocates memory for an animation asset with the given parameters and
  * adds it to the internal asset list.
- * 
+ *
  * @param frame1_filepath filepath to .png for front view of spirit
  * @param frame2_filepath filepath to .png for left view of spirit
  * @param frame3_filepath filepath to lpng for right view of spirit
