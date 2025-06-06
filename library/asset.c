@@ -42,6 +42,7 @@ typedef struct anim_asset {
   SDL_Texture *curr_texture;
   SDL_Texture *frame1_texture;
   SDL_Texture *frame2_texture;
+  SDL_Texture *frame3_texture;
   body_t *body;
 } anim_asset_t;
 
@@ -125,7 +126,7 @@ void asset_make_spirit(const char *front_filepath, const char *left_filepath,
 }
 
 void asset_make_anim(const char *frame1_filepath, const char *frame2_filepath,
-                     body_t *body) {
+                     const char *frame3_filepath, body_t *body) {
   SDL_Rect bounding_box = (SDL_Rect){.x = 0, .y = 0, .w = 0, .h = 0};
   asset_t *asset = asset_init(ASSET_ANIM, bounding_box);
   anim_asset_t *anim_asset = (anim_asset_t *)asset;
@@ -133,6 +134,8 @@ void asset_make_anim(const char *frame1_filepath, const char *frame2_filepath,
       asset_cache_obj_get_or_create(ASSET_IMAGE, frame1_filepath);
   anim_asset->frame2_texture =
       asset_cache_obj_get_or_create(ASSET_IMAGE, frame2_filepath);
+      anim_asset->frame3_texture =
+      asset_cache_obj_get_or_create(ASSET_IMAGE, frame3_filepath);
   anim_asset->curr_texture = anim_asset->frame1_texture;
   anim_asset->body = body;
   list_add(ASSET_LIST, (asset_t *)anim_asset);
@@ -160,10 +163,13 @@ void asset_animate(asset_t *asset, double time) {
   // assert(asset->type == ASSET_ANIM);
   if (asset->type == ASSET_ANIM) {
     anim_asset_t *anim_asset = (anim_asset_t *)asset;
-    if (((int)floor(time) / 1) % 2 == 0) {
+    int val = ((int)floor(time) / 1) % 3;
+    if (val == 0) {
       anim_asset->curr_texture = anim_asset->frame1_texture;
-    } else {
+    } else if (val == 1) {
       anim_asset->curr_texture = anim_asset->frame2_texture;
+    }else{
+      anim_asset->curr_texture = anim_asset->frame3_texture;
     }
   }
 }

@@ -88,7 +88,7 @@ size_t BRICKS3[12][4] = {{50, 390, 100, BRICK_WIDTH},  // where the door is
                          {750, 250, 30, 500}};
 
 const size_t LAVA_WIDTH = 11;
-const size_t LAVA_NUM[NUM_MAP] = {4, 4, 0};
+const size_t LAVA_NUM[NUM_MAP] = {4, 4, 1};
 size_t LAVA1[4][4] = {{180, 15, 165, LAVA_WIDTH},
                       {500, 85, 165, LAVA_WIDTH},
                       {500, 310, 100, LAVA_WIDTH},
@@ -98,6 +98,8 @@ size_t LAVA2[4][4] = {{500, 15, 160, LAVA_WIDTH},
                       {580, 140, 80, LAVA_WIDTH},
                       {510, 400, 60, LAVA_WIDTH},
                       {390, 400, 60, LAVA_WIDTH}};
+
+size_t LAVA3[1][4] = {{500, 15, 160, LAVA_WIDTH}};
 
 const size_t DOOR_NUM[NUM_MAP] = {3, 0, 0};
 size_t DOORS[3][4] = {{60, 458, INNER_RADIUS * 3, OUTER_RADIUS * 3},
@@ -109,7 +111,6 @@ size_t ELEVATOR2[1][4] = {{50, 220, 70, BRICK_WIDTH}};
 const size_t GEM_NUM[3] = {3, 3, 0};
 const size_t GEM1[3][2] = {{180, 100}, {560, 450}, {375, 325}};
 const size_t GEM2[3][2] = {{120, 100}, {430, 310}, {450, 410}};
-
 
 const int16_t H_STEP = 507;
 const int16_t V_STEP = 30;
@@ -144,6 +145,10 @@ const char *GREEN_GEM_PATH = "assets/green_gem.png";
 const char *EXIT_DOOR_PATH = "assets/exit_door.png";
 const char *LAVA1_PATH = "assets/lavaframe1.png";
 const char *LAVA2_PATH = "assets/lavaframe2.png";
+const char *LAVA3_PATH = "assets/lavaframe3.png";
+const char *WATER1_PATH = "assets/waterframe1.png";
+const char *WATER2_PATH = "assets/waterframe2.png";
+const char *WATER3_PATH = "assets/waterframe3.png";
 
 typedef enum {
   LEVEL1 = 1,
@@ -364,11 +369,13 @@ void make_level1(state_t *state) {
   size_t lava_len = LAVA_NUM[0];
   for (size_t i = 0; i < lava_len; i++) {
     vector_t coord = (vector_t){LAVA1[i][0], LAVA1[i][1]};
+    
     body_t *obstacle = make_obstacle(LAVA1[i][2], LAVA1[i][3], coord, "lava");
     scene_add_body(state->scene, obstacle);
     create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
-                     NULL, 0, NULL);
-    asset_make_anim(LAVA1_PATH, LAVA2_PATH, obstacle);
+                    NULL, 0, NULL);
+    asset_make_anim(LAVA1_PATH, LAVA2_PATH, LAVA3_PATH, obstacle);
+    
   }
 
   // make gem
@@ -425,7 +432,7 @@ void make_level2(state_t *state) {
     scene_add_body(state->scene, obstacle);
     create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
                      NULL, 0, NULL);
-    asset_make_anim(LAVA1_PATH, LAVA2_PATH, obstacle);
+    asset_make_anim(LAVA1_PATH, LAVA2_PATH, LAVA3_PATH, obstacle);
   }
 
   // make gem
@@ -460,6 +467,17 @@ void make_level3(state_t *state) {
                      NULL, 0, NULL);
     asset_make_image_with_body(BRICK_PATH, obstacle);
   }
+
+  size_t lava_len = LAVA_NUM[2];
+  for (size_t i = 0; i < lava_len; i++) {
+    vector_t coord = (vector_t){LAVA3[i][0], LAVA3[i][1]};
+    body_t *obstacle = make_obstacle(LAVA3[i][2], LAVA3[i][3], coord, "lava");
+    scene_add_body(state->scene, obstacle);
+    create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
+                     NULL, 0, NULL);
+    asset_make_anim(LAVA1_PATH, LAVA2_PATH, LAVA3_PATH, obstacle);
+  }
+
   // make door
   vector_t coord = (vector_t){DOORS[2][0], DOORS[2][1]};
   body_t *door = make_obstacle(DOORS[2][2], DOORS[2][3], coord, "door");
@@ -795,8 +813,8 @@ state_t *emscripten_init() {
                     spirit);
 
   // make level
-  // make_level1(state);
-  make_level2(state);
+  make_level1(state);
+  // make_level2(state);
   // make_level3(state);
 
   // make water
