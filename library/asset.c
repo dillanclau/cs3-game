@@ -111,7 +111,11 @@ void asset_make_text(const char *filepath, SDL_Rect bounding_box,
 // new asset for the spirit
 void asset_make_spirit(const char *front_filepath, const char *left_filepath,
                        const char *right_filepath, body_t *body) {
+<<<<<<< HEAD
   SDL_Rect bounding_box = (SDL_Rect){.x = 0, .y = 0, .w = 0, .h = 0};
+=======
+  SDL_Rect bounding_box = {.x = 0, .y = 0, .w = 0, .h = 0};
+>>>>>>> origin
   asset_t *asset = asset_init(ASSET_SPIRIT, bounding_box);
   spirit_asset_t *spirit_asset = (spirit_asset_t *)asset;
   spirit_asset->front_texture =
@@ -123,6 +127,7 @@ void asset_make_spirit(const char *front_filepath, const char *left_filepath,
   spirit_asset->curr_texture = spirit_asset->front_texture;
   spirit_asset->body = body;
   list_add(ASSET_LIST, (asset_t *)spirit_asset);
+<<<<<<< HEAD
 }
 
 void asset_make_anim(const char *frame1_filepath, const char *frame2_filepath,
@@ -139,6 +144,8 @@ void asset_make_anim(const char *frame1_filepath, const char *frame2_filepath,
   anim_asset->curr_texture = anim_asset->frame1_texture;
   anim_asset->body = body;
   list_add(ASSET_LIST, (asset_t *)anim_asset);
+=======
+>>>>>>> origin
 }
 
 void asset_change_texture(asset_t *asset, char key) {
@@ -155,6 +162,7 @@ void asset_change_texture(asset_t *asset, char key) {
   case UP_ARROW:
     spirit_asset->curr_texture = spirit_asset->front_texture;
     break;
+<<<<<<< HEAD
   }
 }
 
@@ -171,6 +179,8 @@ void asset_animate(asset_t *asset, double time) {
     } else {
       anim_asset->curr_texture = anim_asset->frame3_texture;
     }
+=======
+>>>>>>> origin
   }
 }
 
@@ -223,6 +233,7 @@ void asset_render(asset_t *asset) {
     }
     sdl_render_image(spirit_asset->curr_texture, &box);
     break;
+<<<<<<< HEAD
   case ASSET_ANIM:
     anim_asset_t *anim_asset = (anim_asset_t *)asset;
     if (anim_asset->body != NULL) {
@@ -230,6 +241,8 @@ void asset_render(asset_t *asset) {
     }
     sdl_render_image(anim_asset->curr_texture, &box);
     break;
+=======
+>>>>>>> origin
   }
 }
 
