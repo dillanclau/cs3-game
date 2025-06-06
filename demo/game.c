@@ -44,6 +44,7 @@ size_t RED_THRESHOLD = 25;
 size_t ORANGE_THRESHOLD = 50;
 size_t GREEN_THRESHOLD = 75;
 
+
 // x, y, w, h
 // Bricks for Map 1
 size_t BRICKS1[14][4] = {{375, -500, 750, 30},
@@ -121,9 +122,10 @@ const size_t GEM1[3][2] = {{180, 100}, {560, 450}, {375, 325}};
 const size_t GEM2[3][2] = {{120, 100}, {430, 310}, {450, 410}};
 const size_t GEM3[3][2] = {{670, 390}, {580, 250}, {135, 345}};
 
-const int16_t H_STEP = 507;
-const int16_t V_STEP = 30;
-const size_t ROWS = 50;
+const vector_t CLOCK_POS = {.x=375, .y=10};
+const color_t CLOCK_COL = {1, 1, .5};
+const size_t TEXT_SIZE = 14;
+const size_t TEXT_HEIGHT_SCALE = 2;
 
 const size_t BODY_ASSETS = 2;
 
@@ -830,10 +832,6 @@ collision_type_t collision(state_t *state) {
   return res;
 }
 
-// change this to be better later
-const size_t TEXT_SIZE = 50;
-const size_t TEXT_HEIGHT_SCALE = 2;
-
 vector_t get_dimensions_for_text(char *text) {
   return (vector_t){strlen(text) * TEXT_SIZE, TEXT_SIZE * TEXT_HEIGHT_SCALE};
 }
@@ -866,25 +864,16 @@ state_t *emscripten_init() {
                     spirit);
 
   // make level
-  // make_level1(state);
-  make_level2(state);
+  make_level1(state);
+  // make_level2(state);
   // make_level3(state);
 
-  // try to do timer
-  // char text[100];
-  // sprintf(text, "Clock:  %.0f", floor(state->time));
-  // SDL_Rect box = {.x=365, .y=700, .w=100, .h=50};
-  // char *text = "Clock: 0";
-
-  asset_make_text(FONT_FILEPATH,
-                  (SDL_Rect){.x = 365, .y = 700, .w = 200, .h = 100}, "HELLO",
-                  TEXT_COLOR);
-  // vector_t text_dim = get_dimensions_for_text(text);
-  //   SDL_Rect text_box =
-  //       (SDL_Rect){.x = 365, .y = 365, .w = text_dim.x, .h = text_dim.y};
-  // asset_make_text(FONT_FILEPATH, text_box, text, TEXT_COLOR);
-  // // list_add(meme, text_asset);
-  // printf("%s\n", "help");
+  char text[10000];
+  sprintf(text, "Clock%.0f", floor(state->time));
+  vector_t text_dim = get_dimensions_for_text(text);
+  SDL_Rect text_box =
+        (SDL_Rect){.x=CLOCK_POS.x - (text_dim.x/2), .y=CLOCK_POS.y, .w = text_dim.x, .h = text_dim.y};
+  asset_make_text(FONT_FILEPATH, text_box, text, CLOCK_COL);
   sdl_on_key((key_handler_t)on_key);
 
   return state;
@@ -895,7 +884,8 @@ bool emscripten_main(state_t *state) {
   sdl_clear();
   sdl_render_scene(state->scene);
   list_t *body_assets = asset_get_asset_list();
-  for (size_t i = 0; i < list_size(body_assets); i++) {
+  size_t len = list_size(body_assets);
+  for (size_t i = 0; i < len; i++) {
     asset_t *asset = list_get(body_assets, i);
     asset_animate(asset, state->time);
     asset_render(list_get(body_assets, i));
@@ -916,20 +906,15 @@ bool emscripten_main(state_t *state) {
                                          spirit_velocity.y - (GRAVITY * dt)});
   }
 
-  list_t* asset_list = asset_get_asset_list();
-  size_t len = list_size(asset_list);
-  asset_t *clock = list_get(asset_list, len-1);
+  // clock
+  asset_t *clock = list_get(body_assets, len - 1);
   asset_destroy(clock);
-
-  // char text[100];
-  // sprintf(text, "Clock:  %.0f", floor(state->time));
-  // SDL_Rect box = {.x=365, .y=700, .w=100, .h=50};
-  // char *text = "Clock: 0";
-  // vector_t text_dim = get_dimensions_for_text(text);
-  //   SDL_Rect text_box =
-  //       (SDL_Rect){.x = 365, .y = 700, .w = text_dim.x, .h = text_dim.y};
-  // asset_make_text(FONT_FILEPATH, text_box, text, OBS_COLOR);
-  
+  char text[10000];
+  sprintf(text, "Clock:%.0f", floor(state->time));;
+  vector_t text_dim = get_dimensions_for_text(text);
+  SDL_Rect text_box =
+        (SDL_Rect){.x=CLOCK_POS.x - (text_dim.x/2), .y=CLOCK_POS.y, .w = text_dim.x, .h = text_dim.y};
+  asset_make_text(FONT_FILEPATH, text_box, text, CLOCK_COL);
 
   state->time += dt;
 
