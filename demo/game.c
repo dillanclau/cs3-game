@@ -244,7 +244,7 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
                         double force_const) {
   reset_user(body1);
   // asset_make_image(GAME_OVER_PATH,
-                  //  (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
+  //  (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
 }
 
 // TODO: jumping velocity implementation matters for when platofrm elevator
@@ -462,10 +462,9 @@ void go_to_homepage(state_t *state) {
                   (SDL_Rect){.x = 200, .y = 350, .w = 300, .h = 50},
                   "Press 3 to go to Level 3", TEXT_COLOR);
   SDL_Rect level_gem_box[3] = {
-    (SDL_Rect){.x = 100, .y = 500, .w = 50, .h = 50},
-    (SDL_Rect){.x = 200, .y = 500, .w = 50, .h = 50},
-    (SDL_Rect){.x = 300, .y = 500, .w = 50, .h = 50}
-  };
+      (SDL_Rect){.x = 100, .y = 500, .w = 50, .h = 50},
+      (SDL_Rect){.x = 200, .y = 500, .w = 50, .h = 50},
+      (SDL_Rect){.x = 300, .y = 500, .w = 50, .h = 50}};
   for (size_t i = 0; i < NUMBER_OF_LEVELS; i++) {
     if (state->level_points[i] > GREEN_THRESHOLD) {
       asset_make_image(GREEN_GEM_PATH, level_gem_box[i]);
