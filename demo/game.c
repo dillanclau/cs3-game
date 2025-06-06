@@ -835,7 +835,7 @@ vector_t get_dimensions_for_text(char *text) {
   return (vector_t){strlen(text) * TEXT_SIZE, TEXT_SIZE * TEXT_HEIGHT_SCALE};
 }
 
-void make_clock(state_t *state){
+void make_clock(state_t *state) {
   char text[10000];
   sprintf(text, "Clock:%.0f", floor(state->time));
   vector_t text_dim = get_dimensions_for_text(text);
@@ -879,7 +879,7 @@ state_t *emscripten_init() {
   make_level3(state);
 
   make_clock(state);
-  
+
   sdl_on_key((key_handler_t)on_key);
 
   return state;

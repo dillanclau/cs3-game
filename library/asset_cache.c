@@ -91,6 +91,8 @@ void asset_cache_destroy() { list_free(ASSET_CACHE); }
 //   return new_entry->obj;
 // }
 
+//using olivias code instead but i think the previous one works to
+
 void *asset_exists(const char *filepath) {
   size_t len = list_size(ASSET_CACHE);
   for (size_t i = 0; i < len; i++) {
