@@ -101,6 +101,14 @@ size_t LAVA2[4][4] = {{500, 15, 160, LAVA_WIDTH},
 
 size_t LAVA3[1][4] = {{500, 15, 160, LAVA_WIDTH}};
 
+const size_t WATER_NUM[NUM_MAP] = {2, 0, 0};
+size_t WATER1[2][4] = {{500, 210, 165, LAVA_WIDTH},
+                      {220, 210, 120, LAVA_WIDTH}};
+
+size_t WATER2[4][4] = {};
+
+// size_t LAVA3[1][4] = {};
+
 const size_t DOOR_NUM[NUM_MAP] = {3, 0, 0};
 size_t DOORS[3][4] = {{60, 458, INNER_RADIUS * 3, OUTER_RADIUS * 3},
                       {60, 424, INNER_RADIUS * 3, OUTER_RADIUS * 3},
@@ -369,17 +377,24 @@ void make_level1(state_t *state) {
   size_t lava_len = LAVA_NUM[0];
   for (size_t i = 0; i < lava_len; i++) {
     vector_t coord = (vector_t){LAVA1[i][0], LAVA1[i][1]};
-    
+
     body_t *obstacle = make_obstacle(LAVA1[i][2], LAVA1[i][3], coord, "lava");
     scene_add_body(state->scene, obstacle);
     create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
-                    NULL, 0, NULL);
+                     NULL, 0, NULL);
     asset_make_anim(LAVA1_PATH, LAVA2_PATH, LAVA3_PATH, obstacle);
-    
+  }
+
+  // make water
+  size_t water_len = WATER_NUM[0];
+  for (size_t i = 0; i < water_len; i++) {
+    vector_t coord = (vector_t){WATER1[i][0], WATER1[i][1]};
+    body_t *obstacle = make_obstacle(WATER1[i][2], WATER1[i][3], coord, "water");
+    scene_add_body(state->scene, obstacle);
+    asset_make_anim(WATER1_PATH, WATER2_PATH, WATER3_PATH, obstacle);
   }
 
   // make gem
-  // vector_t center = (vector_t){.x = 100, .y = 100};
   size_t gem_len = GEM_NUM[0];
   for (size_t i = 0; i < gem_len; i++) {
     vector_t center = (vector_t){GEM1[i][0], GEM1[i][1]};

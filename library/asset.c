@@ -134,7 +134,7 @@ void asset_make_anim(const char *frame1_filepath, const char *frame2_filepath,
       asset_cache_obj_get_or_create(ASSET_IMAGE, frame1_filepath);
   anim_asset->frame2_texture =
       asset_cache_obj_get_or_create(ASSET_IMAGE, frame2_filepath);
-      anim_asset->frame3_texture =
+  anim_asset->frame3_texture =
       asset_cache_obj_get_or_create(ASSET_IMAGE, frame3_filepath);
   anim_asset->curr_texture = anim_asset->frame1_texture;
   anim_asset->body = body;
@@ -168,7 +168,7 @@ void asset_animate(asset_t *asset, double time) {
       anim_asset->curr_texture = anim_asset->frame1_texture;
     } else if (val == 1) {
       anim_asset->curr_texture = anim_asset->frame2_texture;
-    }else{
+    } else {
       anim_asset->curr_texture = anim_asset->frame3_texture;
     }
   }
