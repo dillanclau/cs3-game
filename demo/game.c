@@ -89,10 +89,10 @@ size_t BRICKS3[12][4] = {{50, 390, 100, BRICK_WIDTH},  // where the door is
 
 const size_t LAVA_WIDTH = 11;
 const size_t LAVA_NUM[NUM_MAP] = {4, 0, 0};
-size_t LAVA1[4][4] = {{180, 20, 165, LAVA_WIDTH},
-                      {500, 90, 165, LAVA_WIDTH},
+size_t LAVA1[4][4] = {{180, 15, 165, LAVA_WIDTH},
+                      {500, 85, 165, LAVA_WIDTH},
                       {500, 310, 100, LAVA_WIDTH},
-                      {250, 310, 175, LAVA_WIDTH}};
+                      {252, 310, 160, LAVA_WIDTH}};
 
 const size_t DOOR_NUM[NUM_MAP] = {3, 0, 0};
 size_t DOORS[3][4] = {{60, 458, INNER_RADIUS * 3, OUTER_RADIUS * 3},
@@ -100,6 +100,9 @@ size_t DOORS[3][4] = {{60, 458, INNER_RADIUS * 3, OUTER_RADIUS * 3},
                       {60, 424, INNER_RADIUS * 3, OUTER_RADIUS * 3}};
 
 size_t ELEVATOR2[1][4] = {{50, 220, 70, BRICK_WIDTH}};
+
+size_t GEM_NUM[3] = {3, 0, 0};
+size_t GEM1[3][2] = {{180, 100}, {560, 450}, {375, 325}};
 
 const int16_t H_STEP = 507;
 const int16_t V_STEP = 30;
@@ -244,8 +247,8 @@ void reset_user(body_t *body) { body_set_centroid(body, START_POS); }
 void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
                         double force_const) {
   reset_user(body1);
-  // asset_make_image(GAME_OVER_PATH, (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
-  // if (state->current_screen == LEVEL1) {
+  // asset_make_image(GAME_OVER_PATH, (SDL_Rect){.x = 100, .y = 50, .w = 550, .h
+  // = 400}); if (state->current_screen == LEVEL1) {
   //   state->level_points[0] = 0;
   // } else if (state->current_screen == LEVEL2) {
   //   state->level_points[1] = 0;
@@ -299,6 +302,7 @@ void elevator_user_handler(body_t *body1, body_t *body2, vector_t axis,
 void gem_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
                       double force_const) {
   // reset_user(body1);
+  // do the points and stuff
   body_remove(body2);
 }
 
@@ -361,12 +365,16 @@ void make_level1(state_t *state) {
   }
 
   // make gem
-  vector_t center = (vector_t){.x = 100, .y = 100};
-  body_t *gem = make_gem(OUTER_RADIUS, INNER_RADIUS, center);
-  scene_add_body(state->scene, gem);
-  create_collision(state->scene, state->spirit, gem, gem_user_handler, NULL, 0,
-                   NULL);
-  asset_make_image_with_body(GEM_PATH, gem);
+  // vector_t center = (vector_t){.x = 100, .y = 100};
+  size_t gem_len = GEM_NUM[0];
+  for (size_t i = 0; i < gem_len; i++) {
+    vector_t center = (vector_t) {GEM1[i][0], GEM1[i][1]};
+    body_t *gem = make_gem(OUTER_RADIUS, INNER_RADIUS, center);
+    scene_add_body(state->scene, gem);
+    create_collision(state->scene, state->spirit, gem, gem_user_handler, NULL, 0,
+                    NULL);
+    asset_make_image_with_body(GEM_PATH, gem);
+  }
 
   // make door
   vector_t coord = (vector_t){DOORS[0][0], DOORS[0][1]};
@@ -469,10 +477,9 @@ void go_to_homepage(state_t *state) {
                   (SDL_Rect){.x = 200, .y = 350, .w = 300, .h = 50},
                   "Press 3 to go to Level 3", TEXT_COLOR);
   SDL_Rect level_gem_box[3] = {
-    (SDL_Rect){.x = 100, .y = 500, .w = 50, .h = 50},
-    (SDL_Rect){.x = 200, .y = 500, .w = 50, .h = 50},
-    (SDL_Rect){.x = 300, .y = 500, .w = 50, .h = 50}
-  };
+      (SDL_Rect){.x = 100, .y = 500, .w = 50, .h = 50},
+      (SDL_Rect){.x = 200, .y = 500, .w = 50, .h = 50},
+      (SDL_Rect){.x = 300, .y = 500, .w = 50, .h = 50}};
   for (size_t i = 0; i < NUMBER_OF_LEVELS; i++) {
     if (state->level_points[i] > GREEN_THRESHOLD) {
       asset_make_image(GREEN_GEM_PATH, level_gem_box[i]);
@@ -780,7 +787,6 @@ bool emscripten_main(state_t *state) {
   }
   // body_t *elevator = scene_get_body(state->scene, 1);
   // move_elevator(elevator);
-
 
   state->collision_type = collision(state);
 

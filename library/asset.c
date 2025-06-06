@@ -125,7 +125,7 @@ void asset_make_spirit(const char *front_filepath, const char *left_filepath,
 }
 
 void asset_make_anim(const char *frame1_filepath, const char *frame2_filepath,
-                      body_t *body) {
+                     body_t *body) {
   SDL_Rect bounding_box = (SDL_Rect){.x = 0, .y = 0, .w = 0, .h = 0};
   asset_t *asset = asset_init(ASSET_ANIM, bounding_box);
   anim_asset_t *anim_asset = (anim_asset_t *)asset;
@@ -158,7 +158,7 @@ void asset_change_texture(asset_t *asset, char key) {
 void asset_animate(asset_t *asset, double time) {
   // pass in the key instead
   // assert(asset->type == ASSET_ANIM);
-  if (asset->type == ASSET_ANIM){
+  if (asset->type == ASSET_ANIM) {
     anim_asset_t *anim_asset = (anim_asset_t *)asset;
     if (((int)floor(time) / 1) % 2 == 0) {
       anim_asset->curr_texture = anim_asset->frame1_texture;
@@ -166,7 +166,6 @@ void asset_animate(asset_t *asset, double time) {
       anim_asset->curr_texture = anim_asset->frame2_texture;
     }
   }
-  
 }
 
 void asset_reset_asset_list() {
