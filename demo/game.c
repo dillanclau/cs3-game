@@ -94,7 +94,7 @@ size_t LAVA1[4][4] = {{180, 15, 165, LAVA_WIDTH},
                       {500, 310, 100, LAVA_WIDTH},
                       {252, 310, 160, LAVA_WIDTH}};
 
-size_t LAVA2[4][4] = {{500, 15, 160, LAVA_WIDTH}, 
+size_t LAVA2[4][4] = {{500, 15, 160, LAVA_WIDTH},
                       {580, 140, 80, LAVA_WIDTH},
                       {510, 400, 60, LAVA_WIDTH},
                       {390, 400, 60, LAVA_WIDTH}};
@@ -106,8 +106,10 @@ size_t DOORS[3][4] = {{60, 458, INNER_RADIUS * 3, OUTER_RADIUS * 3},
 
 size_t ELEVATOR2[1][4] = {{50, 220, 70, BRICK_WIDTH}};
 
-size_t GEM_NUM[3] = {3, 0, 0};
-size_t GEM1[3][2] = {{180, 100}, {560, 450}, {375, 325}};
+const size_t GEM_NUM[3] = {3, 3, 0};
+const size_t GEM1[3][2] = {{180, 100}, {560, 450}, {375, 325}};
+const size_t GEM2[3][2] = {{120, 100}, {430, 310}, {450, 410}};
+
 
 const int16_t H_STEP = 507;
 const int16_t V_STEP = 30;
@@ -430,7 +432,7 @@ void make_level2(state_t *state) {
   // vector_t center = (vector_t){.x = 100, .y = 100};
   size_t gem_len = GEM_NUM[1];
   for (size_t i = 0; i < gem_len; i++) {
-    vector_t center = (vector_t){GEM1[i][0], GEM1[i][1]};
+    vector_t center = (vector_t){GEM2[i][0], GEM2[i][1]};
     body_t *gem = make_gem(OUTER_RADIUS, INNER_RADIUS, center);
     scene_add_body(state->scene, gem);
     create_collision(state->scene, state->spirit, gem, gem_user_handler, NULL,
