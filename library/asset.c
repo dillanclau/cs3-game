@@ -176,7 +176,7 @@ void asset_render(asset_t *asset) {
     break;
   case ASSET_BUTTON:
     button_asset_t *button_asset = (button_asset_t *)asset;
-    if (button_asset->body != NULL)  {
+    if (button_asset->body != NULL) {
       box = sdl_get_body_bounding_box(button_asset->body);
     }
     sdl_render_image(button_asset->curr_texture, &box);
