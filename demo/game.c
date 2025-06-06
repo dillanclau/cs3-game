@@ -88,7 +88,7 @@ size_t BRICKS3[12][4] = {{50, 390, 100, BRICK_WIDTH},  // where the door is
                          {750, 250, 30, 500}};
 
 const size_t LAVA_WIDTH = 11;
-const size_t LAVA_NUM[NUM_MAP] = {4, 4, 1};
+const size_t LAVA_NUM[NUM_MAP] = {4, 4, 2};
 size_t LAVA1[4][4] = {{180, 15, 165, LAVA_WIDTH},
                       {500, 85, 165, LAVA_WIDTH},
                       {500, 310, 100, LAVA_WIDTH},
@@ -99,16 +99,17 @@ size_t LAVA2[4][4] = {{500, 15, 160, LAVA_WIDTH},
                       {510, 400, 60, LAVA_WIDTH},
                       {390, 400, 60, LAVA_WIDTH}};
 
-size_t LAVA3[1][4] = {{500, 15, 160, LAVA_WIDTH}};
+size_t LAVA3[2][4] = {{500, 15, 120, LAVA_WIDTH},
+                      {225, 240, 50, LAVA_WIDTH}};
 
-const size_t WATER_NUM[NUM_MAP] = {2, 2, 0};
+const size_t WATER_NUM[NUM_MAP] = {2, 2, 2};
 size_t WATER1[2][4] = {{500, 210, 165, LAVA_WIDTH},
-                      {220, 210, 120, LAVA_WIDTH}};
+                       {220, 210, 120, LAVA_WIDTH}};
 
-size_t WATER2[2][4] = {{300, 300, 120, LAVA_WIDTH},
-                      {110, 90, 100, LAVA_WIDTH}};
+size_t WATER2[2][4] = {{300, 300, 120, LAVA_WIDTH}, {110, 90, 100, LAVA_WIDTH}};
 
-// size_t WATER3[1][4] = {};
+size_t WATER3[2][4] = {{280, 15, 160, LAVA_WIDTH},
+                      {670, 380, 70, LAVA_WIDTH}};
 
 const size_t DOOR_NUM[NUM_MAP] = {3, 0, 0};
 size_t DOORS[3][4] = {{60, 458, INNER_RADIUS * 3, OUTER_RADIUS * 3},
@@ -117,9 +118,10 @@ size_t DOORS[3][4] = {{60, 458, INNER_RADIUS * 3, OUTER_RADIUS * 3},
 
 size_t ELEVATOR2[1][4] = {{50, 220, 70, BRICK_WIDTH}};
 
-const size_t GEM_NUM[3] = {3, 3, 0};
+const size_t GEM_NUM[3] = {3, 3, 3};
 const size_t GEM1[3][2] = {{180, 100}, {560, 450}, {375, 325}};
 const size_t GEM2[3][2] = {{120, 100}, {430, 310}, {450, 410}};
+const size_t GEM3[3][2] = {{670, 390}, {580, 250}, {135, 345}};
 
 const int16_t H_STEP = 507;
 const int16_t V_STEP = 30;
@@ -504,6 +506,25 @@ void make_level3(state_t *state) {
     asset_make_anim(LAVA1_PATH, LAVA2_PATH, LAVA3_PATH, obstacle);
   }
 
+  size_t water_len = WATER_NUM[2];
+  for (size_t i = 0; i < water_len; i++) {
+    vector_t coord = (vector_t){WATER3[i][0], WATER3[i][1]};
+    body_t *obstacle =
+        make_obstacle(WATER3[i][2], WATER3[i][3], coord, "water");
+    scene_add_body(state->scene, obstacle);
+    asset_make_anim(WATER1_PATH, WATER2_PATH, WATER3_PATH, obstacle);
+  }
+
+  size_t gem_len = GEM_NUM[2];
+  for (size_t i = 0; i < gem_len; i++) {
+    vector_t center = (vector_t){GEM3[i][0], GEM3[i][1]};
+    body_t *gem = make_gem(OUTER_RADIUS, INNER_RADIUS, center);
+    scene_add_body(state->scene, gem);
+    create_collision(state->scene, state->spirit, gem, gem_user_handler, NULL,
+                     0, NULL);
+    asset_make_image_with_body(GEM_PATH, gem);
+  }
+
   // make door
   vector_t coord = (vector_t){DOORS[2][0], DOORS[2][1]};
   body_t *door = make_obstacle(DOORS[2][2], DOORS[2][3], coord, "door");
@@ -840,8 +861,8 @@ state_t *emscripten_init() {
 
   // make level
   // make_level1(state);
-  make_level2(state);
-  // make_level3(state);
+  // make_level2(state);
+  make_level3(state);
 
   // make water
   sdl_on_key((key_handler_t)on_key);
