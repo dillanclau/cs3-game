@@ -56,12 +56,9 @@ void asset_animate(asset_t *asset, double time);
 
 void asset_make_spirit(const char *front_filepath, const char *left_filepath,
                        const char *right_filepath, body_t *body);
-<<<<<<< HEAD
 
 void asset_make_anim(const char *frame1_filepath, const char *frame2_filepath,
                      const char *frame3_filepath, body_t *body);
-=======
->>>>>>> origin
 
 /**
  * Resets the internal asset list by freeing all assets and creating a new empty
