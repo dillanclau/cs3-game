@@ -63,7 +63,7 @@ size_t BRICKS1[14][4] = {{375, -500, 750, 30},
 
 // Bricks for Map 2
 size_t BRICKS2[11][4] = {{100, 390, 200, BRICK_WIDTH}, // where the door is
-                         {450, 385, 300, BRICK_WIDTH},
+                         {450, 390, 300, BRICK_WIDTH},
                          {350, 290, 350, BRICK_WIDTH}, // next row
                          {630, 270, 300, BRICK_WIDTH},
                          {225, 200, 450, BRICK_WIDTH}, // third row
@@ -88,11 +88,16 @@ size_t BRICKS3[12][4] = {{50, 390, 100, BRICK_WIDTH},  // where the door is
                          {750, 250, 30, 500}};
 
 const size_t LAVA_WIDTH = 11;
-const size_t LAVA_NUM[NUM_MAP] = {4, 0, 0};
+const size_t LAVA_NUM[NUM_MAP] = {4, 4, 0};
 size_t LAVA1[4][4] = {{180, 15, 165, LAVA_WIDTH},
                       {500, 85, 165, LAVA_WIDTH},
                       {500, 310, 100, LAVA_WIDTH},
                       {252, 310, 160, LAVA_WIDTH}};
+
+size_t LAVA2[4][4] = {{500, 15, 160, LAVA_WIDTH}, 
+                      {580, 140, 80, LAVA_WIDTH},
+                      {510, 400, 60, LAVA_WIDTH},
+                      {390, 400, 60, LAVA_WIDTH}};
 
 const size_t DOOR_NUM[NUM_MAP] = {3, 0, 0};
 size_t DOORS[3][4] = {{60, 458, INNER_RADIUS * 3, OUTER_RADIUS * 3},
@@ -368,11 +373,11 @@ void make_level1(state_t *state) {
   // vector_t center = (vector_t){.x = 100, .y = 100};
   size_t gem_len = GEM_NUM[0];
   for (size_t i = 0; i < gem_len; i++) {
-    vector_t center = (vector_t) {GEM1[i][0], GEM1[i][1]};
+    vector_t center = (vector_t){GEM1[i][0], GEM1[i][1]};
     body_t *gem = make_gem(OUTER_RADIUS, INNER_RADIUS, center);
     scene_add_body(state->scene, gem);
-    create_collision(state->scene, state->spirit, gem, gem_user_handler, NULL, 0,
-                    NULL);
+    create_collision(state->scene, state->spirit, gem, gem_user_handler, NULL,
+                     0, NULL);
     asset_make_image_with_body(GEM_PATH, gem);
   }
 
@@ -408,6 +413,29 @@ void make_level2(state_t *state) {
     create_collision(state->scene, state->spirit, obstacle, platform_handler,
                      NULL, 0, NULL);
     asset_make_image_with_body(BRICK_PATH, obstacle);
+  }
+
+  // make lava
+  size_t lava_len = LAVA_NUM[1];
+  for (size_t i = 0; i < lava_len; i++) {
+    vector_t coord = (vector_t){LAVA2[i][0], LAVA2[i][1]};
+    body_t *obstacle = make_obstacle(LAVA2[i][2], LAVA2[i][3], coord, "lava");
+    scene_add_body(state->scene, obstacle);
+    create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
+                     NULL, 0, NULL);
+    asset_make_anim(LAVA1_PATH, LAVA2_PATH, obstacle);
+  }
+
+  // make gem
+  // vector_t center = (vector_t){.x = 100, .y = 100};
+  size_t gem_len = GEM_NUM[1];
+  for (size_t i = 0; i < gem_len; i++) {
+    vector_t center = (vector_t){GEM1[i][0], GEM1[i][1]};
+    body_t *gem = make_gem(OUTER_RADIUS, INNER_RADIUS, center);
+    scene_add_body(state->scene, gem);
+    create_collision(state->scene, state->spirit, gem, gem_user_handler, NULL,
+                     0, NULL);
+    asset_make_image_with_body(GEM_PATH, gem);
   }
 
   // make door
@@ -765,8 +793,8 @@ state_t *emscripten_init() {
                     spirit);
 
   // make level
-  make_level1(state);
-  // make_level2(state);
+  // make_level1(state);
+  make_level2(state);
   // make_level3(state);
 
   // make water
