@@ -131,10 +131,7 @@ const char *GEM_PATH = "assets/gem.png";
 const char *RED_GEM_PATH = "assets/red_gem.png";
 const char *ORANGE_GEM_PATH = "assets/orange_gem.png";
 const char *GREEN_GEM_PATH = "assets/green_gem.png";
-const char *ELEVATOR_PATH = "assets/elevator.png";
-const char *DOOR_PATH = "assets/door.png";
 const char *EXIT_DOOR_PATH = "assets/exit_door.png";
-const char *GEM_PATH = "assets/gem.png";
 
 const char *BACKGROUND_MUSIC_PATH = "assets/background_music.mp3";
 
@@ -246,8 +243,8 @@ void reset_user(body_t *body) { body_set_centroid(body, START_POS); }
 void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
                         double force_const) {
   reset_user(body1);
-  asset_make_image(GAME_OVER_PATH,
-                   (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
+  // asset_make_image(GAME_OVER_PATH,
+                  //  (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
 }
 
 // TODO: jumping velocity implementation matters for when platofrm elevator
@@ -464,11 +461,11 @@ void go_to_homepage(state_t *state) {
   asset_make_text(FONT_FILEPATH,
                   (SDL_Rect){.x = 200, .y = 350, .w = 300, .h = 50},
                   "Press 3 to go to Level 3", TEXT_COLOR);
-  SDL_Rect level_gem_box[3] = [
+  SDL_Rect level_gem_box[3] = {
     (SDL_Rect){.x = 100, .y = 500, .w = 50, .h = 50},
     (SDL_Rect){.x = 200, .y = 500, .w = 50, .h = 50},
     (SDL_Rect){.x = 300, .y = 500, .w = 50, .h = 50}
-  ];
+  };
   for (size_t i = 0; i < NUMBER_OF_LEVELS; i++) {
     if (state->level_points[i] > GREEN_THRESHOLD) {
       asset_make_image(GREEN_GEM_PATH, level_gem_box[i]);
@@ -736,10 +733,10 @@ state_t *emscripten_init() {
   state->scene = scene_init();
   state->current_screen = LEVEL1;
   state->pause = false;
-  state->level_points[0] = 0; // for level 1
+  state->level_points[0] = 0; // for leFvel 1
   state->level_points[1] = 0; // for level 2
   state->level_points[2] = 0; // for level 3
-  state->collided = false;
+  state->collision_type = NO_COLLISION;
 
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(BACKGROUND_PATH, box);
