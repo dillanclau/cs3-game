@@ -37,18 +37,11 @@ const size_t NUM_MAP = 3;
 const size_t BRICK_WIDTH = 20;
 const size_t BRICK_NUM[NUM_MAP] = {14, 11, 12};
 
-const size_t NUMBER_OF_LEVELS = 3;
-
-// point range thresholds
-size_t RED_THRESHOLD = 25;
-size_t ORANGE_THRESHOLD = 50;
-size_t GREEN_THRESHOLD = 75;
-
 // x, y, w, h
 // Bricks for Map 1
 size_t BRICKS1[14][4] = {{375, -500, 750, 30},
-                         {160, 380, 320, BRICK_WIDTH},
-                         {560, 380, 150, BRICK_WIDTH},
+                         {160, 425, 320, BRICK_WIDTH},
+                         {560, 425, 150, BRICK_WIDTH},
                          {425, 300, 650, BRICK_WIDTH},
                          {325, 200, 650, BRICK_WIDTH},
                          {180, 75, 175, BRICK_WIDTH},
@@ -73,6 +66,7 @@ size_t BRICKS2[11][4] = {{100, 390, 200, BRICK_WIDTH}, // where the door is
                          {375, 0, 750, 30},           // border
                          {0, 250, 30, 500},
                          {750, 250, 30, 500}};
+
 // get rid of brick_width and hard code the whole thing
 size_t BRICKS3[12][4] = {{50, 390, 100, BRICK_WIDTH},  // where the door is
                          {185, 275, BRICK_WIDTH, 200}, // left column
@@ -94,18 +88,20 @@ size_t LAVA1[4][4] = {{180, 20, 165, LAVA_WIDTH},
                       {500, 310, 100, LAVA_WIDTH},
                       {250, 310, 175, LAVA_WIDTH}};
 
-const size_t DOOR_NUM[NUM_MAP] = {3, 0, 0};
-size_t DOORS[3][4] = {{60, 458, INNER_RADIUS * 3, OUTER_RADIUS * 3},
+
+// exits
+size_t EXITS[3][4] = {{60, 458, INNER_RADIUS * 3, OUTER_RADIUS * 3},
                       {60, 424, INNER_RADIUS * 3, OUTER_RADIUS * 3},
                       {60, 424, INNER_RADIUS * 3, OUTER_RADIUS * 3}};
 
+// elevators
 size_t ELEVATOR2[1][4] = {{50, 220, 70, BRICK_WIDTH}};
 
-const int16_t H_STEP = 507;
-const int16_t V_STEP = 30;
-const size_t ROWS = 50;
+// doors
+size_t DOORS[1][4] = {{300, 245, 30, 70}};
 
-const size_t BODY_ASSETS = 2;
+// doors buttons
+size_t BUTTONS[1][4] = {{80, 100, 30, 20}};
 
 // velocity constants
 const vector_t VELOCITY_LEFT = (vector_t){-200, 0};
@@ -127,14 +123,9 @@ const char *LAVA_PATH = "assets/lava.png";
 const char *HOMEPAGE_PATH = "assets/homepage.png";
 const char *ELEVATOR_PATH = "assets/elevator.png";
 const char *DOOR_PATH = "assets/door.png";
-const char *GEM_PATH = "assets/gem.png";
-const char *RED_GEM_PATH = "assets/red_gem.png";
-const char *ORANGE_GEM_PATH = "assets/orange_gem.png";
-const char *GREEN_GEM_PATH = "assets/green_gem.png";
-const char *ELEVATOR_PATH = "assets/elevator.png";
-const char *DOOR_PATH = "assets/door.png";
 const char *EXIT_DOOR_PATH = "assets/exit_door.png";
 const char *GEM_PATH = "assets/gem.png";
+const char *BUTTON_PATH = "assets/button.png";
 
 typedef enum {
   LEVEL1 = 1,
@@ -150,7 +141,6 @@ struct state {
   screen_t current_screen;
   collision_type_t collision_type;
   bool pause;
-  size_t level_points[3];
 };
 
 body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
@@ -227,14 +217,6 @@ void move_elevator(body_t *elevator, body_t *spirit) {
   } else if (centroid.y - 10 < 220) {
     body_set_velocity(elevator, (vector_t){0, 20});
   }
-
-  if (find_collision(elevator, spirit).collided) {
-    if (centroid.y + 10 > 320) {
-      body_set_velocity(spirit, (vector_t){0, -20});
-    } else if (centroid.y - 10 < 220) {
-      body_set_velocity(spirit, (vector_t){0, 20});
-    }
-  }
   // if (centroid.x > MAX.x) {
   //   body_set_centroid(body, (vector_t){MIN.x, centroid.y});
   // } else if (centroid.x < MIN.x) {
@@ -244,6 +226,14 @@ void move_elevator(body_t *elevator, body_t *spirit) {
   // } else if (centroid.y < MIN.y) {
   //   body_set_centroid(body, (vector_t){centroid.x, MAX.y});
   // }
+  if (find_collision(elevator, spirit).collided) {
+    if (centroid.y + 10 > 320) {
+      body_set_velocity(spirit, (vector_t){0, -20});
+    } else if (centroid.y - 10 < 220) {
+      body_set_velocity(spirit, (vector_t){0, 20});
+    }
+  }
+
 }
 
 // Handlers
@@ -252,19 +242,10 @@ void reset_user(body_t *body) { body_set_centroid(body, START_POS); }
 void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
                         double force_const) {
   reset_user(body1);
-  asset_make_image(GAME_OVER_PATH,
-                   (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
-  if (state->current_screen == LEVEL1) {
-    state->level_points[0] = 0;
-  } else if (state->current_screen == LEVEL2) {
-    state->level_points[1] = 0;
-  } else if (state->current_screen == LEVEL3) {
-    state->level_points[2] = 0;
-  }
 }
 
-// TODO: jumping velocity implementation matters for when platofrm elevator
-// TODO: collision??? handles the collisions between user and platform
+// // TODO: jumping velocity implementation matters for when platofrm elevator
+// // TODO: collision??? handles the collisions between user and platform
 // void elevator_user_handler(body_t *body1, body_t *body2, vector_t axis,
 //                            void *aux, double force_const) {
 //   vector_t vel = body_get_velocity(body1);
@@ -281,9 +262,11 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
 //   vector_t plat_vel = body_get_velocity(body2);
 //   vector_t plat_pos = body_get_centroid(body2);
 
-//   if (cen.x > v4->x - INNER_RADIUS && cen.x < v3->x + INNER_RADIUS) {
-//     // vector_t new_pos = (vector_t){cen.x, plat_pos.y + INNER_RADIUS + 8};
+//   if (cen.x > v4->x - INNER_RADIUS && cen.x < v3->x + INNER_RADIUS &&
+//       cen.y - (INNER_RADIUS - 8) >= v4->y) {
+//     printf("%zu\n", vel.y);
 //     vel.y = plat_vel.y;
+//     printf("%zu\n\n", vel.y);
 //   }
 
 //   if (cen.x > v1->x - INNER_RADIUS && cen.x < v2->x + INNER_RADIUS &&
@@ -322,7 +305,7 @@ void platform_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
 
   if (cen.x > v4->x - INNER_RADIUS && cen.x < v3->x + INNER_RADIUS &&
       cen.y - (INNER_RADIUS - 8) >= v4->y) {
-    vel.y = body_get_velocity(body2).y;
+    vel.y = 0;
   }
 
   if (cen.x > v1->x - INNER_RADIUS && cen.x < v2->x + INNER_RADIUS &&
@@ -376,12 +359,12 @@ void make_level1(state_t *state) {
   asset_make_image_with_body(GEM_PATH, gem);
 
   // make door
-  vector_t coord = (vector_t){DOORS[0][0], DOORS[0][1]};
-  body_t *door = make_obstacle(DOORS[0][2], DOORS[0][3], coord, "door");
-  scene_add_body(state->scene, door);
-  create_collision(state->scene, state->spirit, door, reset_user_handler, NULL,
+  vector_t coord = (vector_t){EXITS[0][0], EXITS[0][1]};
+  body_t *exit = make_obstacle(EXITS[0][2], EXITS[0][3], coord, "exit");
+  scene_add_body(state->scene, exit);
+  create_collision(state->scene, state->spirit, exit, reset_user_handler, NULL,
                    0, NULL);
-  asset_make_image_with_body(EXIT_DOOR_PATH, door);
+  asset_make_image_with_body(EXIT_DOOR_PATH, exit);
 }
 
 void make_level2(state_t *state) {
@@ -393,10 +376,26 @@ void make_level2(state_t *state) {
         make_obstacle(ELEVATOR2[i][2], ELEVATOR2[i][3], coord, "elevator");
     scene_add_body(state->scene, obstacle);
     body_set_velocity(obstacle, (vector_t){0, 20}); // change this later
-    create_collision(state->scene, state->spirit, obstacle, platform_handler,
-                     NULL, 0, NULL);
+    create_collision(state->scene, state->spirit, obstacle,
+                     platform_handler, NULL, 0, NULL);
     asset_make_image_with_body(ELEVATOR_PATH, obstacle);
   }
+
+  // make door
+  vector_t door_coord = (vector_t){DOORS[0][0], DOORS[0][1]};
+  body_t *door = make_obstacle(DOORS[0][2], DOORS[0][3], door_coord, "door");
+  scene_add_body(state->scene, door);
+  create_collision(state->scene, state->spirit, door, platform_handler, NULL,
+                   0, NULL);
+  asset_make_image_with_body(DOOR_PATH, door);
+
+  // make door button
+  vector_t button_coord = (vector_t){BUTTONS[0][0], BUTTONS[0][1]};
+  body_t *button = make_obstacle(BUTTONS[0][2], BUTTONS[0][3], button_coord, "button");
+  scene_add_body(state->scene, button);
+  create_collision(state->scene, state->spirit, button, platform_handler, NULL,
+                   0, NULL);
+  asset_make_image_with_body(BUTTON_PATH, button);
 
   size_t brick_len = BRICK_NUM[1];
   for (size_t i = 0; i < brick_len; i++) {
@@ -409,13 +408,15 @@ void make_level2(state_t *state) {
     asset_make_image_with_body(BRICK_PATH, obstacle);
   }
 
-  // make door
-  vector_t coord = (vector_t){DOORS[1][0], DOORS[1][1]};
-  body_t *door = make_obstacle(DOORS[1][2], DOORS[1][3], coord, "door");
-  scene_add_body(state->scene, door);
-  create_collision(state->scene, state->spirit, door, reset_user_handler, NULL,
+  // make exit
+  vector_t coord = (vector_t){EXITS[1][0], EXITS[1][1]};
+  body_t *exit = make_obstacle(EXITS[1][2], EXITS[1][3], coord, "exit");
+  scene_add_body(state->scene, exit);
+  create_collision(state->scene, state->spirit, exit, reset_user_handler, NULL,
                    0, NULL);
-  asset_make_image_with_body(EXIT_DOOR_PATH, door);
+  asset_make_image_with_body(EXIT_DOOR_PATH, exit);
+
+
 }
 
 void make_level3(state_t *state) {
@@ -430,12 +431,12 @@ void make_level3(state_t *state) {
     asset_make_image_with_body(BRICK_PATH, obstacle);
   }
   // make door
-  vector_t coord = (vector_t){DOORS[2][0], DOORS[2][1]};
-  body_t *door = make_obstacle(DOORS[2][2], DOORS[2][3], coord, "door");
-  scene_add_body(state->scene, door);
-  create_collision(state->scene, state->spirit, door, reset_user_handler, NULL,
+  vector_t coord = (vector_t){EXITS[2][0], EXITS[2][1]};
+  body_t *exit = make_obstacle(EXITS[2][2], EXITS[2][3], coord, "exit");
+  scene_add_body(state->scene, exit);
+  create_collision(state->scene, state->spirit, exit, reset_user_handler, NULL,
                    0, NULL);
-  asset_make_image_with_body(EXIT_DOOR_PATH, door);
+  asset_make_image_with_body(EXIT_DOOR_PATH, exit);
 }
 
 void go_to_level1(state_t *state) {
@@ -463,35 +464,18 @@ void go_to_homepage(state_t *state) {
   state->current_screen = HOMEPAGE;
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(HOMEPAGE_PATH, box);
-  asset_make_text(FONT_FILEPATH,
-                  (SDL_Rect){.x = 200, .y = 25, .w = 200, .h = 100}, "HOMEPAGE",
-                  TEXT_COLOR);
-  asset_make_text(FONT_FILEPATH,
-                  (SDL_Rect){.x = 200, .y = 150, .w = 300, .h = 50},
-                  "Press 1 to go to Level 1", TEXT_COLOR);
-  asset_make_text(FONT_FILEPATH,
-                  (SDL_Rect){.x = 200, .y = 250, .w = 300, .h = 50},
-                  "Press 2 to go to Level 2", TEXT_COLOR);
-  asset_make_text(FONT_FILEPATH,
-                  (SDL_Rect){.x = 200, .y = 350, .w = 300, .h = 50},
-                  "Press 3 to go to Level 3", TEXT_COLOR);
-  SDL_Rect level_gem_box[3] = [
-    (SDL_Rect){.x = 100, .y = 500, .w = 50, .h = 50},
-    (SDL_Rect){.x = 200, .y = 500, .w = 50, .h = 50},
-    (SDL_Rect){.x = 300, .y = 500, .w = 50, .h = 50}
-  ];
-  for (size_t i = 0; i < NUMBER_OF_LEVELS; i++) {
-    if (state->level_points[i] > GREEN_THRESHOLD) {
-      asset_make_image(GREEN_GEM_PATH, level_gem_box[i]);
-      break;
-    } else if (state->level_points[i] > ORANGE_THRESHOLD) {
-      asset_make_image(ORANGE_GEM_PATH, level_gem_box[i]);
-      break;
-    } else if (state->level_points[i] > RED_THRESHOLD) {
-      asset_make_image(RED_GEM_PATH, level_gem_box[i]);
-      break;
-    }
-  }
+  // asset_make_text(FONT_FILEPATH,
+  //                 (SDL_Rect){.x = 200, .y = 25, .w = 200, .h = 100},
+  //                 "HOMEPAGE", TEXT_COLOR);
+  // asset_make_text(FONT_FILEPATH,
+  //                 (SDL_Rect){.x = 200, .y = 150, .w = 300, .h = 50},
+  //                 "Press 1 to go to Level 1", TEXT_COLOR);
+  // asset_make_text(FONT_FILEPATH,
+  //                 (SDL_Rect){.x = 200, .y = 250, .w = 300, .h = 50},
+  //                 "Press 2 to go to Level 2", TEXT_COLOR);
+  // asset_make_text(FONT_FILEPATH,
+  //                 (SDL_Rect){.x = 200, .y = 350, .w = 300, .h = 50},
+  //                 "Press 3 to go to Level 3", TEXT_COLOR);
 }
 
 void pause(state_t *state) {
@@ -697,8 +681,7 @@ collision_type_t collision(state_t *state) {
   for (size_t i = 1; i < scene_bodies(scene); i++) {
     body_t *platform = scene_get_body(scene, i);
 
-    if ((strcmp(body_get_info(platform), "platform")) != 0 &&
-        (strcmp(body_get_info(platform), "elevator") != 0)) {
+    if ((strcmp(body_get_info(platform), "platform")) != 0 && (strcmp(body_get_info(platform), "elevator") != 0) && (strcmp(body_get_info(platform), "door") != 0)) {
       continue;
     }
 
@@ -714,7 +697,7 @@ collision_type_t collision(state_t *state) {
     vector_t *v4 = list_get(pts, 3); // top left
 
     if (cen.x > v4->x - INNER_RADIUS && cen.x < v3->x + INNER_RADIUS &&
-        cen.y - (INNER_RADIUS - 3) >= v4->y) {
+        cen.y - (INNER_RADIUS - 8) >= v4->y) {
       res += UP_COLLISION;
       continue;
     }
@@ -746,10 +729,7 @@ state_t *emscripten_init() {
   state->scene = scene_init();
   state->current_screen = LEVEL1;
   state->pause = false;
-  state->level_points[0] = 0; // for level 1
-  state->level_points[1] = 0; // for level 2
-  state->level_points[2] = 0; // for level 3
-  state->collided = false;
+  state->collision_type = NO_COLLISION;
 
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(BACKGROUND_PATH, box);
@@ -760,8 +740,11 @@ state_t *emscripten_init() {
   scene_add_body(state->scene, spirit);
 
   // spirit
-  asset_make_spirit(SPIRIT_FRONT_PATH, SPIRIT_LEFT_PATH, SPIRIT_RIGHT_PATH,
-                    spirit);
+  asset_make_spirit(SPIRIT_FRONT_PATH, SPIRIT_LEFT_PATH, SPIRIT_RIGHT_PATH, spirit);
+
+
+  // button
+
 
   // make level
   // make_level3(state);
@@ -797,6 +780,19 @@ bool emscripten_main(state_t *state) {
     body_set_velocity(spirit, (vector_t){spirit_velocity.x,
                                          spirit_velocity.y - (GRAVITY * dt)});
   }
+
+  // check button
+  list_t *asset_list = asset_get_asset_list();
+  asset_t *button_asset = list_get(asset_list, 4);
+  for (size_t i = 0; i < scene_bodies(state->scene); i++) {
+    body_t *body = scene_get_body(state->scene, i);
+    if (strcmp(body_get_info(body), "button") == 0) {
+      if (find_collision(spirit, body).collided) {
+        asset_change_texture_button(button_asset);
+      }
+    }
+  }
+  
 
   printf("collision = %d\n", (int)state->collision_type);
 

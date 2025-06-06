@@ -9,7 +9,7 @@
 
 #include "body.h"
 
-typedef enum { ASSET_IMAGE, ASSET_TEXT, ASSET_SPIRIT } asset_type_t;
+typedef enum { ASSET_IMAGE, ASSET_TEXT, ASSET_SPIRIT, ASSET_BUTTON} asset_type_t;
 
 typedef struct asset asset_t;
 
@@ -50,20 +50,21 @@ void asset_make_text(const char *filepath, SDL_Rect bounding_box,
  * @param asset
  * @param idx
  */
-<<<<<<< HEAD
-void *asset_change_texture(asset_t *asset, size_t idx);
-=======
 void asset_change_texture(asset_t *asset, char key);
 
 void asset_make_spirit(const char *front_filepath, const char *left_filepath,
                        const char *right_filepath, body_t *body);
->>>>>>> origin
 
 /**
  * Resets the internal asset list by freeing all assets and creating a new empty
  * list. This is useful when transitioning between scenes or levels.
  */
 void asset_reset_asset_list();
+
+void asset_make_button(const char *unpressed_filepath, const char *pressed_filepath, body_t *body);
+
+void asset_change_texture_button(asset_t *asset);
+
 
 /**
  * Returns the internal list of all assets that have been created.
