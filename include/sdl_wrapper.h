@@ -177,6 +177,8 @@ void sdl_on_key(key_handler_t handler);
  */
 double time_since_last_tick(void);
 
+void sdl_reset_timer(void);
+
 /**
  * Plays music in the game.
  *

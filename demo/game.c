@@ -715,6 +715,8 @@ void go_to_homepage(state_t *state) {
   }
   printf("%s/n", "at homepage");
   state->current_screen = HOMEPAGE;
+  state->pause = false;
+  sdl_reset_timer();
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(HOMEPAGE_PATH, box);
 
@@ -752,6 +754,7 @@ void unpause(state_t *state) {
   state->pause = false;
   list_t *asset_list = asset_get_asset_list();
   list_remove(asset_list, list_size(asset_list) - 1);
+  sdl_reset_timer();
   // list_remove(asset_list, list_size(asset_list) - 1);
 }
 
@@ -833,7 +836,6 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
       switch (key) {
       case KEY_H:
         go_to_homepage(state);
-        state->pause = false;
         break;
       case KEY_R:
         restart(state);
@@ -1015,32 +1017,34 @@ bool emscripten_main(state_t *state) {
   }
 
   if (state->current_screen != HOMEPAGE) {
-    double dt = time_since_last_tick();
-    state->collision_type = collision(state);
 
-    // apply gravity
-    if (!(dt > 0.2)) {
-      apply_gravity(state, dt);
-    }
+    if (!(state->pause)) {
+      state->collision_type = collision(state);
+      double dt = time_since_last_tick();
 
-    // check for pressed buttons
-    button_press(state);
+      // apply gravity
 
-    // move elevator
-    if (state->elevator) {
-      move_elevator(state);
-    }
+      if (dt < 0.2) {
+        apply_gravity(state, dt);
+      }
 
-    // clocks
 
-    if (!state->pause) {
+      // check for pressed buttons
+      button_press(state);
+
+      // move elevator
+      if (state->elevator) {
+        move_elevator(state);
+      }
+
+      // clocks
       // asset_t *clock = list_get(body_assets, len - 1);
       // asset_destroy(clock);
       // list_remove(body_assets, len - 1);
       scene_tick(state->scene, dt);
       // make_clock(state);
       state->time += dt;
-    }
+    } 
 
     // asset_destroy(clock); // only destroy if the clock is there
 

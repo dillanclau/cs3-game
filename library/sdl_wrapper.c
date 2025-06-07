@@ -328,6 +328,10 @@ double time_since_last_tick(void) {
   return difference;
 }
 
+void sdl_reset_timer(void) {
+    last_clock = clock();
+}
+
 void sdl_play_music(const char *path) {
   if (!background_music) {
     background_music = Mix_LoadMUS(path);
