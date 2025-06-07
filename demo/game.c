@@ -162,9 +162,10 @@ const char *WATER3_PATH = "assets/waterframe3.png";
 const char *GAME_OVER_PATH = "assets/game_over.png";
 
 const char *BACKGROUND_MUSIC_PATH = "assets/background_music.mp3";
-// const char *GEM_SOUND_PATH = ;
+const char *GEM_SOUND_PATH = "assets/gem_sound.mp3";
 // const char *COMPLETED_SOUND_PATH = ;
 // const char *FAILED_SOUND_PATH = ;
+const char *JUMP_SOUND_PATH = "assets/jump_sound.mp3";
 
 typedef enum {
   LEVEL1 = 1,
@@ -181,6 +182,8 @@ struct state {
   collision_type_t collision_type;
   bool pause;
   size_t level_points[3];
+  double time;
+  bool music_played;
 };
 
 body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
@@ -285,7 +288,7 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   asset_make_image(GAME_OVER_PATH,
                    (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
   // go_to_homepage(state);
-  // sdl_play_sound_effect(FAILED_SOUND_PATH);
+  // sdl_play_level_failed(FAILED_SOUND_PATH);
 }
 
 // TODO: jumping velocity implementation matters for when platofrm elevator
@@ -335,7 +338,7 @@ void gem_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   // reset_user(body1);
   // do the points and stuff
   body_remove(body2);
-  // sdl_play_sound_effect(GEM_SOUND_PATH);
+  sdl_play_gem_sound(GEM_SOUND_PATH);
 }
 
 void platform_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
@@ -582,7 +585,7 @@ void make_level3(state_t *state) {
 }
 
 void go_to_level1(state_t *state) {
-  if (state->current_screen != HOMEPAGE){
+  if (state->current_screen != HOMEPAGE) {
     scene_free(state->scene);
   }
   asset_reset_asset_list();
@@ -713,6 +716,7 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
       asset_change_texture(spirit_asset, key);
       break;
     case UP_ARROW:
+      sdl_play_jump_sound(JUMP_SOUND_PATH);
       if (collision_type == UP_COLLISION ||
           collision_type == UP_LEFT_COLLISION ||
           collision_type == UP_RIGHT_COLLISION) {
@@ -759,7 +763,7 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
   } else {
     asset_change_texture(spirit_asset, UP_ARROW);
     // ask dillan if this changes anything
-    body_set_velocity(spirit, (vector_t) {0, velocity.y});
+    body_set_velocity(spirit, (vector_t){0, velocity.y});
     // switch (key) {
     // case LEFT_ARROW:
     //   body_set_velocity(spirit, (vector_t){0, velocity.y});
@@ -879,7 +883,7 @@ bool emscripten_main(state_t *state) {
     asset_render(list_get(body_assets, i));
   }
 
-  if (state->current_screen != HOMEPAGE){
+  if (state->current_screen != HOMEPAGE) {
     double dt = time_since_last_tick();
     state->collision_type = collision(state);
 
@@ -891,7 +895,7 @@ bool emscripten_main(state_t *state) {
           state->collision_type ==
               UP_RIGHT_COLLISION)) { // only apply if on platform
       body_set_velocity(spirit, (vector_t){spirit_velocity.x,
-    spirit_velocity.y - (GRAVITY * dt)});
+                                           spirit_velocity.y - (GRAVITY * dt)});
     }
 
     // clocks
@@ -905,9 +909,8 @@ bool emscripten_main(state_t *state) {
     }
 
     state->time += dt;
-    
   }
-  
+
   // body_t *elevator = scene_get_body(state->scene, 1);
   // move_elevator(elevator);
 
@@ -917,7 +920,6 @@ bool emscripten_main(state_t *state) {
   }
   if ((time % 10 == 0) && (!(state->music_played))) {
     sdl_play_music(BACKGROUND_MUSIC_PATH);
-    printf("%s\n", "music playing");
     state->music_played = true;
   }
 

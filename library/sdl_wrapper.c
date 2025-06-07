@@ -17,6 +17,10 @@ const int8_t FONT_HEIGHT_SCALE = 2;
 // const double MS_PER_S = 1000.0;
 const double MS_PER_S = 100000;
 static Mix_Music *background_music = NULL;
+static Mix_Music *gem_sound = NULL;
+static Mix_Music *level_completed_sound = NULL;
+static Mix_Music *level_failed_sound = NULL;
+static Mix_Music *jump_sound = NULL;
 
 /**
  * The coordinate at the center of the screen.
@@ -333,20 +337,64 @@ void sdl_play_music(const char *path) {
   }
 }
 
-void sdl_play_sound_effect(const char *path) {
-  Mix_Music *sound_effect = Mix_LoadMUS(path);
-  if (!sound_effect) {
-    SDL_Log("Mix_LoadMUS: %s", Mix_GetError());
-    return;
+void sdl_play_gem_sound(const char *path) {
+  if (!gem_sound) {
+    gem_sound = Mix_LoadMUS(path);
+    if (!gem_sound) {
+      SDL_Log("Mix_LoadMUS: %s", Mix_GetError());
+      return;
+    }
   }
-  Mix_PlayMusic(sound_effect, 0);
+  Mix_PlayMusic(gem_sound, 0);
+}
+
+void sdl_play_level_completed(const char *path) {
+  if (!level_completed_sound) {
+    level_completed_sound = Mix_LoadMUS(path);
+    if (!level_completed_sound) {
+      SDL_Log("Mix_LoadMUS: %s", Mix_GetError());
+      return;
+    }
+  }
+  Mix_PlayMusic(level_completed_sound, 0);
+}
+
+void sdl_play_level_failed(const char *path) {
+  if (!level_failed_sound) {
+    level_failed_sound = Mix_LoadMUS(path);
+    if (!level_failed_sound) {
+      SDL_Log("Mix_LoadMUS: %s", Mix_GetError());
+      return;
+    }
+  }
+  Mix_PlayMusic(level_failed_sound, 0);
+}
+
+void sdl_play_jump_sound(const char *path) {
+  if (!jump_sound) {
+    jump_sound = Mix_LoadMUS(path);
+    if (!jump_sound) {
+      SDL_Log("Mix_LoadMUS: %s", Mix_GetError());
+      return;
+    }
+  }
+  Mix_PlayMusic(jump_sound, 0);
 }
 
 // added by Natalie
 void sdl_quit() {
   if (background_music) {
     Mix_FreeMusic(background_music);
-    Mix_CloseAudio();
-    SDL_Quit();
   }
+  if (gem_sound) {
+    Mix_FreeMusic(gem_sound);
+  }
+  if (level_completed_sound) {
+    Mix_FreeMusic(level_completed_sound);
+  }
+  if (level_failed_sound) {
+    Mix_FreeMusic(level_failed_sound);
+  }
+  Mix_CloseAudio();
+  SDL_Quit();
 }

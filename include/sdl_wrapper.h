@@ -184,7 +184,15 @@ double time_since_last_tick(void);
  */
 void sdl_play_music(const char *path);
 
-void sdl_play_sound_effect(const char *path);
+void sdl_play_gem_sound(const char *path);
+
+void sdl_play_level_completed(const char *path);
+
+void sdl_play_level_failed(const char *path);
+
+void sdl_play_jump_sound(const char *path);
+
+
 
 // added by Natalie
 void sdl_quit();
