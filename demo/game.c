@@ -162,9 +162,10 @@ const char *WATER3_PATH = "assets/waterframe3.png";
 const char *GAME_OVER_PATH = "assets/game_over.png";
 
 const char *BACKGROUND_MUSIC_PATH = "assets/background_music.mp3";
-// const char *GEM_OBTAINMENT_SOUND = ;
-// const char *LEVEL_COMPLETED_SOUND = ;
-// const char *LEVEL_FAILED_SOUND = ;
+const char *GEM_SOUND_PATH = "assets/gem_sound.mp3";
+// const char *COMPLETED_SOUND_PATH = ;
+// const char *FAILED_SOUND_PATH = ;
+const char *JUMP_SOUND_PATH = "assets/jump_sound.mp3";
 
 typedef enum {
   LEVEL1 = 1,
@@ -181,8 +182,8 @@ struct state {
   collision_type_t collision_type;
   bool pause;
   size_t level_points[3];
-  bool music_played;
   double time;
+  bool music_played;
 };
 
 body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
@@ -286,6 +287,8 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   reset_user(body1);
   asset_make_image(GAME_OVER_PATH,
                    (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
+  // go_to_homepage(state);
+  // sdl_play_level_failed(FAILED_SOUND_PATH);
 }
 
 // TODO: jumping velocity implementation matters for when platofrm elevator
@@ -335,6 +338,7 @@ void gem_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   // reset_user(body1);
   // do the points and stuff
   body_remove(body2);
+  sdl_play_gem_sound(GEM_SOUND_PATH);
 }
 
 void platform_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
@@ -843,6 +847,8 @@ state_t *emscripten_init() {
 bool emscripten_main(state_t *state) {
   // check what screen it is on
   sdl_clear();
+  sdl_render_scene(state->scene);
+  sdl_play_music(BACKGROUND_MUSIC_PATH);
   list_t *body_assets = asset_get_asset_list();
   size_t len = list_size(body_assets);
 
@@ -890,7 +896,6 @@ bool emscripten_main(state_t *state) {
   }
   if ((time % 10 == 0) && (!(state->music_played))) {
     sdl_play_music(BACKGROUND_MUSIC_PATH);
-    printf("%s\n", "music playing");
     state->music_played = true;
   }
 
