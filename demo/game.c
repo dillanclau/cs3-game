@@ -121,13 +121,13 @@ size_t ELEVATORS[3][4] = {{50, 220, 70, BRICK_WIDTH},
                           {50, 200, 70, BRICK_WIDTH}};
 
 // elevator buttons
-size_t E_BUTTONS[2][4] = {{475, 150, 30, 20}, {300, 25, 30, 20}};
+size_t E_BUTTONS[2][4] = {{475, 150, 30, 20}, {400, 25, 30, 20}};
 
 // doors
 size_t DOORS[2][4] = {{300, 245, 30, 70}, {250, 175, 30, 90}};
 
 // doors buttons
-size_t BUTTONS[2][4] = {{30, 100, 30, 20}, {500, 140, 30, 20}};
+size_t BUTTONS[2][4] = {{40, 100, 30, 20}, {500, 140, 30, 20}};
 
 const size_t GEM_NUM[3] = {3, 3, 3};
 const size_t GEM1[3][2] = {{180, 100}, {560, 450}, {375, 325}};
@@ -181,7 +181,8 @@ const char *GEM_SOUND_PATH = "assets/gem_sound.mp3";
 const char *JUMP_SOUND_PATH = "assets/jump_sound.mp3";
 const char *DOOR_BUTTON_UNPRESSED_PATH = "assets/button_unpressed.png";
 const char *DOOR_BUTTON_PRESSED_PATH = "assets/button_pressed.png";
-const char *ELEVATOR_BUTTON_UNPRESSED_PATH = "assets/elevator_button_unpressed.png";
+const char *ELEVATOR_BUTTON_UNPRESSED_PATH =
+    "assets/elevator_button_unpressed.png";
 const char *ELEVATOR_BUTTON_PRESSED_PATH = "assets/elevator_button_pressed.png";
 
 typedef enum {
@@ -404,6 +405,7 @@ void init_bgd_player(state_t *state) {
   body_t *spirit = make_spirit(OUTER_RADIUS, INNER_RADIUS, VEC_ZERO);
   body_set_centroid(spirit, START_POS);
   state->spirit = spirit;
+  state->collision_type = NO_COLLISION;
   scene_add_body(state->scene, spirit);
 
   // spirit
@@ -541,7 +543,8 @@ void make_level2(state_t *state) {
 
   // make elevator
   vector_t e_coord = (vector_t){ELEVATORS[0][0], ELEVATORS[0][1]};
-  body_t *elevator = make_obstacle(ELEVATORS[0][2], ELEVATORS[0][3], e_coord, "elevator");
+  body_t *elevator =
+      make_obstacle(ELEVATORS[0][2], ELEVATORS[0][3], e_coord, "elevator");
   scene_add_body(state->scene, elevator);
   create_collision(state->scene, state->spirit, elevator, elevator_user_handler,
                    NULL, 0, NULL);
@@ -561,17 +564,19 @@ void make_level2(state_t *state) {
   vector_t door_coord = (vector_t){DOORS[0][0], DOORS[0][1]};
   body_t *door = make_obstacle(DOORS[0][2], DOORS[0][3], door_coord, "door");
   scene_add_body(state->scene, door);
-  create_collision(state->scene, state->spirit, door, platform_handler, NULL, 0, NULL);
+  create_collision(state->scene, state->spirit, door, platform_handler, NULL, 0,
+                   NULL);
   asset_make_image_with_body(DOOR_PATH, door);
 
   // make door button
   vector_t button_coord = (vector_t){BUTTONS[0][0], BUTTONS[0][1]};
-  body_t *button = make_obstacle(BUTTONS[0][2], BUTTONS[0][3], button_coord, "door button");
+  body_t *button =
+      make_obstacle(BUTTONS[0][2], BUTTONS[0][3], button_coord, "door button");
   scene_add_body(state->scene, button);
-  create_collision(state->scene, state->spirit, button, platform_handler, NULL, 0, NULL);
-  asset_make_button(DOOR_BUTTON_UNPRESSED_PATH, DOOR_BUTTON_PRESSED_PATH, button);
-
-
+  create_collision(state->scene, state->spirit, button, platform_handler, NULL,
+                   0, NULL);
+  asset_make_button(DOOR_BUTTON_UNPRESSED_PATH, DOOR_BUTTON_PRESSED_PATH,
+                    button);
 
   // make_clock(state);
 }
@@ -673,6 +678,8 @@ void go_to_level1(state_t *state) {
   scene_free(state->scene);
   state->scene = scene_init();
   state->current_screen = LEVEL1;
+  state->collision_type = DOWN_COLLISION;
+  state->elevator = false;
   make_level1(state);
   return;
 }
@@ -682,6 +689,8 @@ void go_to_level2(state_t *state) {
   scene_free(state->scene);
   state->scene = scene_init();
   state->current_screen = LEVEL2;
+  state->collision_type = DOWN_COLLISION;
+  state->elevator = false;
   make_level2(state);
   return;
 }
@@ -691,6 +700,8 @@ void go_to_level3(state_t *state) {
   scene_free(state->scene);
   state->scene = scene_init();
   state->current_screen = LEVEL3;
+  state->collision_type = DOWN_COLLISION;
+  state->elevator = false;
   make_level3(state);
   return;
 }
@@ -778,7 +789,7 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
     body_t *spirit = scene_get_body(state->scene, 0);
     vector_t velocity = body_get_velocity(spirit);
     asset_t *spirit_asset = list_get(asset_list, 1);
-    if (type == KEY_PRESSED) {
+    if (type == KEY_PRESSED && !state->pause) {
       switch (key) {
       case LEFT_ARROW:
         if (!(collision_type == RIGHT_COLLISION ||
@@ -805,9 +816,6 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
         }
         asset_change_texture(spirit_asset, key);
         break;
-      case KEY_H:
-        go_to_homepage(state); // check this with natalie
-        break;
       case KEY_P:
         if (state->current_screen == LEVEL1 ||
             state->current_screen == LEVEL2 ||
@@ -815,28 +823,31 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
           pause(state);
         }
         break;
-      case KEY_R:
-        if (state->pause) {
+      }
+    } else if (type == KEY_PRESSED && state->pause) {
+        switch(key) {
+        case KEY_H:
+          go_to_homepage(state);
+          state->pause = false;
+          break;
+        case KEY_R:
           restart(state);
-        }
-        break;
-      case KEY_U:
-        if (state->pause) {
+          break;
+        case KEY_U:
           unpause(state);
+          break;
         }
-        break;
-      }
     } else {
-      asset_change_texture(spirit_asset, UP_ARROW);
-      switch (key) {
-      case LEFT_ARROW:
-        body_set_velocity(spirit, (vector_t){0, velocity.y});
-        break;
-      case RIGHT_ARROW:
-        body_set_velocity(spirit, (vector_t){0, velocity.y});
-        break;
+        switch (key) {
+        case LEFT_ARROW:
+          body_set_velocity(spirit, (vector_t){0, velocity.y});
+          break;
+        case RIGHT_ARROW:
+          body_set_velocity(spirit, (vector_t){0, velocity.y});
+          break;
+        }
+        asset_change_texture(spirit_asset, UP_ARROW);
       }
-    }
   }
 }
 
@@ -1003,7 +1014,9 @@ bool emscripten_main(state_t *state) {
     state->collision_type = collision(state);
 
     // apply gravity
-    apply_gravity(state, dt);
+    if (!(dt > 0.2)) {
+      apply_gravity(state, dt);
+    }
 
     // check for pressed buttons
     button_press(state);
