@@ -10,15 +10,6 @@
 static list_t *ASSET_LIST = NULL;
 const size_t INIT_CAPACITY = 5;
 
-// typedef struct anim_asset {
-//   asset_t base;
-//   SDL_Texture *curr_texture;
-//   SDL_Texture *frame1_texture;
-//   SDL_Texture *frame2_texture;
-//   SDL_Texture *frame3_texture;
-//   body_t *body;
-// } anim_asset_t;
-
 /**
  * Allocates memory for an asset with the given parameters.
  *
@@ -128,6 +119,15 @@ void asset_make_anim(const char *frame1_filepath, const char *frame2_filepath,
   anim_asset->curr_texture = anim_asset->frame1_texture;
   anim_asset->body = body;
   list_add(ASSET_LIST, (asset_t *)anim_asset);
+}
+
+bool asset_change_text(asset_t *asset, char *text){
+  if (asset->type == ASSET_TEXT){
+    text_asset_t *clock = (text_asset_t *) asset;
+    clock->text = text;
+    return true;
+  }
+  return false;
 }
 
 void asset_change_texture(asset_t *asset, char key) {

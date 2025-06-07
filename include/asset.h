@@ -53,6 +53,15 @@ typedef struct button_asset {
   body_t *body;
 } button_asset_t;
 
+typedef struct anim_asset {
+  asset_t base;
+  SDL_Texture *curr_texture;
+  SDL_Texture *frame1_texture;
+  SDL_Texture *frame2_texture;
+  SDL_Texture *frame3_texture;
+  body_t *body;
+} anim_asset_t;
+
 /**
  * Allocates memory for an image asset with the given parameters and adds it
  * to the internal asset list.
@@ -115,6 +124,8 @@ void asset_make_anim(const char *frame1_filepath, const char *frame2_filepath,
  * @param key pressed key
  */
 void asset_change_texture(asset_t *asset, char key);
+
+bool asset_change_text(asset_t *asset, char *text);
 
 /**
  * Changes the texture of the animated assets for water and lava

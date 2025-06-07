@@ -184,7 +184,7 @@ const char *GEM_SOUND_PATH = "assets/gem_sound.mp3";
 const char *JUMP_SOUND_PATH = "assets/jump_sound.mp3";
 const char *DOOR_BUTTON_UNPRESSED_PATH = "assets/button_unpressed.png";
 const char *DOOR_BUTTON_PRESSED_PATH = "assets/button_pressed.png";
-const char *ELEVATOR_BUTTON_UNPRESSED_PATH =
+const char *ELEVATOR_BUTTON_UNPRESSED_PATH = 
     "assets/elevator_button_unpressed.png";
 const char *ELEVATOR_BUTTON_PRESSED_PATH = "assets/elevator_button_pressed.png";
 
@@ -318,6 +318,13 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   // sdl_play_level_failed(FAILED_SOUND_PATH);
 }
 
+// void game_completed_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
+//                         double force_const){
+//   // points
+//   go_to_homepage(state);
+  
+// }
+
 // TODO: jumping velocity implementation matters for when platofrm elevator
 // TODO: collision??? handles the collisions between user and platform
 void elevator_user_handler(body_t *body1, body_t *body2, vector_t axis,
@@ -422,11 +429,11 @@ vector_t get_dimensions_for_text(char *text) {
 }
 
 void make_clock(state_t *state) {
-  vector_t text_dim = get_dimensions_for_text(text);
-  vector_t center = {.x=CLOCK_POS.x-(text_dim.x / 2), .y=CLOCK_POS.y};
-  body_t *clock = make_obstacle(text_dim.x, text_dim.y, CLOCK_POS);
-  //list_t *shape, double mass, color_t color,
-                            // void *info, free_func_t info_freer
+  // vector_t text_dim = get_dimensions_for_text(text);
+  // vector_t center = {.x = CLOCK_POS.x - (text_dim.x / 2), .y = CLOCK_POS.y};
+  // body_t *clock = make_obstacle(text_dim.x, text_dim.y, center);
+  // list_t *shape, double mass, color_t color,
+  // void *info, free_func_t info_freer
   char text[10000];
   sprintf(text, "Clock:%.0f", floor(state->time));
   vector_t text_dim = get_dimensions_for_text(text);
@@ -434,7 +441,7 @@ void make_clock(state_t *state) {
                                  .y = CLOCK_POS.y,
                                  .w = text_dim.x,
                                  .h = text_dim.y};
-  asset_make_text_body(FONT_FILEPATH, text_box, text, CLOCK_COL, );
+  asset_make_text(FONT_FILEPATH, text_box, text, CLOCK_COL);
 }
 
 void make_level1(state_t *state) {
@@ -485,7 +492,7 @@ void make_level1(state_t *state) {
     asset_make_image_with_body(GEM_PATH, gem);
   }
 
-  // make door
+  // make final door
   vector_t coord = (vector_t){EXITS[0][0], EXITS[0][1]};
   body_t *exit = make_obstacle(EXITS[0][2], EXITS[0][3], coord, "exit");
   scene_add_body(state->scene, exit);
@@ -683,8 +690,30 @@ void make_level3(state_t *state) {
   make_clock(state);
 }
 
+void pause(state_t *state) {
+  state->pause = true;
+  asset_make_image(PAUSE_PATH,
+                   (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
+}
+
+void unpause(state_t *state) {
+  // if (state->pause_body) {
+  //   asset_remove_body(state->pause_body);
+  //   body_remove(state->pause_body);
+  //   body_free(state->pause_body);
+  // }
+  if (state->pause){
+    state->pause = false;
+    list_t *asset_list = asset_get_asset_list();
+    list_remove(asset_list, list_size(asset_list) - 1);
+  }
+  
+  // list_remove(asset_list, list_size(asset_list) - 1);
+}
+
 void go_to_level1(state_t *state) {
   asset_reset_asset_list();
+  unpause(state);
   scene_free(state->scene);
   state->scene = scene_init();
   state->current_screen = LEVEL1;
@@ -708,6 +737,18 @@ void go_to_level3(state_t *state) {
   state->current_screen = LEVEL3;
   make_level3(state);
   return;
+}
+
+void restart(state_t *state) {
+  state->time = 0; // reset everything
+  unpause(state);
+  if (state->current_screen == LEVEL1) {
+    go_to_level1(state);
+  } else if (state->current_screen == LEVEL2) {
+    go_to_level2(state);
+  } else if (state->current_screen == LEVEL3) {
+    go_to_level3(state);
+  }
 }
 
 void go_to_homepage(state_t *state) {
@@ -737,36 +778,6 @@ void go_to_homepage(state_t *state) {
       asset_make_image(RED_GEM_PATH, level_gem_box[i]);
       break;
     }
-  }
-}
-
-void pause(state_t *state) {
-  state->pause = true;
-  asset_make_image(PAUSE_PATH,
-                   (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
-}
-
-void unpause(state_t *state) {
-  // if (state->pause_body) {
-  //   asset_remove_body(state->pause_body);
-  //   body_remove(state->pause_body);
-  //   body_free(state->pause_body);
-  // }
-  state->pause = false;
-  list_t *asset_list = asset_get_asset_list();
-  list_remove(asset_list, list_size(asset_list) - 1);
-  // list_remove(asset_list, list_size(asset_list) - 1);
-}
-
-void restart(state_t *state) {
-  state->time = 0; // reset everything
-  unpause(state);
-  if (state->current_screen == LEVEL1) {
-    go_to_level1(state);
-  } else if (state->current_screen == LEVEL2) {
-    go_to_level2(state);
-  } else if (state->current_screen == LEVEL3) {
-    go_to_level3(state);
   }
 }
 
@@ -1024,6 +1035,7 @@ bool emscripten_main(state_t *state) {
       body_set_velocity(spirit, (vector_t){spirit_velocity.x,
                                            spirit_velocity.y - (GRAVITY * dt)});
     }
+
     // apply gravity
     apply_gravity(state, dt);
 
@@ -1036,10 +1048,28 @@ bool emscripten_main(state_t *state) {
     }
 
     if (!state->pause) {
-      asset_t *clock = list_get(body_assets, list_size(body_assets) - 1);
-      asset_destroy(clock);
+      size_t idx = list_size(body_assets) - 1;
+
+      asset_t *clock = list_get(body_assets, idx);
       state->time += dt;
-      make_clock(state);
+      
+      char text[10000];
+      sprintf(text, "Clock:%.0f", floor(state->time));
+
+      bool changed = asset_change_text(clock, text);
+      if (!changed) {
+        idx--;
+        clock = list_get(body_assets, idx);
+        asset_change_text(clock, text);
+      }
+
+      // body_t *exit = scene_get_body(state->scene, scene_bodies(state->scene) -1);
+      // // find collision for final door and spirit
+      // if (find_collision(spirit, exit).collided) {
+      //   go_to_homepage(state);
+      // }
+
+      // make_clock(state);
       scene_tick(state->scene, dt);
     }
   }
