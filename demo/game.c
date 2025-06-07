@@ -94,16 +94,21 @@ size_t EXITS[3][4] = {{60, 458, INNER_RADIUS * 3, OUTER_RADIUS * 3},
                       {60, 424, INNER_RADIUS * 3, OUTER_RADIUS * 3}};
 
 // elevators
-size_t ELEVATOR2[1][4] = {{50, 220, 70, BRICK_WIDTH}};
+size_t ELEVATORS[3][4] = {{50, 220, 70, BRICK_WIDTH},
+                          {700, 25, 70, BRICK_WIDTH},
+                          {50, 200, 70, BRICK_WIDTH}};
 
 // elevator buttons
-size_t E_BUTTONS[1][4] = {{500, 150, 30, 20}};
+size_t E_BUTTONS[2][4] = {{475, 150, 30, 20},
+                          {300, 25, 30, 20}};
 
 // doors
-size_t DOORS[1][4] = {{300, 245, 30, 70}};
+size_t DOORS[2][4] = {{300, 245, 30, 70},
+                      {250, 175, 30, 90}};
 
 // doors buttons
-size_t BUTTONS[1][4] = {{80, 100, 30, 20}};
+size_t BUTTONS[2][4] = {{50, 100, 30, 20},
+                        {500, 140, 30, 20}};
 
 // velocity constants
 const vector_t VELOCITY_LEFT = (vector_t){-200, 0};
@@ -129,7 +134,8 @@ const char *EXIT_DOOR_PATH = "assets/exit_door.png";
 const char *GEM_PATH = "assets/gem.png";
 const char *DOOR_BUTTON_UNPRESSED_PATH = "assets/button_unpressed.png";
 const char *DOOR_BUTTON_PRESSED_PATH = "assets/button_pressed.png";
-const char *ELEVATOR_BUTTON_UNPRESSED_PATH = "assets/elevator_button_unpressed.png";
+const char *ELEVATOR_BUTTON_UNPRESSED_PATH =
+    "assets/elevator_button_unpressed.png";
 const char *ELEVATOR_BUTTON_PRESSED_PATH = "assets/elevator_button_pressed.png";
 
 typedef enum {
@@ -215,26 +221,38 @@ void wrap_edges(body_t *body) {
 }
 
 void move_elevator(state_t *state) {
-  body_t *elevator = NULL;
   for (size_t i = 0; i < scene_bodies(state->scene); i++) {
     body_t *body = scene_get_body(state->scene, i);
     if (strcmp(body_get_info(body), "elevator") == 0) {
-      elevator = body;
-      break;
+      vector_t centroid = body_get_centroid(body);
+
+      if (state->current_screen == LEVEL2) {
+        if (centroid.y + 10 > 320) {
+          body_set_velocity(body, (vector_t){0, -20});
+        } else if (centroid.y - 10 < 220) {
+          body_set_velocity(body, (vector_t){0, 20});
+        }
+      }
+
+      if (state->current_screen == LEVEL3) {
+        if (centroid.x == 700) { // first elevator
+          if (centroid.y + 10 > 320) {
+            body_set_velocity(body, (vector_t){0, -20});
+          } else if (centroid.y - 10 < 25) {
+            body_set_velocity(body, (vector_t){0, 20});
+          }
+        } else if (centroid.x == 50) { // second elevator
+          if (centroid.y + 10 > 320) {
+            body_set_velocity(body, (vector_t){0, -20});
+          } else if (centroid.y - 10 < 200) {
+            body_set_velocity(body, (vector_t){0, 20});
+          }
+        }
+      }
     }
   }
-
-  if (elevator == NULL) {
-    return;
-  }
-
-  vector_t centroid = body_get_centroid(elevator);
-  if (centroid.y + 10 > 320) {
-    body_set_velocity(elevator, (vector_t){0, -20});
-  } else if (centroid.y - 10 < 220) {
-    body_set_velocity(elevator, (vector_t){0, 20});
-  }
 }
+
 
 // Handlers
 void reset_user(body_t *body) { body_set_centroid(body, START_POS); }
@@ -371,22 +389,24 @@ void make_level2(state_t *state) {
   // make elevator
   size_t elevator_len = 1;
   for (size_t i = 0; i < elevator_len; i++) {
-    vector_t coord = (vector_t){ELEVATOR2[i][0], ELEVATOR2[i][1]};
+    vector_t coord = (vector_t){ELEVATORS[i][0], ELEVATORS[i][1]};
     body_t *obstacle =
-        make_obstacle(ELEVATOR2[i][2], ELEVATOR2[i][3], coord, "elevator");
+        make_obstacle(ELEVATORS[i][2], ELEVATORS[i][3], coord, "elevator");
     scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, state->spirit, obstacle,   
+    create_collision(state->scene, state->spirit, obstacle,
                      elevator_user_handler, NULL, 0, NULL);
     asset_make_image_with_body(ELEVATOR_PATH, obstacle);
   }
 
   // make elevator button
   vector_t e_button_coord = (vector_t){E_BUTTONS[0][0], E_BUTTONS[0][1]};
-  body_t *e_button = make_obstacle(E_BUTTONS[0][2], E_BUTTONS[0][3], e_button_coord, "elevator button");
+  body_t *e_button = make_obstacle(E_BUTTONS[0][2], E_BUTTONS[0][3],
+                                   e_button_coord, "elevator button");
   scene_add_body(state->scene, e_button);
-  create_collision(state->scene, state->spirit, e_button, platform_handler, NULL,
-                   0, NULL);
-  asset_make_button(ELEVATOR_BUTTON_UNPRESSED_PATH, ELEVATOR_BUTTON_PRESSED_PATH, e_button);
+  create_collision(state->scene, state->spirit, e_button, platform_handler,
+                   NULL, 0, NULL);
+  asset_make_button(ELEVATOR_BUTTON_UNPRESSED_PATH,
+                    ELEVATOR_BUTTON_PRESSED_PATH, e_button);
 
   // make door
   vector_t door_coord = (vector_t){DOORS[0][0], DOORS[0][1]};
@@ -403,7 +423,8 @@ void make_level2(state_t *state) {
   scene_add_body(state->scene, button);
   create_collision(state->scene, state->spirit, button, platform_handler, NULL,
                    0, NULL);
-  asset_make_button(DOOR_BUTTON_UNPRESSED_PATH, DOOR_BUTTON_PRESSED_PATH, button);
+  asset_make_button(DOOR_BUTTON_UNPRESSED_PATH, DOOR_BUTTON_PRESSED_PATH,
+                    button);
 
   size_t brick_len = BRICK_NUM[1];
   for (size_t i = 0; i < brick_len; i++) {
@@ -426,6 +447,45 @@ void make_level2(state_t *state) {
 }
 
 void make_level3(state_t *state) {
+
+  for (size_t i = 1; i < 3; i++) {
+    vector_t elevator_coord = (vector_t){ELEVATORS[i][0], ELEVATORS[i][1]};
+    body_t *obstacle =
+        make_obstacle(ELEVATORS[i][2], ELEVATORS[i][3], elevator_coord, "elevator");
+    scene_add_body(state->scene, obstacle);
+    create_collision(state->scene, state->spirit, obstacle,
+                      elevator_user_handler, NULL, 0, NULL);
+    asset_make_image_with_body(ELEVATOR_PATH, obstacle);
+  }
+
+  // make elevator button
+  vector_t e_button_coord = (vector_t){E_BUTTONS[1][0], E_BUTTONS[1][1]};
+  body_t *e_button = make_obstacle(E_BUTTONS[1][2], E_BUTTONS[1][3],
+                                   e_button_coord, "elevator button");
+  scene_add_body(state->scene, e_button);
+  create_collision(state->scene, state->spirit, e_button, platform_handler,
+                   NULL, 0, NULL);
+  asset_make_button(ELEVATOR_BUTTON_UNPRESSED_PATH,
+                    ELEVATOR_BUTTON_PRESSED_PATH, e_button);
+
+  // make door
+  vector_t door_coord = (vector_t){DOORS[1][0], DOORS[1][1]};
+  body_t *door = make_obstacle(DOORS[1][2], DOORS[1][3], door_coord, "door");
+  scene_add_body(state->scene, door);
+  create_collision(state->scene, state->spirit, door, platform_handler, NULL, 0,
+                   NULL);
+  asset_make_image_with_body(DOOR_PATH, door);
+
+  // make door button
+  vector_t button_coord = (vector_t){BUTTONS[1][0], BUTTONS[1][1]};
+  body_t *button =
+      make_obstacle(BUTTONS[1][2], BUTTONS[1][3], button_coord, "door button");
+  scene_add_body(state->scene, button);
+  create_collision(state->scene, state->spirit, button, platform_handler, NULL,
+                   0, NULL);
+  asset_make_button(DOOR_BUTTON_UNPRESSED_PATH, DOOR_BUTTON_PRESSED_PATH,
+                    button);
+
   size_t brick_len = BRICK_NUM[2];
   for (size_t i = 0; i < brick_len; i++) {
     vector_t coord = (vector_t){BRICKS3[i][0], BRICKS3[i][1]};
@@ -436,7 +496,8 @@ void make_level3(state_t *state) {
                      NULL, 0, NULL);
     asset_make_image_with_body(BRICK_PATH, obstacle);
   }
-  // make door
+
+  // make exit
   vector_t coord = (vector_t){EXITS[2][0], EXITS[2][1]};
   body_t *exit = make_obstacle(EXITS[2][2], EXITS[2][3], coord, "exit");
   scene_add_body(state->scene, exit);
@@ -687,13 +748,13 @@ void button_action(state_t *state, body_t *button) {
       image_asset_t *obstacle = (image_asset_t *)asset;
       body_t *body = obstacle->body;
       if ((strcmp(body_get_info(button), "door button") == 0 &&
-          strcmp(body_get_info(body), "door") == 0))  {
+           strcmp(body_get_info(body), "door") == 0)) {
         asset_destroy(obstacle);
         body_remove(body);
       } else if (strcmp(body_get_info(button), "elevator button") == 0 &&
-          strcmp(body_get_info(body), "elevator") == 0) {
-            state->elevator = true;
-          }
+                 strcmp(body_get_info(body), "elevator") == 0) {
+        state->elevator = true;
+      }
     }
   }
 }
@@ -783,7 +844,7 @@ state_t *emscripten_init() {
   state->points = 0;
   srand(time(NULL));
   state->scene = scene_init();
-  state->current_screen = LEVEL1;
+  state->current_screen = LEVEL3;
   state->pause = false;
   state->collision_type = NO_COLLISION;
   state->elevator = false;
@@ -802,8 +863,8 @@ state_t *emscripten_init() {
 
   // make level
   // make_level3(state);
-  make_level2(state);
-  // make_level3(state);
+  // make_level2(state);
+  make_level3(state);
 
   sdl_on_key((key_handler_t)on_key);
 
@@ -819,8 +880,6 @@ bool emscripten_main(state_t *state) {
     asset_t *asset = list_get(body_assets, i);
     asset_render(asset);
   }
-
-
 
   // update collision type
   state->collision_type = collision(state);
