@@ -312,7 +312,7 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   asset_make_image(GAME_OVER_PATH,
                    (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
   // go_to_homepage(state);
-  // sdl_play_level_failed(FAILED_SOUND_PATH);
+  sdl_play_level_failed(FAILED_SOUND_PATH);
 }
 
 // TODO: jumping velocity implementation matters for when platofrm elevator
@@ -830,29 +830,29 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
         break;
       }
     } else if (type == KEY_PRESSED && state->pause) {
-        switch(key) {
-        case KEY_H:
-          go_to_homepage(state);
-          state->pause = false;
-          break;
-        case KEY_R:
-          restart(state);
-          break;
-        case KEY_U:
-          unpause(state);
-          break;
-        }
-    } else {
-        switch (key) {
-        case LEFT_ARROW:
-          body_set_velocity(spirit, (vector_t){0, velocity.y});
-          break;
-        case RIGHT_ARROW:
-          body_set_velocity(spirit, (vector_t){0, velocity.y});
-          break;
-        }
-        asset_change_texture(spirit_asset, UP_ARROW);
+      switch (key) {
+      case KEY_H:
+        go_to_homepage(state);
+        state->pause = false;
+        break;
+      case KEY_R:
+        restart(state);
+        break;
+      case KEY_U:
+        unpause(state);
+        break;
       }
+    } else {
+      switch (key) {
+      case LEFT_ARROW:
+        body_set_velocity(spirit, (vector_t){0, velocity.y});
+        break;
+      case RIGHT_ARROW:
+        body_set_velocity(spirit, (vector_t){0, velocity.y});
+        break;
+      }
+      asset_change_texture(spirit_asset, UP_ARROW);
+    }
   }
 }
 
