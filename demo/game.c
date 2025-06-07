@@ -164,7 +164,7 @@ const char *GAME_OVER_PATH = "assets/game_over.png";
 const char *BACKGROUND_MUSIC_PATH = "assets/background_music.mp3";
 const char *GEM_SOUND_PATH = "assets/gem_sound.mp3";
 // const char *COMPLETED_SOUND_PATH = ;
-// const char *FAILED_SOUND_PATH = ;
+const char *FAILED_SOUND_PATH = "assets/level_failed.mp3";
 const char *JUMP_SOUND_PATH = "assets/jump_sound.mp3";
 
 typedef enum {
@@ -288,7 +288,7 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   asset_make_image(GAME_OVER_PATH,
                    (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
   // go_to_homepage(state);
-  // sdl_play_level_failed(FAILED_SOUND_PATH);
+  sdl_play_level_failed(FAILED_SOUND_PATH);
 }
 
 // TODO: jumping velocity implementation matters for when platofrm elevator

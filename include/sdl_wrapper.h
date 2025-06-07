@@ -192,8 +192,6 @@ void sdl_play_level_failed(const char *path);
 
 void sdl_play_jump_sound(const char *path);
 
-
-
 // added by Natalie
 void sdl_quit();
 
