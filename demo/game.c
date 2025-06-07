@@ -372,6 +372,7 @@ void platform_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
 }
 
 void init_bgd_player(state_t *state) {
+  state->time = 0;
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(BACKGROUND_PATH, box);
 
@@ -402,6 +403,7 @@ void make_clock(state_t *state) {
 
 void make_level1(state_t *state) {
   init_bgd_player(state);
+
   // make brick platforms
   size_t brick_len = BRICK_NUM[0];
   for (size_t i = 0; i < brick_len; i++) {
@@ -505,7 +507,6 @@ void make_level2(state_t *state) {
   }
 
   // make gem
-  // vector_t center = (vector_t){.x = 100, .y = 100};
   size_t gem_len = GEM_NUM[1];
   for (size_t i = 0; i < gem_len; i++) {
     vector_t center = (vector_t){GEM2[i][0], GEM2[i][1]};
@@ -581,11 +582,9 @@ void make_level3(state_t *state) {
 }
 
 void go_to_level1(state_t *state) {
-  if (state->current_screen != HOMEPAGE) {
-    scene_free(state->scene);
-  }
   asset_reset_asset_list();
-  // scene_free(state->scene); // this lowkey might break
+  scene_free(state->scene);
+  state->scene = scene_init();
   state->current_screen = LEVEL1;
   make_level1(state);
   return;
@@ -593,6 +592,8 @@ void go_to_level1(state_t *state) {
 
 void go_to_level2(state_t *state) {
   asset_reset_asset_list();
+  scene_free(state->scene);
+  state->scene = scene_init();
   state->current_screen = LEVEL2;
   make_level2(state);
   return;
@@ -600,13 +601,19 @@ void go_to_level2(state_t *state) {
 
 void go_to_level3(state_t *state) {
   asset_reset_asset_list();
+  scene_free(state->scene);
+  state->scene = scene_init();
   state->current_screen = LEVEL3;
   make_level3(state);
   return;
 }
 
 void go_to_homepage(state_t *state) {
-  // asset_reset_asset_list(); // only do this if need to reset
+  if (state->current_screen != HOMEPAGE){
+    asset_reset_asset_list();
+    scene_free(state->scene);
+    state->scene = scene_init();
+  }
   printf("%s/n", "at homepage");
   state->current_screen = HOMEPAGE;
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
@@ -633,23 +640,6 @@ void go_to_homepage(state_t *state) {
 
 void pause(state_t *state) {
   state->pause = true;
-  // list_t *body_list = list_init(4, free);
-  // vector_t *v1 = malloc(sizeof(vector_t));
-  // *v1 = (vector_t){150, 100};
-  // list_add(body_list, v1);
-  // vector_t *v2 = malloc(sizeof(vector_t));
-  // *v2 = (vector_t){600, 400};
-  // list_add(body_list, v2);
-  // vector_t *v3 = malloc(sizeof(vector_t));
-  // *v3 = (vector_t){150, 400};
-  // list_add(body_list, v3);
-  // vector_t *v4 = malloc(sizeof(vector_t));
-  // *v4 = (vector_t){600, 100};
-  // list_add(body_list, v4);
-  // state->pause_body = body_init(body_list, 100, SPIRIT_COLOR);
-  // body_set_centroid(state->pause_body, CENTER);
-  // scene_add_body(state->scene, state->pause_body);
-  // asset_make_image_with_body(PAUSE_FILEPATH, state->pause_body);
   asset_make_image(PAUSE_PATH,
                    (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
 }
@@ -681,92 +671,77 @@ void restart(state_t *state) {
 // need to fix this so that the screen transitions work well
 // handle the if else cases correcly
 void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
-  body_t *spirit = NULL;
-  vector_t velocity = {0, 0};
-  asset_t *spirit_asset = NULL;
-  list_t *asset_list = asset_get_asset_list();
-  if (state->current_screen != HOMEPAGE) {
-    // spirit should be the first body
-    spirit = scene_get_body(state->scene, 0);
-    velocity = body_get_velocity(spirit);
-    spirit_asset = list_get(asset_list, 1);
-  }
-
-  if (type == KEY_PRESSED) {
-    collision_type_t collision_type = state->collision_type;
-    switch (key) {
-    case LEFT_ARROW:
-      if (!(collision_type == RIGHT_COLLISION ||
-            collision_type == UP_RIGHT_COLLISION ||
-            collision_type == DOWN_RIGHT_COLLISION)) {
-        body_set_velocity(spirit, (vector_t){VELOCITY_LEFT.x, velocity.y});
-      }
-      asset_change_texture(spirit_asset, key);
-      break;
-    case RIGHT_ARROW:
-      if (!(collision_type == LEFT_COLLISION ||
-            collision_type == UP_LEFT_COLLISION ||
-            collision_type == DOWN_LEFT_COLLISION)) {
-        body_set_velocity(spirit, (vector_t){VELOCITY_RIGHT.x, velocity.y});
-      }
-      asset_change_texture(spirit_asset, key);
-      break;
-    case UP_ARROW:
-      if (collision_type == UP_COLLISION ||
-          collision_type == UP_LEFT_COLLISION ||
-          collision_type == UP_RIGHT_COLLISION) {
-        body_set_velocity(spirit, (vector_t){velocity.x, VELOCITY_UP.y});
+  if (state->current_screen == HOMEPAGE){
+    if (type == KEY_PRESSED){
+      switch (key){
+      case KEY_1:
+        go_to_level1(state);
+        break;
+      case KEY_2:
+        go_to_level2(state);
+        break;
+      case KEY_3:
+        go_to_level3(state);
         break;
       }
-      asset_change_texture(spirit_asset, key);
-      break;
-    case KEY_1:
-      if (state->pause || state->current_screen == HOMEPAGE) {
-        go_to_level1(state);
-      }
-      break;
-    case KEY_2:
-      if (state->pause || state->current_screen == HOMEPAGE) {
-        go_to_level2(state);
-      }
-      break;
-    case KEY_3:
-      if (state->pause || state->current_screen == HOMEPAGE) {
-        go_to_level3(state);
-      }
-      break;
-    case KEY_H:
-      go_to_homepage(state); // check this with natalie
-      break;
-    case KEY_P:
-      if (state->current_screen == LEVEL1 || state->current_screen == LEVEL2 ||
-          state->current_screen == LEVEL3) {
-        pause(state);
-      }
-      break;
-    case KEY_R:
-      if (state->pause) {
-        restart(state);
-      }
-      break;
-    case KEY_U:
-      if (state->pause) {
-        unpause(state);
-      }
-      break;
     }
-  } else {
-    asset_change_texture(spirit_asset, UP_ARROW);
-    // ask dillan if this changes anything
-    body_set_velocity(spirit, (vector_t){0, velocity.y});
-    // switch (key) {
-    // case LEFT_ARROW:
-    //   body_set_velocity(spirit, (vector_t){0, velocity.y});
-    //   break;
-    // case RIGHT_ARROW:
-    //   body_set_velocity(spirit, (vector_t){0, velocity.y});
-    //   break;
-    // }
+  }else{
+    list_t *asset_list = asset_get_asset_list();
+    collision_type_t collision_type = state->collision_type;
+    body_t *spirit = scene_get_body(state->scene, 0);
+    vector_t velocity = body_get_velocity(spirit);
+    asset_t *spirit_asset = list_get(asset_list, 1);
+    if(type == KEY_PRESSED){
+      switch (key) {
+        case LEFT_ARROW:
+          if (!(collision_type == RIGHT_COLLISION ||
+                collision_type == UP_RIGHT_COLLISION ||
+                collision_type == DOWN_RIGHT_COLLISION)) {
+            body_set_velocity(spirit, (vector_t){VELOCITY_LEFT.x, velocity.y});
+          }
+          asset_change_texture(spirit_asset, key);
+          break;
+        case RIGHT_ARROW:
+          if (!(collision_type == LEFT_COLLISION ||
+                collision_type == UP_LEFT_COLLISION ||
+                collision_type == DOWN_LEFT_COLLISION)) {
+            body_set_velocity(spirit, (vector_t){VELOCITY_RIGHT.x, velocity.y});
+          }
+          asset_change_texture(spirit_asset, key);
+          break;
+        case UP_ARROW:
+          if (collision_type == UP_COLLISION ||
+              collision_type == UP_LEFT_COLLISION ||
+              collision_type == UP_RIGHT_COLLISION) {
+            body_set_velocity(spirit, (vector_t){velocity.x, VELOCITY_UP.y});
+            break;
+          }
+          asset_change_texture(spirit_asset, key);
+          break;
+        case KEY_H:
+          go_to_homepage(state); // check this with natalie
+          break;
+        case KEY_P:
+          if (state->current_screen == LEVEL1 || state->current_screen == LEVEL2 ||
+              state->current_screen == LEVEL3) {
+            pause(state);
+          }
+          break;
+        case KEY_R:
+          if (state->pause) {
+            restart(state);
+          }
+          break;
+        case KEY_U:
+          if (state->pause) {
+            unpause(state);
+          }
+          break;
+        }
+    }else{
+      asset_change_texture(spirit_asset, UP_ARROW);
+      body_set_velocity(spirit, (vector_t){0, velocity.y});
+    }
   }
 }
 
@@ -892,16 +867,19 @@ bool emscripten_main(state_t *state) {
     }
 
     // clocks
-    asset_t *clock = list_get(body_assets, len - 1);
+    
     // asset_destroy(clock); // only destroy if the clock is there
-    make_clock(state);
+    
     // sdl_render_scene(state->scene);
 
     if (!state->pause) {
+      asset_t *clock = list_get(body_assets, len - 1);
       scene_tick(state->scene, dt);
+      make_clock(state);
+      state->time += dt;
     }
 
-    state->time += dt;
+    
   }
 
   // body_t *elevator = scene_get_body(state->scene, 1);
