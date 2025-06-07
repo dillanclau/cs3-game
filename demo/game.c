@@ -581,7 +581,7 @@ void make_level3(state_t *state) {
 }
 
 void go_to_level1(state_t *state) {
-  if (state->current_screen != HOMEPAGE){
+  if (state->current_screen != HOMEPAGE) {
     scene_free(state->scene);
   }
   asset_reset_asset_list();
@@ -758,7 +758,7 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
   } else {
     asset_change_texture(spirit_asset, UP_ARROW);
     // ask dillan if this changes anything
-    body_set_velocity(spirit, (vector_t) {0, velocity.y});
+    body_set_velocity(spirit, (vector_t){0, velocity.y});
     // switch (key) {
     // case LEFT_ARROW:
     //   body_set_velocity(spirit, (vector_t){0, velocity.y});
@@ -876,7 +876,7 @@ bool emscripten_main(state_t *state) {
     asset_render(list_get(body_assets, i));
   }
 
-  if (state->current_screen != HOMEPAGE){
+  if (state->current_screen != HOMEPAGE) {
     double dt = time_since_last_tick();
     state->collision_type = collision(state);
 
@@ -888,7 +888,7 @@ bool emscripten_main(state_t *state) {
           state->collision_type ==
               UP_RIGHT_COLLISION)) { // only apply if on platform
       body_set_velocity(spirit, (vector_t){spirit_velocity.x,
-    spirit_velocity.y - (GRAVITY * dt)});
+                                           spirit_velocity.y - (GRAVITY * dt)});
     }
 
     // clocks
@@ -902,9 +902,8 @@ bool emscripten_main(state_t *state) {
     }
 
     state->time += dt;
-    
   }
-  
+
   // body_t *elevator = scene_get_body(state->scene, 1);
   // move_elevator(elevator);
 
