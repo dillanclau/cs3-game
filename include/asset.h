@@ -9,9 +9,48 @@
 
 #include "body.h"
 
-typedef enum { ASSET_IMAGE, ASSET_TEXT, ASSET_SPIRIT, ASSET_ANIM } asset_type_t;
+typedef enum {
+  ASSET_IMAGE,
+  ASSET_TEXT,
+  ASSET_SPIRIT,
+  ASSET_ANIM,
+  ASSET_BUTTON,
+} asset_type_t;
 
-typedef struct asset asset_t;
+typedef struct asset {
+  asset_type_t type;
+  SDL_Rect bounding_box;
+} asset_t;
+
+typedef struct text_asset {
+  asset_t base;
+  TTF_Font *font;
+  const char *text;
+  color_t color;
+} text_asset_t;
+
+typedef struct image_asset {
+  asset_t base;
+  SDL_Texture *texture;
+  body_t *body;
+} image_asset_t;
+
+typedef struct spirit_asset {
+  asset_t base;
+  SDL_Texture *curr_texture;
+  SDL_Texture *front_texture;
+  SDL_Texture *right_texture;
+  SDL_Texture *left_texture;
+  body_t *body;
+} spirit_asset_t;
+
+typedef struct button_asset {
+  asset_t base;
+  SDL_Texture *curr_texture;
+  SDL_Texture *unpressed_texture;
+  SDL_Texture *pressed_texture;
+  body_t *body;
+} button_asset_t;
 
 /**
  * Allocates memory for an image asset with the given parameters and adds it
@@ -89,6 +128,11 @@ void asset_animate(asset_t *asset, double time);
  * list. This is useful when transitioning between scenes or levels.
  */
 void asset_reset_asset_list();
+
+void asset_make_button(const char *unpressed_filepath,
+                       const char *pressed_filepath, body_t *body);
+
+void asset_change_texture_button(asset_t *asset);
 
 /**
  * Returns the internal list of all assets that have been created.

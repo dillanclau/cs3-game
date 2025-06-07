@@ -1,5 +1,13 @@
 {
     "files.associations": {
-        "body.h": "c"
+        "body.h": "c",
+        "assert.h": "c",
+        "array": "c",
+        "functional": "c",
+        "istream": "c",
+        "ostream": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c"
     }
 }
