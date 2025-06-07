@@ -422,6 +422,11 @@ vector_t get_dimensions_for_text(char *text) {
 }
 
 void make_clock(state_t *state) {
+  vector_t text_dim = get_dimensions_for_text(text);
+  vector_t center = {.x=CLOCK_POS.x-(text_dim.x / 2), .y=CLOCK_POS.y};
+  body_t *clock = make_obstacle(text_dim.x, text_dim.y, CLOCK_POS);
+  //list_t *shape, double mass, color_t color,
+                            // void *info, free_func_t info_freer
   char text[10000];
   sprintf(text, "Clock:%.0f", floor(state->time));
   vector_t text_dim = get_dimensions_for_text(text);
@@ -429,7 +434,7 @@ void make_clock(state_t *state) {
                                  .y = CLOCK_POS.y,
                                  .w = text_dim.x,
                                  .h = text_dim.y};
-  asset_make_text(FONT_FILEPATH, text_box, text, CLOCK_COL);
+  asset_make_text_body(FONT_FILEPATH, text_box, text, CLOCK_COL, );
 }
 
 void make_level1(state_t *state) {
