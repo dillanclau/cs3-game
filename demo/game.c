@@ -176,9 +176,10 @@ const char *GAME_OVER_PATH = "assets/game_over.png";
 
 const char *BACKGROUND_MUSIC_PATH = "assets/background_music.mp3";
 const char *GEM_SOUND_PATH = "assets/gem_sound.mp3";
-// const char *COMPLETED_SOUND_PATH = ;
-const char *FAILED_SOUND_PATH = "assets/level_failed.mp3";
+const char *COMPLETED_SOUND_PATH = "assets/level_completed_sound.mp3";
+const char *FAILED_SOUND_PATH = "assets/level_failed_sound.mp3";
 const char *JUMP_SOUND_PATH = "assets/jump_sound.mp3";
+
 const char *DOOR_BUTTON_UNPRESSED_PATH = "assets/button_unpressed.png";
 const char *DOOR_BUTTON_PRESSED_PATH = "assets/button_pressed.png";
 const char *ELEVATOR_BUTTON_UNPRESSED_PATH =
@@ -266,7 +267,7 @@ void wrap_edges(body_t *body) {
     body_set_centroid(body, (vector_t){centroid.x, MIN.y});
   } else if (centroid.y < MIN.y) {
     body_set_centroid(body, (vector_t){centroid.x, MAX.y});
-  } 
+  }
 }
 
 void move_elevator(state_t *state) {
@@ -311,7 +312,7 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   asset_make_image(GAME_OVER_PATH,
                    (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
   // go_to_homepage(state);
-  sdl_play_level_failed(FAILED_SOUND_PATH);
+  // sdl_play_level_failed(FAILED_SOUND_PATH);
 }
 
 // TODO: jumping velocity implementation matters for when platofrm elevator
@@ -791,6 +792,9 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
     asset_t *spirit_asset = list_get(asset_list, 1);
     if (type == KEY_PRESSED && !state->pause) {
       switch (key) {
+      case KEY_H:
+        go_to_homepage(state);
+        break;
       case LEFT_ARROW:
         if (!(collision_type == RIGHT_COLLISION ||
               collision_type == UP_RIGHT_COLLISION ||
@@ -808,6 +812,7 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
         asset_change_texture(spirit_asset, key);
         break;
       case UP_ARROW:
+        sdl_play_jump_sound(JUMP_SOUND_PATH);
         if (collision_type == UP_COLLISION ||
             collision_type == UP_LEFT_COLLISION ||
             collision_type == UP_RIGHT_COLLISION) {
