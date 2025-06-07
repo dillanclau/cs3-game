@@ -684,7 +684,6 @@ void make_level3(state_t *state) {
     asset_make_image_with_body(GEM_PATH, gem);
   }
 
-
   // make exit
   vector_t coord = (vector_t){EXITS[2][0], EXITS[2][1]};
   body_t *exit = make_obstacle(EXITS[2][2], EXITS[2][3], coord, "exit");
@@ -1027,16 +1026,16 @@ bool emscripten_main(state_t *state) {
     double dt = time_since_last_tick();
     state->collision_type = collision(state);
 
-  // apply gravity
-  apply_gravity(state, dt);
+    // apply gravity
+    apply_gravity(state, dt);
 
-  // check for pressed buttons
-  button_press(state);
+    // check for pressed buttons
+    button_press(state);
 
-  // move elevator
-  if (state->elevator) {
-    move_elevator(state);
-  }
+    // move elevator
+    if (state->elevator) {
+      move_elevator(state);
+    }
     // apply gravity
     body_t *spirit = state->spirit;
     vector_t spirit_velocity = body_get_velocity(spirit);
