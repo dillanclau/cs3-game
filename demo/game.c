@@ -850,9 +850,8 @@ bool emscripten_main(state_t *state) {
   sdl_render_scene(state->scene);
   sdl_play_music(BACKGROUND_MUSIC_PATH);
   list_t *body_assets = asset_get_asset_list();
-  size_t len = list_size(body_assets);
 
-  for (size_t i = 0; i < len; i++) {
+  for (size_t i = 0; i < list_size(body_assets); i++) {
     asset_t *asset = list_get(body_assets, i);
     asset_animate(asset, state->time);
     asset_render(list_get(body_assets, i));
@@ -869,21 +868,17 @@ bool emscripten_main(state_t *state) {
           state->collision_type == UP_LEFT_COLLISION ||
           state->collision_type ==
               UP_RIGHT_COLLISION)) { // only apply if on platform
+      printf("%s\n", "help");
       body_set_velocity(spirit, (vector_t){spirit_velocity.x,
                                            spirit_velocity.y - (GRAVITY * dt)});
     }
 
-    // clocks
-
-    // asset_destroy(clock); // only destroy if the clock is there
-
-    // sdl_render_scene(state->scene);
-
     if (!state->pause) {
-      asset_t *clock = list_get(body_assets, len - 1);
-      scene_tick(state->scene, dt);
-      make_clock(state);
+      asset_t *clock = list_get(body_assets, list_size(body_assets) - 1);
+      asset_destroy(clock);
       state->time += dt;
+      make_clock(state);
+      scene_tick(state->scene, dt);
     }
   }
 
