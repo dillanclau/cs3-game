@@ -99,16 +99,13 @@ size_t ELEVATORS[3][4] = {{50, 220, 70, BRICK_WIDTH},
                           {50, 200, 70, BRICK_WIDTH}};
 
 // elevator buttons
-size_t E_BUTTONS[2][4] = {{475, 150, 30, 20},
-                          {300, 25, 30, 20}};
+size_t E_BUTTONS[2][4] = {{475, 150, 30, 20}, {300, 25, 30, 20}};
 
 // doors
-size_t DOORS[2][4] = {{300, 245, 30, 70},
-                      {250, 175, 30, 90}};
+size_t DOORS[2][4] = {{300, 245, 30, 70}, {250, 175, 30, 90}};
 
 // doors buttons
-size_t BUTTONS[2][4] = {{50, 100, 30, 20},
-                        {500, 140, 30, 20}};
+size_t BUTTONS[2][4] = {{50, 100, 30, 20}, {500, 140, 30, 20}};
 
 // velocity constants
 const vector_t VELOCITY_LEFT = (vector_t){-200, 0};
@@ -252,7 +249,6 @@ void move_elevator(state_t *state) {
     }
   }
 }
-
 
 // Handlers
 void reset_user(body_t *body) { body_set_centroid(body, START_POS); }
@@ -450,11 +446,11 @@ void make_level3(state_t *state) {
 
   for (size_t i = 1; i < 3; i++) {
     vector_t elevator_coord = (vector_t){ELEVATORS[i][0], ELEVATORS[i][1]};
-    body_t *obstacle =
-        make_obstacle(ELEVATORS[i][2], ELEVATORS[i][3], elevator_coord, "elevator");
+    body_t *obstacle = make_obstacle(ELEVATORS[i][2], ELEVATORS[i][3],
+                                     elevator_coord, "elevator");
     scene_add_body(state->scene, obstacle);
     create_collision(state->scene, state->spirit, obstacle,
-                      elevator_user_handler, NULL, 0, NULL);
+                     elevator_user_handler, NULL, 0, NULL);
     asset_make_image_with_body(ELEVATOR_PATH, obstacle);
   }
 
