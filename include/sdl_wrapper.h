@@ -181,7 +181,6 @@ void sdl_play_music(const char *path);
 
 void sdl_play_sound_effect(const char *path, sound_effect_t sound_type);
 
-
 // added by Natalie
 void sdl_quit();
 

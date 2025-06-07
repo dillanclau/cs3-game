@@ -9,8 +9,8 @@
 #include "asset_cache.h"
 #include "collision.h"
 #include "forces.h"
-#include "sdl_wrapper.h"
 #include "sdl_wrapper.c"
+#include "sdl_wrapper.h"
 
 const vector_t MIN = {0, 0};
 const vector_t MAX = {750, 500};
@@ -261,8 +261,6 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   // go_to_homepage(state);
   sdl_play_sound_effect(FAILED_SOUND_PATH);
 }
-
-
 
 // TODO: jumping velocity implementation matters for when platofrm elevator
 // TODO: collision??? handles the collisions between user and platform
@@ -778,7 +776,7 @@ state_t *emscripten_init() {
 bool emscripten_main(state_t *state) {
   double dt = time_since_last_tick();
   sdl_clear();
-  sdl_render_scene(state->scene);  
+  sdl_render_scene(state->scene);
   sdl_play_music(BACKGROUND_MUSIC_PATH);
   list_t *body_assets = asset_get_asset_list();
   for (size_t i = 0; i < list_size(body_assets); i++) {
@@ -787,7 +785,6 @@ bool emscripten_main(state_t *state) {
   body_t *elevator = scene_get_body(state->scene, 1);
   move_elevator(elevator, state->spirit);
   state->collision_type = collision(state);
-
 
   // apply gravity
   body_t *spirit = state->spirit;

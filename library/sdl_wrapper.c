@@ -18,7 +18,6 @@ const int8_t FONT_HEIGHT_SCALE = 2;
 const double MS_PER_S = 100000;
 static Mix_Music *background_music = NULL;
 
-
 /**
  * The coordinate at the center of the screen.
  */
