@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "body.h": "c"
+        "body.h": "c",
+        "assert.h": "c"
     }
 }
