@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_ttf.h>
 #include <assert.h>
 #include <math.h>
@@ -15,6 +16,11 @@ const SDL_Color SDL_BLACK = {0, 0, 0};
 const int8_t FONT_HEIGHT_SCALE = 2;
 // const double MS_PER_S = 1000.0;
 const double MS_PER_S = 100000;
+static Mix_Music *background_music = NULL;
+static Mix_Music *gem_sound = NULL;
+static Mix_Music *level_completed_sound = NULL;
+static Mix_Music *level_failed_sound = NULL;
+static Mix_Music *jump_sound = NULL;
 
 /**
  * The coordinate at the center of the screen.
@@ -130,15 +136,19 @@ void sdl_init(vector_t min, vector_t max) {
   center = vec_multiply(0.5, vec_add(min, max));
   max_diff = vec_subtract(max, center);
   SDL_Init(SDL_INIT_EVERYTHING);
-  TTF_Init();
 
   // initializing the music functionality
-  Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
+  SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+  if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+    printf("%s\n", "music initialized");
+    SDL_Log("Mix_OpenAudio: %s", Mix_GetError());
+  }
 
   window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED,
                             SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT,
                             SDL_WINDOW_RESIZABLE);
   renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
+  TTF_Init();
 }
 
 bool sdl_is_done(state_t *state) {
@@ -312,4 +322,79 @@ double time_since_last_tick(void) {
                           : 0.0; // return 0 the first time this is called
   last_clock = now;
   return difference;
+}
+
+void sdl_play_music(const char *path) {
+  if (!background_music) {
+    background_music = Mix_LoadMUS(path);
+    if (!background_music) {
+      SDL_Log("Mix_LoadMUS: %s", Mix_GetError());
+      return;
+    }
+  }
+  if (Mix_PlayingMusic() == 0) {
+    Mix_PlayMusic(background_music, -1);
+  }
+}
+
+void sdl_play_gem_sound(const char *path) {
+  if (!gem_sound) {
+    gem_sound = Mix_LoadMUS(path);
+    if (!gem_sound) {
+      SDL_Log("Mix_LoadMUS: %s", Mix_GetError());
+      return;
+    }
+  }
+  Mix_PlayMusic(gem_sound, 0);
+}
+
+void sdl_play_level_completed(const char *path) {
+  if (!level_completed_sound) {
+    level_completed_sound = Mix_LoadMUS(path);
+    if (!level_completed_sound) {
+      SDL_Log("Mix_LoadMUS: %s", Mix_GetError());
+      return;
+    }
+  }
+  Mix_PlayMusic(level_completed_sound, 0);
+}
+
+void sdl_play_level_failed(const char *path) {
+  if (!level_failed_sound) {
+    level_failed_sound = Mix_LoadMUS(path);
+    if (!level_failed_sound) {
+      SDL_Log("Mix_LoadMUS: %s", Mix_GetError());
+      return;
+    }
+  }
+  Mix_PlayMusic(level_failed_sound, 0);
+}
+
+void sdl_play_jump_sound(const char *path) {
+  if (!jump_sound) {
+    jump_sound = Mix_LoadMUS(path);
+    if (!jump_sound) {
+      SDL_Log("Mix_LoadMUS: %s", Mix_GetError());
+      return;
+    }
+  }
+  Mix_PlayMusic(jump_sound, 0);
+}
+
+// added by Natalie
+void sdl_quit() {
+  if (background_music) {
+    Mix_FreeMusic(background_music);
+  }
+  if (gem_sound) {
+    Mix_FreeMusic(gem_sound);
+  }
+  if (level_completed_sound) {
+    Mix_FreeMusic(level_completed_sound);
+  }
+  if (level_failed_sound) {
+    Mix_FreeMusic(level_failed_sound);
+  }
+  Mix_CloseAudio();
+  SDL_Quit();
 }
