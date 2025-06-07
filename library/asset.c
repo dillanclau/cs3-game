@@ -121,9 +121,9 @@ void asset_make_anim(const char *frame1_filepath, const char *frame2_filepath,
   list_add(ASSET_LIST, (asset_t *)anim_asset);
 }
 
-bool asset_change_text(asset_t *asset, char *text){
-  if (asset->type == ASSET_TEXT){
-    text_asset_t *clock = (text_asset_t *) asset;
+bool asset_change_text(asset_t *asset, char *text) {
+  if (asset->type == ASSET_TEXT) {
+    text_asset_t *clock = (text_asset_t *)asset;
     clock->text = text;
     return true;
   }

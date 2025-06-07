@@ -184,7 +184,7 @@ const char *GEM_SOUND_PATH = "assets/gem_sound.mp3";
 const char *JUMP_SOUND_PATH = "assets/jump_sound.mp3";
 const char *DOOR_BUTTON_UNPRESSED_PATH = "assets/button_unpressed.png";
 const char *DOOR_BUTTON_PRESSED_PATH = "assets/button_pressed.png";
-const char *ELEVATOR_BUTTON_UNPRESSED_PATH = 
+const char *ELEVATOR_BUTTON_UNPRESSED_PATH =
     "assets/elevator_button_unpressed.png";
 const char *ELEVATOR_BUTTON_PRESSED_PATH = "assets/elevator_button_pressed.png";
 
@@ -318,11 +318,12 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   // sdl_play_level_failed(FAILED_SOUND_PATH);
 }
 
-// void game_completed_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
+// void game_completed_handler(body_t *body1, body_t *body2, vector_t axis, void
+// *aux,
 //                         double force_const){
 //   // points
 //   go_to_homepage(state);
-  
+
 // }
 
 // TODO: jumping velocity implementation matters for when platofrm elevator
@@ -702,12 +703,12 @@ void unpause(state_t *state) {
   //   body_remove(state->pause_body);
   //   body_free(state->pause_body);
   // }
-  if (state->pause){
+  if (state->pause) {
     state->pause = false;
     list_t *asset_list = asset_get_asset_list();
     list_remove(asset_list, list_size(asset_list) - 1);
   }
-  
+
   // list_remove(asset_list, list_size(asset_list) - 1);
 }
 
@@ -1052,7 +1053,7 @@ bool emscripten_main(state_t *state) {
 
       asset_t *clock = list_get(body_assets, idx);
       state->time += dt;
-      
+
       char text[10000];
       sprintf(text, "Clock:%.0f", floor(state->time));
 
@@ -1063,7 +1064,8 @@ bool emscripten_main(state_t *state) {
         asset_change_text(clock, text);
       }
 
-      // body_t *exit = scene_get_body(state->scene, scene_bodies(state->scene) -1);
+      // body_t *exit = scene_get_body(state->scene, scene_bodies(state->scene)
+      // -1);
       // // find collision for final door and spirit
       // if (find_collision(spirit, exit).collided) {
       //   go_to_homepage(state);
