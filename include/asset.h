@@ -27,6 +27,7 @@ typedef struct text_asset {
   TTF_Font *font;
   const char *text;
   color_t color;
+  body_t *body;
 } text_asset_t;
 
 typedef struct image_asset {

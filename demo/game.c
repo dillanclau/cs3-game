@@ -137,7 +137,6 @@ size_t RED_THRESHOLD = 25;
 size_t ORANGE_THRESHOLD = 50;
 size_t GREEN_THRESHOLD = 75;
 
-
 const vector_t CLOCK_POS = {.x = 375, .y = 10};
 const color_t CLOCK_COL = {1, 1, .5};
 const size_t TEXT_SIZE = 14;
