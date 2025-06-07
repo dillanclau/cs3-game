@@ -8,7 +8,7 @@
 #include "sdl_wrapper.h"
 
 static list_t *ASSET_LIST = NULL;
-const size_t INIT_CAPACITY = 5;
+const size_t INIT_CAPACITY = 10;
 
 typedef struct anim_asset {
   asset_t base;
@@ -46,6 +46,7 @@ static asset_t *asset_init(asset_type_t ty, SDL_Rect bounding_box) {
     break;
   case ASSET_BUTTON:
     new = malloc(sizeof(button_asset_t));
+    break;
   case ASSET_ANIM:
     new = malloc(sizeof(anim_asset_t));
     break;
@@ -223,6 +224,7 @@ void asset_render(asset_t *asset) {
       box = sdl_get_body_bounding_box(button_asset->body);
     }
     sdl_render_image(button_asset->curr_texture, &box);
+    break;
   case ASSET_ANIM:
     anim_asset_t *anim_asset = (anim_asset_t *)asset;
     if (anim_asset->body != NULL) {
