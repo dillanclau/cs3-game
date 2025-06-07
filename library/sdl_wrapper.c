@@ -18,6 +18,7 @@ const int8_t FONT_HEIGHT_SCALE = 2;
 const double MS_PER_S = 100000;
 static Mix_Music *background_music = NULL;
 
+
 /**
  * The coordinate at the center of the screen.
  */
@@ -328,7 +329,18 @@ void sdl_play_music(const char *path) {
       return;
     }
   }
-  Mix_PlayMusic(background_music, -1);
+  if (Mix_PlayingMusic() == 0) {
+    Mix_PlayMusic(background_music, -1);
+  }
+}
+
+void sdl_play_sound_effect(const char *path) {
+  Mix_Music *sound_effect = Mix_LoadMUS(path);
+  if (!sound_effect) {
+    SDL_Log("Mix_LoadMUS: %s", Mix_GetError());
+    return;
+  }
+  Mix_PlayMusic(sound_effect, 0);
 }
 
 // added by Natalie

@@ -10,6 +10,7 @@
 #include "collision.h"
 #include "forces.h"
 #include "sdl_wrapper.h"
+#include "sdl_wrapper.c"
 
 const vector_t MIN = {0, 0};
 const vector_t MAX = {750, 500};
@@ -135,9 +136,9 @@ const char *EXIT_DOOR_PATH = "assets/exit_door.png";
 const char *GAME_OVER_PATH = "assets/game_over.png";
 
 const char *BACKGROUND_MUSIC_PATH = "assets/background_music.mp3";
-// const char *GEM_OBTAINMENT_SOUND = ;
-// const char *LEVEL_COMPLETED_SOUND = ;
-// const char *LEVEL_FAILED_SOUND = ;
+const char *GEM_SOUND_PATH = ;
+const char *COMPLETED_SOUND_PATH = ;
+const char *FAILED_SOUND_PATH = ;
 
 typedef enum {
   LEVEL1 = 1,
@@ -154,8 +155,6 @@ struct state {
   collision_type_t collision_type;
   bool pause;
   size_t level_points[3];
-  bool music_played;
-  double time;
 };
 
 body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
@@ -259,7 +258,11 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   reset_user(body1);
   asset_make_image(GAME_OVER_PATH,
                    (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
+  // go_to_homepage(state);
+  sdl_play_sound_effect(FAILED_SOUND_PATH);
 }
+
+
 
 // TODO: jumping velocity implementation matters for when platofrm elevator
 // TODO: collision??? handles the collisions between user and platform
@@ -305,6 +308,7 @@ void gem_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
                       double force_const) {
   // reset_user(body1);
   body_remove(body2);
+  sdl_play_sound_effect(GEM_SOUND_PATH);
 }
 
 void platform_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
@@ -747,7 +751,6 @@ state_t *emscripten_init() {
   state->level_points[1] = 0; // for level 2
   state->level_points[2] = 0; // for level 3
   state->collision_type = NO_COLLISION;
-  state->time = 0;
 
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(BACKGROUND_PATH, box);
@@ -774,27 +777,17 @@ state_t *emscripten_init() {
 
 bool emscripten_main(state_t *state) {
   double dt = time_since_last_tick();
-  state->time = (state->time) + dt;
   sdl_clear();
-  sdl_render_scene(state->scene);
+  sdl_render_scene(state->scene);  
+  sdl_play_music(BACKGROUND_MUSIC_PATH);
   list_t *body_assets = asset_get_asset_list();
   for (size_t i = 0; i < list_size(body_assets); i++) {
     asset_render(list_get(body_assets, i));
   }
   body_t *elevator = scene_get_body(state->scene, 1);
   move_elevator(elevator, state->spirit);
-
   state->collision_type = collision(state);
 
-  size_t time = (size_t)state->time;
-  if (time % 10 != 0) {
-    state->music_played = false;
-  }
-  if ((time % 10 == 0) && (!(state->music_played))) {
-    sdl_play_music(BACKGROUND_MUSIC_PATH);
-    printf("%s\n", "music playing");
-    state->music_played = true;
-  }
 
   // apply gravity
   body_t *spirit = state->spirit;
