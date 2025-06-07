@@ -266,7 +266,7 @@ void wrap_edges(body_t *body) {
     body_set_centroid(body, (vector_t){centroid.x, MIN.y});
   } else if (centroid.y < MIN.y) {
     body_set_centroid(body, (vector_t){centroid.x, MAX.y});
-  }
+  } 
 }
 
 void move_elevator(state_t *state) {
