@@ -16,11 +16,14 @@ const SDL_Color SDL_BLACK = {0, 0, 0};
 const int8_t FONT_HEIGHT_SCALE = 2;
 // const double MS_PER_S = 1000.0;
 const double MS_PER_S = 100000;
+
+const size_t NUMBER_OF_SOUNDS = 5;
+
 static Mix_Music *background_music = NULL;
-static Mix_Music *gem_sound = NULL;
-static Mix_Music *level_completed_sound = NULL;
-static Mix_Music *level_failed_sound = NULL;
-static Mix_Music *jump_sound = NULL;
+static Mix_Chunk *gem_sound = NULL;
+static Mix_Chunk *level_completed_sound = NULL;
+static Mix_Chunk *level_failed_sound = NULL;
+static Mix_Chunk *jump_sound = NULL;
 
 /**
  * The coordinate at the center of the screen.
@@ -143,6 +146,7 @@ void sdl_init(vector_t min, vector_t max) {
     printf("%s\n", "music initialized");
     SDL_Log("Mix_OpenAudio: %s", Mix_GetError());
   }
+  Mix_AllocateChannels(NUMBER_OF_SOUNDS);
 
   window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED,
                             SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT,
@@ -337,49 +341,33 @@ void sdl_play_music(const char *path) {
   }
 }
 
-void sdl_play_gem_sound(const char *path) {
-  if (!gem_sound) {
-    gem_sound = Mix_LoadMUS(path);
-    if (!gem_sound) {
-      SDL_Log("Mix_LoadMUS: %s", Mix_GetError());
+void sdl_play_sound_effect(Mix_Chunk **sound, const char *path) {
+  if (!*sound) {
+    *sound = Mix_LoadWAV(path);
+    if (!*sound) {
+      SDL_Log("Mix_LoadWAV: %s", Mix_GetError());
       return;
     }
   }
-  Mix_PlayMusic(gem_sound, 0);
+  Mix_PlayChannel(-1, *sound, 0);
+}
+
+void sdl_play_gem_sound(const char *path) {
+  sdl_play_sound_effect(&gem_sound, path);
 }
 
 void sdl_play_level_completed(const char *path) {
-  if (!level_completed_sound) {
-    level_completed_sound = Mix_LoadMUS(path);
-    if (!level_completed_sound) {
-      SDL_Log("Mix_LoadMUS: %s", Mix_GetError());
-      return;
-    }
-  }
-  Mix_PlayMusic(level_completed_sound, 0);
+  sdl_play_sound_effect(&level_completed_sound, path);
 }
 
 void sdl_play_level_failed(const char *path) {
-  if (!level_failed_sound) {
-    level_failed_sound = Mix_LoadMUS(path);
-    if (!level_failed_sound) {
-      SDL_Log("Mix_LoadMUS: %s", Mix_GetError());
-      return;
-    }
-  }
-  Mix_PlayMusic(level_failed_sound, 0);
+  sdl_play_sound_effect(&level_failed_sound, path);
 }
 
 void sdl_play_jump_sound(const char *path) {
-  if (!jump_sound) {
-    jump_sound = Mix_LoadMUS(path);
-    if (!jump_sound) {
-      SDL_Log("Mix_LoadMUS: %s", Mix_GetError());
-      return;
-    }
-  }
-  Mix_PlayMusic(jump_sound, 0);
+  sdl_play_sound_effect(&jump_sound, path);
 }
+
 
 // added by Natalie
 void sdl_quit() {
@@ -387,13 +375,16 @@ void sdl_quit() {
     Mix_FreeMusic(background_music);
   }
   if (gem_sound) {
-    Mix_FreeMusic(gem_sound);
+    Mix_FreeChunk(gem_sound);
   }
   if (level_completed_sound) {
-    Mix_FreeMusic(level_completed_sound);
+    Mix_FreeChunk(level_completed_sound);
   }
   if (level_failed_sound) {
-    Mix_FreeMusic(level_failed_sound);
+    Mix_FreeChunk(level_failed_sound);
+  }
+  if (jump_sound) {
+    Mix_FreeChunk(jump_sound);
   }
   Mix_CloseAudio();
   SDL_Quit();

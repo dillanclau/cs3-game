@@ -184,6 +184,8 @@ double time_since_last_tick(void);
  */
 void sdl_play_music(const char *path);
 
+void sdl_play_sound_effect(Mix_Chunk **sound, const char *path);
+
 void sdl_play_gem_sound(const char *path);
 
 void sdl_play_level_completed(const char *path);
