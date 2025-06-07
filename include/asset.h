@@ -9,7 +9,7 @@
 
 #include "body.h"
 
-typedef enum { ASSET_IMAGE, ASSET_TEXT, ASSET_SPIRIT } asset_type_t;
+typedef enum { ASSET_IMAGE, ASSET_TEXT, ASSET_SPIRIT, ASSET_ANIM } asset_type_t;
 
 typedef struct asset asset_t;
 
@@ -47,13 +47,42 @@ void asset_make_text(const char *filepath, SDL_Rect bounding_box,
                      const char *text, color_t color);
 
 /**
- * @param asset
- * @param idx
+ * Allocates memory for a spirit asset with the given parameters and adds it
+ * to the internal asset list.
+ *
+ * @param front_filepath filepath to .png for front view of spirit
+ * @param left_filepath filepath to .png for left view of spirit
+ * @param right_filepath filepath to lpng for right view of spirit
+ * @param body the body to render the image on top of
+ */
+void asset_make_spirit(const char *front_filepath, const char *left_filepath,
+                       const char *right_filepath, body_t *body);
+/**
+ * Allocates memory for an animation asset with the given parameters and
+ * adds it to the internal asset list.
+ *
+ * @param frame1_filepath filepath to .png for front view of spirit
+ * @param frame2_filepath filepath to .png for left view of spirit
+ * @param frame3_filepath filepath to lpng for right view of spirit
+ * @param body the body to render the image on top of
+ */
+void asset_make_anim(const char *frame1_filepath, const char *frame2_filepath,
+                     const char *frame3_filepath, body_t *body);
+
+/**
+ * Changes the texture of the spirit asset based on the key pressed by user.
+ * @param asset spirit asset
+ * @param key pressed key
  */
 void asset_change_texture(asset_t *asset, char key);
 
-void asset_make_spirit(const char *front_filepath, const char *left_filepath,
-                       const char *right_filepath, body_t *body);
+/**
+ * Changes the texture of the animated assets for water and lava
+ * based on the time.
+ * @param asset animated asset
+ * @param time the current time of the game
+ */
+void asset_animate(asset_t *asset, double time);
 
 /**
  * Resets the internal asset list by freeing all assets and creating a new empty

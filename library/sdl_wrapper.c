@@ -132,7 +132,6 @@ void sdl_init(vector_t min, vector_t max) {
   center = vec_multiply(0.5, vec_add(min, max));
   max_diff = vec_subtract(max, center);
   SDL_Init(SDL_INIT_EVERYTHING);
-  TTF_Init();
 
   // initializing the music functionality
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
@@ -145,6 +144,7 @@ void sdl_init(vector_t min, vector_t max) {
                             SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT,
                             SDL_WINDOW_RESIZABLE);
   renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
+  TTF_Init();
 }
 
 bool sdl_is_done(state_t *state) {

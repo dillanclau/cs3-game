@@ -177,6 +177,11 @@ void sdl_on_key(key_handler_t handler);
  */
 double time_since_last_tick(void);
 
+/**
+ * Plays music in the game.
+ *
+ * @param path filepath to .mp3 file
+ */
 void sdl_play_music(const char *path);
 
 void sdl_play_sound_effect(const char *path);
