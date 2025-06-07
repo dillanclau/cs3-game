@@ -130,6 +130,14 @@ const size_t GEM1[3][2] = {{180, 100}, {560, 450}, {375, 325}};
 const size_t GEM2[3][2] = {{120, 100}, {430, 310}, {450, 410}};
 const size_t GEM3[3][2] = {{670, 390}, {580, 250}, {135, 345}};
 
+const size_t NUMBER_OF_LEVELS = 3;
+
+// point range thresholds
+size_t RED_THRESHOLD = 25;
+size_t ORANGE_THRESHOLD = 50;
+size_t GREEN_THRESHOLD = 75;
+
+
 const vector_t CLOCK_POS = {.x = 375, .y = 10};
 const color_t CLOCK_COL = {1, 1, .5};
 const size_t TEXT_SIZE = 14;
@@ -198,6 +206,7 @@ struct state {
   bool elevator;
   double time;
   bool music_played;
+  size_t level_points[3];
 };
 
 body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
@@ -567,37 +576,6 @@ void make_level2(state_t *state) {
     asset_make_image_with_body(GEM_PATH, gem);
   }
 
-  // make lava
-  size_t lava_len = LAVA_NUM[1];
-  for (size_t i = 0; i < lava_len; i++) {
-    vector_t coord = (vector_t){LAVA2[i][0], LAVA2[i][1]};
-    body_t *obstacle = make_obstacle(LAVA2[i][2], LAVA2[i][3], coord, "lava");
-    scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, state->spirit, obstacle, reset_user_handler,
-                     NULL, 0, NULL);
-    asset_make_anim(LAVA1_PATH, LAVA2_PATH, LAVA3_PATH, obstacle);
-  }
-
-  size_t water_len = WATER_NUM[1];
-  for (size_t i = 0; i < water_len; i++) {
-    vector_t coord = (vector_t){WATER2[i][0], WATER2[i][1]};
-    body_t *obstacle =
-        make_obstacle(WATER2[i][2], WATER2[i][3], coord, "water");
-    scene_add_body(state->scene, obstacle);
-    asset_make_anim(WATER1_PATH, WATER2_PATH, WATER3_PATH, obstacle);
-  }
-
-  // make gem
-  size_t gem_len = GEM_NUM[1];
-  for (size_t i = 0; i < gem_len; i++) {
-    vector_t center = (vector_t){GEM2[i][0], GEM2[i][1]};
-    body_t *gem = make_gem(OUTER_RADIUS, INNER_RADIUS, center);
-    scene_add_body(state->scene, gem);
-    create_collision(state->scene, state->spirit, gem, gem_user_handler, NULL,
-                     0, NULL);
-    asset_make_image_with_body(GEM_PATH, gem);
-  }
-
   // make exit
   vector_t coord = (vector_t){EXITS[1][0], EXITS[1][1]};
   body_t *exit = make_obstacle(EXITS[1][2], EXITS[1][3], coord, "exit");
@@ -689,7 +667,6 @@ void make_level3(state_t *state) {
                      0, NULL);
     asset_make_image_with_body(GEM_PATH, gem);
   }
-
 
   // make exit
   vector_t coord = (vector_t){EXITS[2][0], EXITS[2][1]};
@@ -988,11 +965,11 @@ state_t *emscripten_init() {
   // moved this code to init_bgd_spirit()
   // SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   // asset_make_image(BACKGROUND_PATH, box);
-  state->collision_type = NO_COLLISION;
+  // state->collision_type = NO_COLLISION;
   state->elevator = false;
 
-  SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
-  asset_make_image(BACKGROUND_PATH, box);
+  // SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
+  // asset_make_image(BACKGROUND_PATH, box);
 
   // body_t *spirit = make_spirit(OUTER_RADIUS, INNER_RADIUS, VEC_ZERO);
   // body_set_centroid(spirit, START_POS);
@@ -1043,16 +1020,16 @@ bool emscripten_main(state_t *state) {
       body_set_velocity(spirit, (vector_t){spirit_velocity.x,
                                            spirit_velocity.y - (GRAVITY * dt)});
     }
-  // apply gravity
-  apply_gravity(state, dt);
+    // apply gravity
+    apply_gravity(state, dt);
 
-  // check for pressed buttons
-  button_press(state);
+    // check for pressed buttons
+    button_press(state);
 
-  // move elevator
-  if (state->elevator) {
-    move_elevator(state);
-  }
+    // move elevator
+    if (state->elevator) {
+      move_elevator(state);
+    }
 
     if (!state->pause) {
       asset_t *clock = list_get(body_assets, list_size(body_assets) - 1);

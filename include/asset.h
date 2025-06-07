@@ -12,7 +12,8 @@
 typedef enum {
   ASSET_IMAGE,
   ASSET_TEXT,
-  ASSET_SPIRIT, ASSET_ANIM,
+  ASSET_SPIRIT,
+  ASSET_ANIM,
   ASSET_BUTTON,
 } asset_type_t;
 

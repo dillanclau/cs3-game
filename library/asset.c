@@ -148,7 +148,6 @@ void asset_animate(asset_t *asset, double time) {
       anim_asset->curr_texture = anim_asset->frame3_texture;
     }
   }
-  }
 }
 
 void asset_make_button(const char *unpressed_filepath,
