@@ -318,13 +318,6 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   // sdl_play_level_failed(FAILED_SOUND_PATH);
 }
 
-// void game_completed_handler(body_t *body1, body_t *body2, vector_t axis, void
-// *aux,
-//                         double force_const){
-//   // points
-//   go_to_homepage(state);
-
-// }
 
 // TODO: jumping velocity implementation matters for when platofrm elevator
 // TODO: collision??? handles the collisions between user and platform
@@ -411,16 +404,15 @@ void platform_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
 }
 
 void init_bgd_player(state_t *state) {
-  state->time = 0;
+  state->time = 0; // code duplicatory 
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(BACKGROUND_PATH, box);
 
   body_t *spirit = make_spirit(OUTER_RADIUS, INNER_RADIUS, VEC_ZERO);
   body_set_centroid(spirit, START_POS);
+  body_set_velocity(spirit, (vector_t) {.x=0,.y=0}); // maybe this will help the issue?
   state->spirit = spirit;
   scene_add_body(state->scene, spirit);
-
-  // spirit
   asset_make_spirit(SPIRIT_FRONT_PATH, SPIRIT_LEFT_PATH, SPIRIT_RIGHT_PATH,
                     spirit);
 }
@@ -691,6 +683,15 @@ void make_level3(state_t *state) {
   make_clock(state);
 }
 
+void transition_screen(state_t *state){
+  printf("%s/n", "transitions");
+  state->time = 0;
+  asset_reset_asset_list();
+  state->pause = false; // not sure about this
+  scene_free(state->scene);
+  state->scene = scene_init();
+}
+
 void pause(state_t *state) {
   state->pause = true;
   asset_make_image(PAUSE_PATH,
@@ -698,71 +699,51 @@ void pause(state_t *state) {
 }
 
 void unpause(state_t *state) {
-  // if (state->pause_body) {
-  //   asset_remove_body(state->pause_body);
-  //   body_remove(state->pause_body);
-  //   body_free(state->pause_body);
-  // }
   if (state->pause) {
     state->pause = false;
     list_t *asset_list = asset_get_asset_list();
     list_remove(asset_list, list_size(asset_list) - 1);
   }
-
-  // list_remove(asset_list, list_size(asset_list) - 1);
 }
 
 void go_to_level1(state_t *state) {
-  asset_reset_asset_list();
-  unpause(state);
-  scene_free(state->scene);
-  state->scene = scene_init();
   state->current_screen = LEVEL1;
   make_level1(state);
   return;
 }
 
 void go_to_level2(state_t *state) {
-  asset_reset_asset_list();
-  scene_free(state->scene);
-  state->scene = scene_init();
   state->current_screen = LEVEL2;
   make_level2(state);
   return;
 }
 
 void go_to_level3(state_t *state) {
-  asset_reset_asset_list();
-  scene_free(state->scene);
-  state->scene = scene_init();
   state->current_screen = LEVEL3;
   make_level3(state);
   return;
 }
 
 void restart(state_t *state) {
-  state->time = 0; // reset everything
-  unpause(state);
-  if (state->current_screen == LEVEL1) {
-    go_to_level1(state);
-  } else if (state->current_screen == LEVEL2) {
-    go_to_level2(state);
-  } else if (state->current_screen == LEVEL3) {
-    go_to_level3(state);
+  // just double checks lol
+  if (state->current_screen != HOMEPAGE){
+    transition_screen(state);
+    if (state->current_screen == LEVEL1) {
+      go_to_level1(state);
+    } else if (state->current_screen == LEVEL2) {
+      go_to_level2(state);
+    } else if (state->current_screen == LEVEL3) {
+      go_to_level3(state);
+    }
   }
+  
 }
 
 void go_to_homepage(state_t *state) {
-  if (state->current_screen != HOMEPAGE) {
-    asset_reset_asset_list();
-    scene_free(state->scene);
-    state->scene = scene_init();
-  }
   printf("%s/n", "at homepage");
   state->current_screen = HOMEPAGE;
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(HOMEPAGE_PATH, box);
-
   SDL_Rect level_gem_box[3] = {
       (SDL_Rect){.x = 100, .y = 500, .w = 50, .h = 50},
       (SDL_Rect){.x = 200, .y = 500, .w = 50, .h = 50},
@@ -789,12 +770,15 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
     if (type == KEY_PRESSED) {
       switch (key) {
       case KEY_1:
+        transition_screen(state);
         go_to_level1(state);
         break;
       case KEY_2:
+        transition_screen(state);
         go_to_level2(state);
         break;
       case KEY_3:
+        transition_screen(state);
         go_to_level3(state);
         break;
       }
@@ -833,6 +817,7 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
         asset_change_texture(spirit_asset, key);
         break;
       case KEY_H:
+        transition_screen(state);
         go_to_homepage(state); // check this with natalie
         break;
       case KEY_P:
@@ -1027,17 +1012,17 @@ bool emscripten_main(state_t *state) {
 
     // apply gravity
     body_t *spirit = state->spirit;
-    vector_t spirit_velocity = body_get_velocity(spirit);
-    if (!(state->collision_type == UP_COLLISION ||
-          state->collision_type == UP_LEFT_COLLISION ||
-          state->collision_type ==
-              UP_RIGHT_COLLISION)) { // only apply if on platform
-      printf("%s\n", "help");
-      body_set_velocity(spirit, (vector_t){spirit_velocity.x,
-                                           spirit_velocity.y - (GRAVITY * dt)});
-    }
-
+    // vector_t spirit_velocity = body_get_velocity(spirit);
+    // if (!(state->collision_type == UP_COLLISION ||
+    //       state->collision_type == UP_LEFT_COLLISION ||
+    //       state->collision_type ==
+    //           UP_RIGHT_COLLISION)) { // only apply if on platform
+    //   printf("%s\n", "help");
+    //   body_set_velocity(spirit, (vector_t){spirit_velocity.x,
+    //                                        spirit_velocity.y - (GRAVITY * dt)});
+    // }
     // apply gravity
+
     apply_gravity(state, dt);
 
     // check for pressed buttons
@@ -1063,29 +1048,19 @@ bool emscripten_main(state_t *state) {
         clock = list_get(body_assets, idx);
         asset_change_text(clock, text);
       }
-
-      // body_t *exit = scene_get_body(state->scene, scene_bodies(state->scene)
-      // -1);
-      // // find collision for final door and spirit
-      // if (find_collision(spirit, exit).collided) {
-      //   go_to_homepage(state);
-      // }
-
-      // make_clock(state);
-      scene_tick(state->scene, dt);
     }
-  }
+    scene_tick(state->scene, dt);
 
-  // body_t *elevator = scene_get_body(state->scene, 1);
-  // move_elevator(elevator);
-
-  size_t time = (size_t)state->time;
-  if (time % 10 != 0) {
-    state->music_played = false;
-  }
-  if ((time % 10 == 0) && (!(state->music_played))) {
-    sdl_play_music(BACKGROUND_MUSIC_PATH);
-    state->music_played = true;
+    // sound playing
+    size_t time = (size_t)state->time;
+    if (time % 10 != 0) {
+      state->music_played = false;
+    }
+    if ((time % 10 == 0) && (!(state->music_played))) {
+      sdl_play_music(BACKGROUND_MUSIC_PATH);
+      state->music_played = true;
+    }
+    
   }
 
   sdl_show();
