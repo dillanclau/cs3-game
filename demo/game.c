@@ -393,11 +393,9 @@ void platform_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   body_set_velocity(body1, vel);
 }
 
-
 vector_t get_dimensions_for_text(char *text) {
   return (vector_t){strlen(text) * TEXT_SIZE, TEXT_SIZE * TEXT_HEIGHT_SCALE};
 }
-
 
 void init_bgd_player(state_t *state) {
   state->time = 0;
@@ -1007,9 +1005,9 @@ bool emscripten_main(state_t *state) {
     sprintf(text, "Clock:%.0f", floor(state->time));
     vector_t text_dim = get_dimensions_for_text(text);
     SDL_Rect rect = (SDL_Rect){.x = CLOCK_POS.x - (text_dim.x / 2),
-                                 .y = CLOCK_POS.y,
-                                 .w = text_dim.x,
-                                 .h = text_dim.y};
+                               .y = CLOCK_POS.y,
+                               .w = text_dim.x,
+                               .h = text_dim.y};
 
     TTF_Font *font = TTF_OpenFont(FONT_FILEPATH, 18);
     sdl_render_text(text, font, CLOCK_COL, &rect);
