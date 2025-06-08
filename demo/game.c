@@ -332,6 +332,7 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
 
 void win_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
                  double force_const) {
+  reset_user(body1);
   asset_make_image(WIN_PATH, (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
   sdl_play_level_completed(COMPLETED_SOUND_PATH);
 }
