@@ -64,7 +64,7 @@ const size_t BRICKS2[12][4] = {
     {500, 130, 300, 20}, {100, 80, 200, 20}, // starting platform
     {710, 30, 80, 60},                       // misc sq
     {375, 0, 750, 30},                       // border
-    {0, 250, 30, 500}, {750, 250, 30, 500}};
+    {0, 250, 30, 500},   {750, 250, 30, 500}};
 
 // get rid of brick_width and hard code the whole thing
 const size_t BRICKS3[12][4] = {
@@ -719,14 +719,11 @@ void go_to_homepage(state_t *state) {
 
   for (size_t i = 0; i < NUMBER_OF_LEVELS; i++) {
     double score = state->level_points[i];
-    if (score >= GREEN_THRESHOLD &&
-        state->level_completed[i]) {
+    if (score >= GREEN_THRESHOLD && state->level_completed[i]) {
       asset_make_image(GREEN_GEM_PATH, level_gem_box[i]);
-    } else if (score >= ORANGE_THRESHOLD &&
-               state->level_completed[i]) {
+    } else if (score >= ORANGE_THRESHOLD && state->level_completed[i]) {
       asset_make_image(ORANGE_GEM_PATH, level_gem_box[i]);
-    } else if (score >= RED_THRESHOLD &&
-               state->level_completed[i]) {
+    } else if (score >= RED_THRESHOLD && state->level_completed[i]) {
       asset_make_image(RED_GEM_PATH, level_gem_box[i]);
     }
   }
@@ -1005,9 +1002,9 @@ state_t *emscripten_init() {
   state->collision_type = NO_COLLISION;
   state->pause = false;
   state->elevator = false;
-  state->level_points[0] = 0.0;        // for level 1
-  state->level_points[1] = 0.0;        // for level 2
-  state->level_points[2] = 0.0;        // for level 3
+  state->level_points[0] = 0.0;      // for level 1
+  state->level_points[1] = 0.0;      // for level 2
+  state->level_points[2] = 0.0;      // for level 3
   state->level_completed[0] = false; // for level 1
   state->level_completed[1] = false; // for level 2
   state->level_completed[2] = false; // for level 3
@@ -1052,7 +1049,7 @@ bool emscripten_main(state_t *state) {
   // for loop
   for (size_t i = 0; i < len; i++) {
     asset_t *asset = list_get(body_assets, i);
-    // asset_animate(asset, state->time);
+    asset_animate(asset, state->time);
     asset_render(list_get(body_assets, i));
   }
 
