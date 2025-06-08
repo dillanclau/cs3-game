@@ -30,14 +30,14 @@ const color_t CLOCK_COL = {1, 1, .5};
 // constants to create platforms
 const size_t NUM_MAP = 3;
 const size_t BRICK_WIDTH = 20;
-const size_t BRICK_NUM[NUM_MAP] = {14, 11, 12};
+const size_t BRICK_NUM[NUM_MAP] = {14, 12, 12};
 
 const size_t NUMBER_OF_LEVELS = 3;
 
 // point range thresholds
-size_t RED_THRESHOLD = 1;
-size_t ORANGE_THRESHOLD = 2;
-size_t GREEN_THRESHOLD = 3;
+size_t RED_THRESHOLD = 0;
+size_t ORANGE_THRESHOLD = 5;
+size_t GREEN_THRESHOLD = 15;
 
 // x, y, w, h
 // Bricks for Map 1
@@ -184,7 +184,7 @@ struct state {
   collision_type_t collision_type;
   bool pause;
   bool elevator;
-  size_t level_points[3];
+  double level_points[3];
   bool level_completed[3];
   bool level_failed[3];
   double time;
@@ -691,7 +691,6 @@ void go_to_level2(state_t *state) {
   scene_free(state->scene);
   state->scene = scene_init();
   state->current_screen = LEVEL2;
-  // state->collision_type = DOWN_COLLISION;
   state->elevator = false;
   state->level_completed[1] = false;
   make_level2(state);
@@ -704,7 +703,6 @@ void go_to_level3(state_t *state) {
   scene_free(state->scene);
   state->scene = scene_init();
   state->current_screen = LEVEL3;
-  // state->collision_type = DOWN_COLLISION;
   state->elevator = false;
   state->level_completed[2] = false;
   make_level3(state);
@@ -730,14 +728,12 @@ void go_to_homepage(state_t *state) {
       (SDL_Rect){.x = 552, .y = 375, .w = 50, .h = 50}};
 
   for (size_t i = 0; i < NUMBER_OF_LEVELS; i++) {
-    if ((int)state->level_points[i] == GREEN_THRESHOLD &&
-        state->level_completed[i]) {
+    double score = state->level_points[i];
+    if (score >= GREEN_THRESHOLD && state->level_completed[i]) {
       asset_make_image(GREEN_GEM_PATH, level_gem_box[i]);
-    } else if ((int)state->level_points[i] == ORANGE_THRESHOLD &&
-               state->level_completed[i]) {
+    } else if (score >= ORANGE_THRESHOLD && state->level_completed[i]) {
       asset_make_image(ORANGE_GEM_PATH, level_gem_box[i]);
-    } else if ((int)state->level_points[i] == RED_THRESHOLD &&
-               state->level_completed[i]) {
+    } else if (score >= RED_THRESHOLD && state->level_completed[i]) {
       asset_make_image(RED_GEM_PATH, level_gem_box[i]);
     }
   }
@@ -784,10 +780,14 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
         go_to_level1(state);
         break;
       case KEY_2:
-        go_to_level2(state);
+        if (state->level_completed[0]) {
+          go_to_level2(state);
+        }
         break;
       case KEY_3:
-        go_to_level3(state);
+        if (state->level_completed[0] && state->level_completed[1]) {
+          go_to_level3(state);
+        }
         break;
       }
     }
@@ -928,9 +928,11 @@ void update_points(state_t *state) {
     }
   }
 
-  if (gem_counter > state->level_points[state->current_screen - 1] &&
+  double score = pow(gem_counter, 2) * (60 / state->time);
+
+  if (score > state->level_points[state->current_screen - 1] &&
       state->level_completed[state->current_screen - 1]) {
-    state->level_points[state->current_screen - 1] = gem_counter;
+    state->level_points[state->current_screen - 1] = score;
   }
 }
 
@@ -1026,9 +1028,12 @@ state_t *emscripten_init() {
   state->collision_type = NO_COLLISION;
   state->pause = false;
   state->elevator = false;
-  state->level_points[0] = 0;        // for level 1
-  state->level_points[1] = 0;        // for level 2
-  state->level_points[2] = 0;        // for level 3
+  state->level_points[0] = 0.0;             // for level 1
+  state->level_points[1] = 0.0;             // for level 2
+  state->level_points[2] = 0.0;      // for level 3
+  state->level_completed[0] = false; // for level 1
+  state->level_completed[1] = false; // for level 2
+  state->level_completed[2] = false;        // for level 3
   state->level_completed[0] = false; // for level 1
   state->level_completed[1] = false; // for level 2
   state->level_completed[2] = false; // for level 3
@@ -1136,6 +1141,12 @@ bool emscripten_main(state_t *state) {
       if (state->elevator) {
         move_elevator(state);
       }
+
+      // update points
+      update_points(state);
+
+      // check for completed level
+      level_complete(state);
 
       // clocks
       // asset_t *clock = list_get(body_assets, len - 1);
