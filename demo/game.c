@@ -1010,6 +1010,11 @@ bool emscripten_main(state_t *state) {
                                .y = CLOCK_POS.y,
                                .w = text_dim.x,
                                .h = text_dim.y};
+=======
+                               .y = CLOCK_POS.y,
+                               .w = text_dim.x,
+                               .h = text_dim.y};
+>>>>>>> refs/remotes/origin/master
 
     sdl_render_text(text, state->font, CLOCK_COL, &rect);
 

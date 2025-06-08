@@ -65,17 +65,17 @@ void asset_make_image(const char *filepath, SDL_Rect bounding_box) {
   list_add(ASSET_LIST, (asset_t *)image_asset);
 }
 
-void asset_make_text_with_body(const char *filepath, const char *text,
-                               color_t color, body_t *body) {
-  SDL_Rect bounding_box = (SDL_Rect){.x = 0, .y = 0, .w = 0, .h = 0};
-  asset_t *asset = asset_init(ASSET_TEXT, bounding_box);
-  text_asset_t *text_asset = (text_asset_t *)asset;
-  text_asset->font = asset_cache_obj_get_or_create(ASSET_TEXT, filepath);
-  text_asset->text = text;
-  text_asset->color = color;
-  text_asset->body = body;
-  list_add(ASSET_LIST, (asset_t *)text_asset);
-}
+// void asset_make_text_with_body(const char *filepath, const char *text,
+//                                color_t color, body_t *body) {
+//   SDL_Rect bounding_box = (SDL_Rect){.x = 0, .y = 0, .w = 0, .h = 0};
+//   asset_t *asset = asset_init(ASSET_TEXT, bounding_box);
+//   text_asset_t *text_asset = (text_asset_t *)asset;
+//   text_asset->font = asset_cache_obj_get_or_create(ASSET_TEXT, filepath);
+//   text_asset->text = text;
+//   text_asset->color = color;
+//   text_asset->body = body;
+//   list_add(ASSET_LIST, (asset_t *)text_asset);
+// }
 
 void asset_make_text_body(const char *filepath, const char *text, color_t color,
                           body_t *body) {
