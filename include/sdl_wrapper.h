@@ -188,7 +188,7 @@ void sdl_play_music(const char *path);
 
 /**
  * Plays a sound effect in the game
- * 
+ *
  * @param sound the stored sound
  * @param path filepath to .mp3 file
  */
@@ -196,28 +196,28 @@ void sdl_play_sound_effect(Mix_Chunk **sound, const char *path);
 
 /**
  * Plays a gem sound effect in the game
- * 
+ *
  * @param path filepath to gem sound .mp3 file
  */
 void sdl_play_gem_sound(const char *path);
 
 /**
  * Plays a gem sound effect in the game
- * 
+ *
  * @param path filepath to level completed sound .mp3 file
  */
 void sdl_play_level_completed(const char *path);
 
 /**
  * Plays a gem sound effect in the game
- * 
+ *
  * @param path filepath to level failed sound .mp3 file
  */
 void sdl_play_level_failed(const char *path);
 
 /**
  * Plays a gem sound effect in the game
- * 
+ *
  * @param path filepath to jump sound .mp3 file
  */
 void sdl_play_jump_sound(const char *path);
