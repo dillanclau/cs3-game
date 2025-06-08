@@ -30,17 +30,31 @@ const color_t CLOCK_COL = {1, 1, .5};
 // constants to create platforms
 const size_t NUM_MAP = 3;
 const size_t BRICK_WIDTH = 20;
-const size_t LAVA_WIDTH = 11;
-const size_t BRICK_NUM[NUM_MAP] = {14, 12, 12};
+const size_t BRICK_NUM[NUM_MAP] = {14, 11, 12};
 
-// obstacle dimensions in {x, y, w, h}
-// Bricks for Map 1, the width of the bricks are 20
-const size_t BRICKS1[14][4] = {
-    {375, -500, 750, 30}, {160, 425, 320, 20}, {560, 425, 150, 20},
-    {425, 300, 650, 20},  {325, 200, 650, 20}, {180, 75, 175, 20},
-    {500, 75, 175, 20},   {730, 330, 40, 60},  {30, 235, 60, 70},
-    {730, 90, 40, 60},    {715, 35, 70, 70},   {375, 0, 750, 30},
-    {0, 250, 30, 500},    {750, 250, 30, 500}};
+const size_t NUMBER_OF_LEVELS = 3;
+
+// point range thresholds
+size_t RED_THRESHOLD = 1;
+size_t ORANGE_THRESHOLD = 2;
+size_t GREEN_THRESHOLD = 3;
+
+// x, y, w, h
+// Bricks for Map 1
+size_t BRICKS1[14][4] = {{375, -500, 750, 30},
+                         {160, 425, 320, BRICK_WIDTH},
+                         {560, 425, 150, BRICK_WIDTH},
+                         {425, 300, 650, BRICK_WIDTH},
+                         {325, 200, 650, BRICK_WIDTH},
+                         {180, 75, 175, BRICK_WIDTH},
+                         {500, 75, 175, BRICK_WIDTH},
+                         {730, 330, 40, 60},
+                         {30, 235, 60, 70},
+                         {730, 90, 40, 60},
+                         {715, 35, 70, 70},
+                         {375, 0, 750, 30},
+                         {0, 250, 30, 500},
+                         {750, 250, 30, 500}};
 
 // Bricks for Map 2
 const size_t BRICKS2[12][4] = {
@@ -99,11 +113,6 @@ const size_t E_BUTTONS[2][4] = {{475, 150, 30, 20}, {400, 25, 30, 20}};
 const size_t DOORS[2][4] = {{300, 245, 30, 70}, {250, 175, 30, 90}};
 // doors buttons
 const size_t BUTTONS[2][4] = {{40, 100, 30, 20}, {500, 140, 30, 20}};
-
-// point range thresholds
-const size_t RED_THRESHOLD = 25;
-const size_t ORANGE_THRESHOLD = 50;
-const size_t GREEN_THRESHOLD = 75;
 
 // gem constants
 const size_t GEM_NUM[3] = {3, 3, 3};
@@ -176,6 +185,8 @@ struct state {
   bool pause;
   bool elevator;
   size_t level_points[3];
+  bool level_completed[3];
+  bool level_failed[3];
   double time;
   bool music_played;
   TTF_Font *font;
@@ -415,6 +426,7 @@ void init_bgd_player(state_t *state) {
 }
 
 void make_level1(state_t *state) {
+  state->current_screen == LEVEL1;
   init_bgd_player(state);
 
   // make brick platforms
@@ -473,6 +485,7 @@ void make_level1(state_t *state) {
 }
 
 void make_level2(state_t *state) {
+  state->current_screen == LEVEL2;
   init_bgd_player(state);
 
   // make brick platforms
@@ -568,6 +581,7 @@ void make_level2(state_t *state) {
 }
 
 void make_level3(state_t *state) {
+  state->current_screen == LEVEL3;
   init_bgd_player(state);
 
   for (size_t i = 1; i < 3; i++) {
@@ -660,34 +674,39 @@ void make_level3(state_t *state) {
 }
 
 void go_to_level1(state_t *state) {
+  state->level_failed[0] = false;
   asset_reset_asset_list();
   scene_free(state->scene);
   state->scene = scene_init();
   state->current_screen = LEVEL1;
-  // state->collision_type = DOWN_COLLISION;
   state->elevator = false;
+  state->level_completed[0] = false;
   make_level1(state);
   return;
 }
 
 void go_to_level2(state_t *state) {
+  state->level_failed[1] = false;
   asset_reset_asset_list();
   scene_free(state->scene);
   state->scene = scene_init();
   state->current_screen = LEVEL2;
   // state->collision_type = DOWN_COLLISION;
   state->elevator = false;
+  state->level_completed[1] = false;
   make_level2(state);
   return;
 }
 
 void go_to_level3(state_t *state) {
+  state->level_failed[2] = false;
   asset_reset_asset_list();
   scene_free(state->scene);
   state->scene = scene_init();
   state->current_screen = LEVEL3;
   // state->collision_type = DOWN_COLLISION;
   state->elevator = false;
+  state->level_completed[2] = false;
   make_level3(state);
   return;
 }
@@ -701,24 +720,25 @@ void go_to_homepage(state_t *state) {
   state->current_screen = HOMEPAGE;
   state->pause = false;
   sdl_reset_timer();
+
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(HOMEPAGE_PATH, box);
 
   SDL_Rect level_gem_box[3] = {
-      (SDL_Rect){.x = 100, .y = 500, .w = 50, .h = 50},
-      (SDL_Rect){.x = 200, .y = 500, .w = 50, .h = 50},
-      (SDL_Rect){.x = 300, .y = 500, .w = 50, .h = 50}};
+      (SDL_Rect){.x = 148, .y = 375, .w = 50, .h = 50},
+      (SDL_Rect){.x = 350, .y = 375, .w = 50, .h = 50},
+      (SDL_Rect){.x = 552, .y = 375, .w = 50, .h = 50}};
 
-  for (size_t i = 0; i < NUM_MAP; i++) {
-    if (state->level_points[i] > GREEN_THRESHOLD) {
+  for (size_t i = 0; i < NUMBER_OF_LEVELS; i++) {
+    if ((int)state->level_points[i] == GREEN_THRESHOLD &&
+        state->level_completed[i]) {
       asset_make_image(GREEN_GEM_PATH, level_gem_box[i]);
-      break;
-    } else if (state->level_points[i] > ORANGE_THRESHOLD) {
+    } else if ((int)state->level_points[i] == ORANGE_THRESHOLD &&
+               state->level_completed[i]) {
       asset_make_image(ORANGE_GEM_PATH, level_gem_box[i]);
-      break;
-    } else if (state->level_points[i] > RED_THRESHOLD) {
+    } else if ((int)state->level_points[i] == RED_THRESHOLD &&
+               state->level_completed[i]) {
       asset_make_image(RED_GEM_PATH, level_gem_box[i]);
-      break;
     }
   }
 }
@@ -894,6 +914,57 @@ void apply_gravity(state_t *state, double dt) {
   }
 }
 
+void update_points(state_t *state) {
+  size_t gem_counter = 3;
+  list_t *asset_list = asset_get_asset_list();
+  for (size_t i = 0; i < list_size(asset_list); i++) {
+    asset_t *asset = list_get(asset_list, i);
+    if (asset->type == ASSET_IMAGE) {
+      image_asset_t *gem_asset = (image_asset_t *)asset;
+      body_t *gem = gem_asset->body;
+      if (strcmp(body_get_info(gem), "gem") == 0) {
+        gem_counter--;
+      }
+    }
+  }
+
+  if (gem_counter > state->level_points[state->current_screen - 1] &&
+      state->level_completed[state->current_screen - 1]) {
+    state->level_points[state->current_screen - 1] = gem_counter;
+  }
+}
+
+void level_complete(state_t *state) {
+  body_t *spirit = state->spirit;
+  list_t *asset_list = asset_get_asset_list();
+  for (size_t i = 0; i < list_size(asset_list); i++) {
+    asset_t *asset = list_get(asset_list, i);
+    if (asset->type == ASSET_IMAGE) {
+      image_asset_t *obstacle = (image_asset_t *)asset;
+      body_t *body = obstacle->body;
+      if ((strcmp(body_get_info(body), "exit")) == 0 &&
+          find_collision(spirit, body).collided) {
+        state->level_completed[state->current_screen - 1] = true;
+      }
+    }
+  }
+}
+
+void level_failed(state_t *state) {
+  body_t *spirit = state->spirit;
+  list_t *asset_list = asset_get_asset_list();
+  for (size_t i = 0; i < list_size(asset_list); i++) {
+    asset_t *asset = list_get(asset_list, i);
+    if (asset->type == ASSET_IMAGE) {
+      image_asset_t *lava = (image_asset_t *)asset;
+      body_t *body = lava->body;
+      if ((strcmp(body_get_info(body), "lava")) == 0 && find_collision(spirit, body).collided) {
+        state->level_failed[state->current_screen - 1] == true;
+      }
+    }
+  }
+}
+
 collision_type_t collision(state_t *state) {
   body_t *spirit = state->spirit;
   scene_t *scene = state->scene;
@@ -954,9 +1025,15 @@ state_t *emscripten_init() {
   state->collision_type = NO_COLLISION;
   state->pause = false;
   state->elevator = false;
-  state->level_points[0] = 0; // for level 1
-  state->level_points[1] = 0; // for level 2
-  state->level_points[2] = 0; // for level 3
+  state->level_points[0] = 0;        // for level 1
+  state->level_points[1] = 0;        // for level 2
+  state->level_points[2] = 0;        // for level 3
+  state->level_completed[0] = false; // for level 1
+  state->level_completed[1] = false; // for level 2
+  state->level_completed[2] = false; // for level 3
+  state->level_failed[0] = false;
+  state->level_failed[1] = false;
+  state->level_failed[2] = false;
   state->time = 0;
   state->font = TTF_OpenFont(FONT_FILEPATH, 18);
 
@@ -995,76 +1072,98 @@ bool emscripten_main(state_t *state) {
   list_t *body_assets = asset_get_asset_list();
   size_t len = list_size(body_assets);
 
+  // update points
+  update_points(state);
+
+  // check for completed level
+  level_complete(state);
+  level_failed(state);
+
+  bool game_over = false;
+  if (state->level_completed[state->current_screen - 1] || state->level_failed[state->current_screen - 1]) {
+    game_over = true;
+  }
+
+  printf("%s\n", "level completed");
+  printf("%d\n", state->level_completed[state->current_screen - 1]);
+  printf("%s\n", "level failed");
+  printf("%d\n", state->level_failed[state->current_screen - 1]);
+  printf("%s\n", "game over");
+
+  printf("%d\n", game_over);
+
+  // if ((state->current_screen == LEVEL1 && !(state->level_completed[0])) || (state->current_screen == LEVEL2 && !(state->level_completed[1])) || (state->current_screen == LEVEL3 && !(state->level_completed[2]))) {
+  //   game_over = true;
+  // }
+
   // for loop
   for (size_t i = 0; i < len; i++) {
     asset_t *asset = list_get(body_assets, i);
-    // asset_animate(asset, state->time);
+    asset_animate(asset, state->time);
     asset_render(list_get(body_assets, i));
   }
 
   if (state->current_screen != HOMEPAGE) {
-    char text[10000];
-    sprintf(text, "Clock:%.0f", floor(state->time));
-    vector_t text_dim = get_dimensions_for_text(text);
-    SDL_Rect rect = (SDL_Rect){.x = CLOCK_POS.x - (text_dim.x / 2),
-                               .y = CLOCK_POS.y,
-                               .w = text_dim.x,
-                               .h = text_dim.y};
-=======
-                               .y = CLOCK_POS.y,
-                               .w = text_dim.x,
-                               .h = text_dim.y};
->>>>>>> refs/remotes/origin/master
 
-    sdl_render_text(text, state->font, CLOCK_COL, &rect);
 
-    if (!(state->pause)) {
-      state->collision_type = collision(state);
-      double dt = time_since_last_tick();
+  if (!(state->pause) && !(game_over)) {
 
-      // apply gravity
+      char text[10000];
+      sprintf(text, "Clock:%.0f", floor(state->time));
+      vector_t text_dim = get_dimensions_for_text(text);
+      SDL_Rect rect = (SDL_Rect){.x = CLOCK_POS.x - (text_dim.x / 2),
+                                .y = CLOCK_POS.y,
+                                .w = text_dim.x,
+                                .h = text_dim.y};
 
-      if (dt < 0.2) {
-        apply_gravity(state, dt);
-      }
+      sdl_render_text(text, state->font, CLOCK_COL, &rect);
+    
+    state->collision_type = collision(state);
+    double dt = time_since_last_tick();
 
-      // check for pressed buttons
-      button_press(state);
-
-      // move elevator
-      if (state->elevator) {
-        move_elevator(state);
-      }
-
-      // clocks
-      // asset_t *clock = list_get(body_assets, len - 1);
-      // asset_destroy(clock);
-      // list_remove(body_assets, len - 1);
-      // update_clock(state);
-      scene_tick(state->scene, dt);
-      // make_clock(state);
-      state->time += dt;
+    // apply gravity
+    if (dt < 0.2) {
+      apply_gravity(state, dt);
     }
 
-    // asset_destroy(clock); // only destroy if the clock is there
+    // check for pressed buttons
+    button_press(state);
 
-    // sdl_render_scene(state->scene);
+    // move elevator
+    if (state->elevator) {
+      move_elevator(state);
+    }
+
+    // clocks
+    // asset_t *clock = list_get(body_assets, len - 1);
+    // asset_destroy(clock);
+    // list_remove(body_assets, len - 1);
+    // update_clock(state);
+    scene_tick(state->scene, dt);
+    // make_clock(state);
+    state->time += dt;
   }
 
-  // body_t *elevator = scene_get_body(state->scene, 1);
-  // move_elevator(elevator);
+  // asset_destroy(clock); // only destroy if the clock is there
 
-  size_t time = (size_t)state->time;
-  if (time % 10 != 0) {
-    state->music_played = false;
-  }
-  if ((time % 10 == 0) && (!(state->music_played))) {
-    sdl_play_music(BACKGROUND_MUSIC_PATH);
-    state->music_played = true;
-  }
+  // sdl_render_scene(state->scene);
+}
 
-  sdl_show();
-  return false;
+// body_t *elevator = scene_get_body(state->scene, 1);
+// move_elevator(elevator);
+
+// size_t time = (size_t)state->time;
+// if (time % 10 != 0) {
+//   state->music_played = false;
+// }
+
+// if ((time % 10 == 0) && (!(state->music_played))) {
+//   sdl_play_music(BACKGROUND_MUSIC_PATH);
+//   state->music_played = true;
+// }
+
+sdl_show();
+return false;
 }
 
 void emscripten_free(state_t *state) {
