@@ -40,9 +40,9 @@ const size_t BRICK_NUM[NUM_MAP] = {14, 11, 12};
 const size_t NUMBER_OF_LEVELS = 3;
 
 // point range thresholds
-size_t RED_THRESHOLD = 25;
-size_t ORANGE_THRESHOLD = 50;
-size_t GREEN_THRESHOLD = 75;
+size_t RED_THRESHOLD = 1;
+size_t ORANGE_THRESHOLD = 2;
+size_t GREEN_THRESHOLD = 3;
 
 // x, y, w, h
 // Bricks for Map 1
@@ -100,7 +100,7 @@ size_t LAVA2[4][4] = {{500, 15, 140, LAVA_WIDTH},
                       {510, 400, 60, LAVA_WIDTH},
                       {390, 400, 60, LAVA_WIDTH}};
 
-size_t LAVA3[2][4] = {{500, 15, 120, LAVA_WIDTH}, {225, 240, 50, LAVA_WIDTH}};
+size_t LAVA3[2][4] = {{500, 15, 100, LAVA_WIDTH}, {225, 240, 50, LAVA_WIDTH}};
 
 const size_t WATER_NUM[NUM_MAP] = {2, 2, 2};
 size_t WATER1[2][4] = {{500, 210, 165, LAVA_WIDTH},
@@ -121,7 +121,7 @@ size_t ELEVATORS[3][4] = {{50, 220, 70, BRICK_WIDTH},
                           {50, 200, 70, BRICK_WIDTH}};
 
 // elevator buttons
-size_t E_BUTTONS[2][4] = {{475, 150, 30, 20}, {400, 25, 30, 20}};
+size_t E_BUTTONS[2][4] = {{475, 150, 30, 20}, {350, 25, 30, 20}};
 
 // doors
 size_t DOORS[2][4] = {{300, 245, 30, 70}, {250, 175, 30, 90}};
@@ -202,6 +202,7 @@ struct state {
   bool pause;
   bool elevator;
   size_t level_points[3];
+  bool level_completed[3];
   double time;
   bool music_played;
 };
@@ -700,8 +701,8 @@ void go_to_level1(state_t *state) {
   scene_free(state->scene);
   state->scene = scene_init();
   state->current_screen = LEVEL1;
-  // state->collision_type = DOWN_COLLISION;
   state->elevator = false;
+  state->level_completed[0] = false;
   make_level1(state);
   return;
 }
@@ -713,6 +714,7 @@ void go_to_level2(state_t *state) {
   state->current_screen = LEVEL2;
   // state->collision_type = DOWN_COLLISION;
   state->elevator = false;
+  state->level_completed[1] = false;
   make_level2(state);
   return;
 }
@@ -724,6 +726,7 @@ void go_to_level3(state_t *state) {
   state->current_screen = LEVEL3;
   // state->collision_type = DOWN_COLLISION;
   state->elevator = false;
+  state->level_completed[2] = false;
   make_level3(state);
   return;
 }
@@ -734,28 +737,25 @@ void go_to_homepage(state_t *state) {
     scene_free(state->scene);
     state->scene = scene_init();
   }
-  printf("%s/n", "at homepage");
   state->current_screen = HOMEPAGE;
   state->pause = false;
   sdl_reset_timer();
+
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(HOMEPAGE_PATH, box);
 
   SDL_Rect level_gem_box[3] = {
-      (SDL_Rect){.x = 100, .y = 500, .w = 50, .h = 50},
-      (SDL_Rect){.x = 200, .y = 500, .w = 50, .h = 50},
-      (SDL_Rect){.x = 300, .y = 500, .w = 50, .h = 50}};
+      (SDL_Rect){.x = 148, .y = 375, .w = 50, .h = 50},
+      (SDL_Rect){.x = 350, .y = 375, .w = 50, .h = 50},
+      (SDL_Rect){.x = 552, .y = 375, .w = 50, .h = 50}};
 
   for (size_t i = 0; i < NUMBER_OF_LEVELS; i++) {
-    if (state->level_points[i] > GREEN_THRESHOLD) {
+    if ((int)state->level_points[i] == GREEN_THRESHOLD && state->level_completed[i]) {
       asset_make_image(GREEN_GEM_PATH, level_gem_box[i]);
-      break;
-    } else if (state->level_points[i] > ORANGE_THRESHOLD) {
+    } else if ((int)state->level_points[i] == ORANGE_THRESHOLD && state->level_completed[i]) {
       asset_make_image(ORANGE_GEM_PATH, level_gem_box[i]);
-      break;
-    } else if (state->level_points[i] > RED_THRESHOLD) {
+    } else if ((int)state->level_points[i] == RED_THRESHOLD && state->level_completed[i]) {
       asset_make_image(RED_GEM_PATH, level_gem_box[i]);
-      break;
     }
   }
 }
@@ -931,6 +931,40 @@ void apply_gravity(state_t *state, double dt) {
   }
 }
 
+void update_points(state_t *state) {
+  size_t gem_counter = 3;
+  list_t *asset_list = asset_get_asset_list();
+  for (size_t i = 0; i < list_size(asset_list); i++) {
+    asset_t *asset = list_get(asset_list, i);
+    if (asset->type == ASSET_IMAGE) {
+      image_asset_t *gem_asset = (image_asset_t *)asset;
+      body_t *gem = gem_asset->body;
+      if (strcmp(body_get_info(gem), "gem") == 0) {
+        gem_counter--;
+      }
+    }
+  }
+
+  if (gem_counter > state->level_points[state->current_screen - 1] && state->level_completed[state->current_screen - 1]) {
+    state->level_points[state->current_screen - 1] = gem_counter;
+  }    
+}
+
+void level_complete(state_t *state) {
+  body_t *spirit = state->spirit;
+  list_t *asset_list = asset_get_asset_list();
+  for (size_t i = 0; i < list_size(asset_list); i++) {
+    asset_t *asset = list_get(asset_list, i);
+    if (asset->type == ASSET_IMAGE) {
+      image_asset_t *obstacle = (image_asset_t *)asset;
+      body_t *body = obstacle->body;
+      if ((strcmp(body_get_info(body), "exit")) == 0 && find_collision(spirit, body).collided) {
+        state->level_completed[state->current_screen - 1] = true;
+      }
+    }
+  }
+}
+
 collision_type_t collision(state_t *state) {
   body_t *spirit = state->spirit;
   scene_t *scene = state->scene;
@@ -994,6 +1028,9 @@ state_t *emscripten_init() {
   state->level_points[0] = 0; // for level 1
   state->level_points[1] = 0; // for level 2
   state->level_points[2] = 0; // for level 3
+  state->level_completed[0] = false; // for level 1
+  state->level_completed[1] = false; // for level 2
+  state->level_completed[2] = false; // for level 3
   state->time = 0;
 
   go_to_homepage(state);
@@ -1044,7 +1081,6 @@ bool emscripten_main(state_t *state) {
       double dt = time_since_last_tick();
 
       // apply gravity
-
       if (dt < 0.2) {
         apply_gravity(state, dt);
       }
@@ -1056,6 +1092,12 @@ bool emscripten_main(state_t *state) {
       if (state->elevator) {
         move_elevator(state);
       }
+
+      // update points
+      update_points(state);
+
+      // check for completed level
+      level_complete(state);
 
       // clocks
       // asset_t *clock = list_get(body_assets, len - 1);
@@ -1078,6 +1120,7 @@ bool emscripten_main(state_t *state) {
   if (time % 10 != 0) {
     state->music_played = false;
   }
+
   if ((time % 10 == 0) && (!(state->music_played))) {
     sdl_play_music(BACKGROUND_MUSIC_PATH);
     state->music_played = true;
