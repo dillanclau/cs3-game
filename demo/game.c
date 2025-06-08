@@ -90,8 +90,8 @@ size_t EXITS[3][4] = {{60, 458, INNER_RADIUS * 3, OUTER_RADIUS * 3},
                       {60, 424, INNER_RADIUS * 3, OUTER_RADIUS * 3}};
 
 // elevators
-const size_t ELEVATORS[3][4] = {{50, 220, 70, 20}, {700, 25, 70, 20}, 
-                                {50, 200, 70, 20}};
+const size_t ELEVATORS[3][4] = {
+    {50, 220, 70, 20}, {700, 25, 70, 20}, {50, 200, 70, 20}};
 // elevator buttons
 const size_t E_BUTTONS[2][4] = {{475, 150, 30, 20}, {400, 25, 30, 20}};
 
@@ -393,6 +393,12 @@ void platform_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   body_set_velocity(body1, vel);
 }
 
+
+vector_t get_dimensions_for_text(char *text) {
+  return (vector_t){strlen(text) * TEXT_SIZE, TEXT_SIZE * TEXT_HEIGHT_SCALE};
+}
+
+
 void init_bgd_player(state_t *state) {
   state->time = 0;
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
@@ -407,21 +413,6 @@ void init_bgd_player(state_t *state) {
   // spirit
   asset_make_spirit(SPIRIT_FRONT_PATH, SPIRIT_LEFT_PATH, SPIRIT_RIGHT_PATH,
                     spirit);
-}
-
-vector_t get_dimensions_for_text(char *text) {
-  return (vector_t){strlen(text) * TEXT_SIZE, TEXT_SIZE * TEXT_HEIGHT_SCALE};
-}
-
-void make_clock(state_t *state) {
-  char text[10000];
-  sprintf(text, "Clock:%.0f", floor(state->time));
-  vector_t text_dim = get_dimensions_for_text(text);
-  SDL_Rect text_box = (SDL_Rect){.x = CLOCK_POS.x - (text_dim.x / 2),
-                                 .y = CLOCK_POS.y,
-                                 .w = text_dim.x,
-                                 .h = text_dim.y};
-  asset_make_text(FONT_FILEPATH, text_box, text, CLOCK_COL);
 }
 
 void make_level1(state_t *state) {
@@ -1004,13 +995,24 @@ bool emscripten_main(state_t *state) {
   list_t *body_assets = asset_get_asset_list();
   size_t len = list_size(body_assets);
 
+  // for loop
   for (size_t i = 0; i < len; i++) {
     asset_t *asset = list_get(body_assets, i);
-    asset_animate(asset, state->time);
+    // asset_animate(asset, state->time);
     asset_render(list_get(body_assets, i));
   }
 
   if (state->current_screen != HOMEPAGE) {
+    char text[10000];
+    sprintf(text, "Clock:%.0f", floor(state->time));
+    vector_t text_dim = get_dimensions_for_text(text);
+    SDL_Rect rect = (SDL_Rect){.x = CLOCK_POS.x - (text_dim.x / 2),
+                                 .y = CLOCK_POS.y,
+                                 .w = text_dim.x,
+                                 .h = text_dim.y};
+
+    TTF_Font *font = TTF_OpenFont(FONT_FILEPATH, 18);
+    sdl_render_text(text, font, CLOCK_COL, &rect);
 
     if (!(state->pause)) {
       state->collision_type = collision(state);
@@ -1034,6 +1036,7 @@ bool emscripten_main(state_t *state) {
       // asset_t *clock = list_get(body_assets, len - 1);
       // asset_destroy(clock);
       // list_remove(body_assets, len - 1);
+      // update_clock(state);
       scene_tick(state->scene, dt);
       // make_clock(state);
       state->time += dt;
