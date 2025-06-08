@@ -101,7 +101,7 @@ size_t LAVA2[4][4] = {{500, 15, 140, LAVA_WIDTH},
                       {510, 400, 60, LAVA_WIDTH},
                       {390, 400, 60, LAVA_WIDTH}};
 
-size_t LAVA3[2][4] = {{500, 15, 120, LAVA_WIDTH}, {225, 240, 50, LAVA_WIDTH}};
+size_t LAVA3[2][4] = {{550, 15, 90, LAVA_WIDTH}, {225, 240, 50, LAVA_WIDTH}};
 
 const size_t WATER_NUM[NUM_MAP] = {2, 2, 2};
 size_t WATER1[2][4] = {{500, 210, 165, LAVA_WIDTH},
