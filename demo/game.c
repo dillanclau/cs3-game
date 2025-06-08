@@ -169,14 +169,14 @@ const char *JUMP_SOUND_PATH = "assets/jump_sound.mp3";
 
 // asset position constants
 SDL_Rect HOMEPAGE_GEM_BOX[3] = {
-  (SDL_Rect){.x = 148, .y = 375, .w = 50, .h = 50},
-  (SDL_Rect){.x = 350, .y = 375, .w = 50, .h = 50},
-  (SDL_Rect){.x = 552, .y = 375, .w = 50, .h = 50}};
-SDL_Rect BACKGROUND_BOX = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
+    (SDL_Rect){.x = 148, .y = 375, .w = 50, .h = 50},
+    (SDL_Rect){.x = 350, .y = 375, .w = 50, .h = 50},
+    (SDL_Rect){.x = 552, .y = 375, .w = 50, .h = 50}};
+SDL_Rect BACKGROUND_BOX =
+    (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
 SDL_Rect POP_UP_BOX = (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400};
 
 bool game_over = false;
-
 
 typedef enum {
   LEVEL1 = 1,
@@ -306,7 +306,7 @@ void reset_user(body_t *body) {
 
 // when the player dies
 void lose_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
-                        double force_const) {
+                  double force_const) {
   reset_user(body1);
   asset_make_image(GAME_OVER_PATH, POP_UP_BOX);
   sdl_play_level_failed(FAILED_SOUND_PATH);
@@ -438,8 +438,8 @@ void make_level1(state_t *state) {
     body_t *obstacle =
         make_obstacle(BRICKS1[i][2], BRICKS1[i][3], coord, "platform");
     scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, scene_get_body(state->scene, 0), obstacle, platform_handler,
-                     NULL, 0, NULL);
+    create_collision(state->scene, scene_get_body(state->scene, 0), obstacle,
+                     platform_handler, NULL, 0, NULL);
     asset_make_image_with_body(BRICK_PATH, obstacle);
   }
 
@@ -449,8 +449,8 @@ void make_level1(state_t *state) {
     vector_t coord = (vector_t){LAVA1[i][0], LAVA1[i][1]};
     body_t *obstacle = make_obstacle(LAVA1[i][2], LAVA1[i][3], coord, "lava");
     scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, scene_get_body(state->scene, 0), obstacle, lose_handler,
-                     NULL, 0, NULL);
+    create_collision(state->scene, scene_get_body(state->scene, 0), obstacle,
+                     lose_handler, NULL, 0, NULL);
     asset_make_anim(LAVA1_PATH, LAVA2_PATH, LAVA3_PATH, obstacle);
   }
 
@@ -470,8 +470,8 @@ void make_level1(state_t *state) {
     vector_t center = (vector_t){GEM1[i][0], GEM1[i][1]};
     body_t *gem = make_gem(OUTER_RADIUS, INNER_RADIUS, center);
     scene_add_body(state->scene, gem);
-    create_collision(state->scene, scene_get_body(state->scene, 0), gem, gem_user_handler, NULL,
-                     0, NULL);
+    create_collision(state->scene, scene_get_body(state->scene, 0), gem,
+                     gem_user_handler, NULL, 0, NULL);
     asset_make_image_with_body(GEM_PATH, gem);
   }
 
@@ -479,8 +479,8 @@ void make_level1(state_t *state) {
   vector_t coord = (vector_t){EXITS[0][0], EXITS[0][1]};
   body_t *exit = make_obstacle(EXITS[0][2], EXITS[0][3], coord, "exit");
   scene_add_body(state->scene, exit);
-  create_collision(state->scene, scene_get_body(state->scene, 0), exit, win_handler, NULL, 0,
-                   NULL);
+  create_collision(state->scene, scene_get_body(state->scene, 0), exit,
+                   win_handler, NULL, 0, NULL);
   asset_make_image_with_body(EXIT_DOOR_PATH, exit);
 }
 
@@ -496,8 +496,8 @@ void make_level2(state_t *state) {
     body_t *obstacle =
         make_obstacle(BRICKS2[i][2], BRICKS2[i][3], coord, "platform");
     scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, scene_get_body(state->scene, 0), obstacle, platform_handler,
-                     NULL, 0, NULL);
+    create_collision(state->scene, scene_get_body(state->scene, 0), obstacle,
+                     platform_handler, NULL, 0, NULL);
     asset_make_image_with_body(BRICK_PATH, obstacle);
   }
 
@@ -507,8 +507,8 @@ void make_level2(state_t *state) {
     vector_t coord = (vector_t){LAVA2[i][0], LAVA2[i][1]};
     body_t *obstacle = make_obstacle(LAVA2[i][2], LAVA2[i][3], coord, "lava");
     scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, scene_get_body(state->scene, 0), obstacle, lose_handler,
-                     NULL, 0, NULL);
+    create_collision(state->scene, scene_get_body(state->scene, 0), obstacle,
+                     lose_handler, NULL, 0, NULL);
     asset_make_anim(LAVA1_PATH, LAVA2_PATH, LAVA3_PATH, obstacle);
   }
 
@@ -528,8 +528,8 @@ void make_level2(state_t *state) {
     vector_t center = (vector_t){GEM2[i][0], GEM2[i][1]};
     body_t *gem = make_gem(OUTER_RADIUS, INNER_RADIUS, center);
     scene_add_body(state->scene, gem);
-    create_collision(state->scene, scene_get_body(state->scene, 0), gem, gem_user_handler, NULL,
-                     0, NULL);
+    create_collision(state->scene, scene_get_body(state->scene, 0), gem,
+                     gem_user_handler, NULL, 0, NULL);
     asset_make_image_with_body(GEM_PATH, gem);
   }
 
@@ -537,8 +537,8 @@ void make_level2(state_t *state) {
   vector_t coord = (vector_t){EXITS[1][0], EXITS[1][1]};
   body_t *exit = make_obstacle(EXITS[1][2], EXITS[1][3], coord, "exit");
   scene_add_body(state->scene, exit);
-  create_collision(state->scene, scene_get_body(state->scene, 0), exit, win_handler, NULL, 0,
-                   NULL);
+  create_collision(state->scene, scene_get_body(state->scene, 0), exit,
+                   win_handler, NULL, 0, NULL);
   asset_make_image_with_body(EXIT_DOOR_PATH, exit);
 
   // make elevator
@@ -546,8 +546,8 @@ void make_level2(state_t *state) {
   body_t *elevator =
       make_obstacle(ELEVATORS[0][2], ELEVATORS[0][3], e_coord, "elevator");
   scene_add_body(state->scene, elevator);
-  create_collision(state->scene, scene_get_body(state->scene, 0), elevator, platform_handler,
-                   NULL, 0, NULL);
+  create_collision(state->scene, scene_get_body(state->scene, 0), elevator,
+                   platform_handler, NULL, 0, NULL);
   asset_make_image_with_body(ELEVATOR_PATH, elevator);
 
   // make elevator button
@@ -555,8 +555,8 @@ void make_level2(state_t *state) {
   body_t *e_button = make_obstacle(E_BUTTONS[0][2], E_BUTTONS[0][3],
                                    e_button_coord, "elevator button");
   scene_add_body(state->scene, e_button);
-  create_collision(state->scene, scene_get_body(state->scene, 0), e_button, platform_handler,
-                   NULL, 0, NULL);
+  create_collision(state->scene, scene_get_body(state->scene, 0), e_button,
+                   platform_handler, NULL, 0, NULL);
   asset_make_button(ELEVATOR_BUTTON_UNPRESSED_PATH,
                     ELEVATOR_BUTTON_PRESSED_PATH, e_button);
 
@@ -564,8 +564,8 @@ void make_level2(state_t *state) {
   vector_t door_coord = (vector_t){DOORS[0][0], DOORS[0][1]};
   body_t *door = make_obstacle(DOORS[0][2], DOORS[0][3], door_coord, "door");
   scene_add_body(state->scene, door);
-  create_collision(state->scene, scene_get_body(state->scene, 0), door, platform_handler, NULL, 0,
-                   NULL);
+  create_collision(state->scene, scene_get_body(state->scene, 0), door,
+                   platform_handler, NULL, 0, NULL);
   asset_make_image_with_body(DOOR_PATH, door);
 
   // make door button
@@ -573,8 +573,8 @@ void make_level2(state_t *state) {
   body_t *button =
       make_obstacle(BUTTONS[0][2], BUTTONS[0][3], button_coord, "door button");
   scene_add_body(state->scene, button);
-  create_collision(state->scene, scene_get_body(state->scene, 0), button, platform_handler, NULL,
-                   0, NULL);
+  create_collision(state->scene, scene_get_body(state->scene, 0), button,
+                   platform_handler, NULL, 0, NULL);
   asset_make_button(DOOR_BUTTON_UNPRESSED_PATH, DOOR_BUTTON_PRESSED_PATH,
                     button);
 }
@@ -599,8 +599,8 @@ void make_level3(state_t *state) {
   body_t *e_button = make_obstacle(E_BUTTONS[1][2], E_BUTTONS[1][3],
                                    e_button_coord, "elevator button");
   scene_add_body(state->scene, e_button);
-  create_collision(state->scene, scene_get_body(state->scene, 0), e_button, platform_handler,
-                   NULL, 0, NULL);
+  create_collision(state->scene, scene_get_body(state->scene, 0), e_button,
+                   platform_handler, NULL, 0, NULL);
   asset_make_button(ELEVATOR_BUTTON_UNPRESSED_PATH,
                     ELEVATOR_BUTTON_PRESSED_PATH, e_button);
 
@@ -608,8 +608,8 @@ void make_level3(state_t *state) {
   vector_t door_coord = (vector_t){DOORS[1][0], DOORS[1][1]};
   body_t *door = make_obstacle(DOORS[1][2], DOORS[1][3], door_coord, "door");
   scene_add_body(state->scene, door);
-  create_collision(state->scene, scene_get_body(state->scene, 0), door, platform_handler, NULL, 0,
-                   NULL);
+  create_collision(state->scene, scene_get_body(state->scene, 0), door,
+                   platform_handler, NULL, 0, NULL);
   asset_make_image_with_body(DOOR_PATH, door);
 
   // make door button
@@ -617,8 +617,8 @@ void make_level3(state_t *state) {
   body_t *button =
       make_obstacle(BUTTONS[1][2], BUTTONS[1][3], button_coord, "door button");
   scene_add_body(state->scene, button);
-  create_collision(state->scene, scene_get_body(state->scene, 0), button, platform_handler, NULL,
-                   0, NULL);
+  create_collision(state->scene, scene_get_body(state->scene, 0), button,
+                   platform_handler, NULL, 0, NULL);
   asset_make_button(DOOR_BUTTON_UNPRESSED_PATH, DOOR_BUTTON_PRESSED_PATH,
                     button);
 
@@ -628,8 +628,8 @@ void make_level3(state_t *state) {
     body_t *obstacle =
         make_obstacle(BRICKS3[i][2], BRICKS3[i][3], coord, "platform");
     scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, scene_get_body(state->scene, 0), obstacle, platform_handler,
-                     NULL, 0, NULL);
+    create_collision(state->scene, scene_get_body(state->scene, 0), obstacle,
+                     platform_handler, NULL, 0, NULL);
     asset_make_image_with_body(BRICK_PATH, obstacle);
   }
 
@@ -638,8 +638,8 @@ void make_level3(state_t *state) {
     vector_t coord = (vector_t){LAVA3[i][0], LAVA3[i][1]};
     body_t *obstacle = make_obstacle(LAVA3[i][2], LAVA3[i][3], coord, "lava");
     scene_add_body(state->scene, obstacle);
-    create_collision(state->scene, scene_get_body(state->scene, 0), obstacle, lose_handler,
-                     NULL, 0, NULL);
+    create_collision(state->scene, scene_get_body(state->scene, 0), obstacle,
+                     lose_handler, NULL, 0, NULL);
     asset_make_anim(LAVA1_PATH, LAVA2_PATH, LAVA3_PATH, obstacle);
   }
 
@@ -657,8 +657,8 @@ void make_level3(state_t *state) {
     vector_t center = (vector_t){GEM3[i][0], GEM3[i][1]};
     body_t *gem = make_gem(OUTER_RADIUS, INNER_RADIUS, center);
     scene_add_body(state->scene, gem);
-    create_collision(state->scene, scene_get_body(state->scene, 0), gem, gem_user_handler, NULL,
-                     0, NULL);
+    create_collision(state->scene, scene_get_body(state->scene, 0), gem,
+                     gem_user_handler, NULL, 0, NULL);
     asset_make_image_with_body(GEM_PATH, gem);
   }
 
@@ -666,15 +666,15 @@ void make_level3(state_t *state) {
   vector_t coord = (vector_t){EXITS[2][0], EXITS[2][1]};
   body_t *exit = make_obstacle(EXITS[2][2], EXITS[2][3], coord, "exit");
   scene_add_body(state->scene, exit);
-  create_collision(state->scene, scene_get_body(state->scene, 0), exit, win_handler, NULL, 0,
-                   NULL);
+  create_collision(state->scene, scene_get_body(state->scene, 0), exit,
+                   win_handler, NULL, 0, NULL);
   asset_make_image_with_body(EXIT_DOOR_PATH, exit);
 }
 
-
 // SCREEN-SWITCHING FUNCTIONALITY
 
-void go_to_level(state_t *state, screen_t target_screen, make_level_t make_level) {
+void go_to_level(state_t *state, screen_t target_screen,
+                 make_level_t make_level) {
   asset_reset_asset_list();
   scene_free(state->scene);
   state->scene = scene_init();
@@ -683,17 +683,11 @@ void go_to_level(state_t *state, screen_t target_screen, make_level_t make_level
   make_level(state);
 }
 
-void go_to_level1(state_t *state) {
-  go_to_level(state, LEVEL1, make_level1);
-}
+void go_to_level1(state_t *state) { go_to_level(state, LEVEL1, make_level1); }
 
-void go_to_level2(state_t *state) {
-  go_to_level(state, LEVEL2, make_level2);
-}
+void go_to_level2(state_t *state) { go_to_level(state, LEVEL2, make_level2); }
 
-void go_to_level3(state_t *state) {
-  go_to_level(state, LEVEL3, make_level3);
-}
+void go_to_level3(state_t *state) { go_to_level(state, LEVEL3, make_level3); }
 
 void go_to_homepage(state_t *state) {
   if (state->current_screen != HOMEPAGE) {
@@ -976,7 +970,7 @@ state_t *emscripten_init() {
   sdl_init(MIN, MAX);
   state_t *state = malloc(sizeof(state_t));
   state->scene = scene_init();
-  state->current_screen = LEVEL1;
+  state->current_screen = HOMEPAGE;
   state->collision_type = NO_COLLISION;
   state->pause = false;
   state->elevator = false;
@@ -1008,8 +1002,6 @@ bool emscripten_main(state_t *state) {
     asset_animate(asset, state->time);
     asset_render(list_get(body_assets, i));
   }
-  
-
 
   if (state->current_screen != HOMEPAGE) {
 
@@ -1020,11 +1012,11 @@ bool emscripten_main(state_t *state) {
       sprintf(text, "Clock:%.0f", floor(state->time));
       vector_t text_dim = get_dimensions_for_text(text);
       SDL_Rect rect = (SDL_Rect){.x = CLOCK_POS.x - (text_dim.x / 2),
-                                       .y = CLOCK_POS.y,
-                                       .w = text_dim.x,
-                                       .h = text_dim.y};
-      
-      sdl_render_text(text, state->font, CLOCK_COL, &rect);      
+                                 .y = CLOCK_POS.y,
+                                 .w = text_dim.x,
+                                 .h = text_dim.y};
+
+      sdl_render_text(text, state->font, CLOCK_COL, &rect);
       state->collision_type = collision(state);
       double dt = time_since_last_tick();
 
@@ -1044,11 +1036,9 @@ bool emscripten_main(state_t *state) {
       // check for completed level
       level_complete(state);
 
-
       scene_tick(state->scene, dt);
       state->time += dt;
     }
-
   }
 
   sdl_show();
