@@ -750,11 +750,14 @@ void go_to_homepage(state_t *state) {
       (SDL_Rect){.x = 552, .y = 375, .w = 50, .h = 50}};
 
   for (size_t i = 0; i < NUMBER_OF_LEVELS; i++) {
-    if ((int)state->level_points[i] == GREEN_THRESHOLD && state->level_completed[i]) {
+    if ((int)state->level_points[i] == GREEN_THRESHOLD &&
+        state->level_completed[i]) {
       asset_make_image(GREEN_GEM_PATH, level_gem_box[i]);
-    } else if ((int)state->level_points[i] == ORANGE_THRESHOLD && state->level_completed[i]) {
+    } else if ((int)state->level_points[i] == ORANGE_THRESHOLD &&
+               state->level_completed[i]) {
       asset_make_image(ORANGE_GEM_PATH, level_gem_box[i]);
-    } else if ((int)state->level_points[i] == RED_THRESHOLD && state->level_completed[i]) {
+    } else if ((int)state->level_points[i] == RED_THRESHOLD &&
+               state->level_completed[i]) {
       asset_make_image(RED_GEM_PATH, level_gem_box[i]);
     }
   }
@@ -945,9 +948,10 @@ void update_points(state_t *state) {
     }
   }
 
-  if (gem_counter > state->level_points[state->current_screen - 1] && state->level_completed[state->current_screen - 1]) {
+  if (gem_counter > state->level_points[state->current_screen - 1] &&
+      state->level_completed[state->current_screen - 1]) {
     state->level_points[state->current_screen - 1] = gem_counter;
-  }    
+  }
 }
 
 void level_complete(state_t *state) {
@@ -958,7 +962,8 @@ void level_complete(state_t *state) {
     if (asset->type == ASSET_IMAGE) {
       image_asset_t *obstacle = (image_asset_t *)asset;
       body_t *body = obstacle->body;
-      if ((strcmp(body_get_info(body), "exit")) == 0 && find_collision(spirit, body).collided) {
+      if ((strcmp(body_get_info(body), "exit")) == 0 &&
+          find_collision(spirit, body).collided) {
         state->level_completed[state->current_screen - 1] = true;
       }
     }
@@ -1025,9 +1030,9 @@ state_t *emscripten_init() {
   state->collision_type = NO_COLLISION;
   state->pause = false;
   state->elevator = false;
-  state->level_points[0] = 0; // for level 1
-  state->level_points[1] = 0; // for level 2
-  state->level_points[2] = 0; // for level 3
+  state->level_points[0] = 0;        // for level 1
+  state->level_points[1] = 0;        // for level 2
+  state->level_points[2] = 0;        // for level 3
   state->level_completed[0] = false; // for level 1
   state->level_completed[1] = false; // for level 2
   state->level_completed[2] = false; // for level 3
