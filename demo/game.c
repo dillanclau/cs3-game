@@ -35,7 +35,7 @@ const color_t TEXT_COLOR = (color_t){1, 0, 0};
 // constants to create platforms
 const size_t NUM_MAP = 3;
 const size_t BRICK_WIDTH = 20;
-const size_t BRICK_NUM[NUM_MAP] = {14, 11, 12};
+const size_t BRICK_NUM[NUM_MAP] = {14, 12, 12};
 
 const size_t NUMBER_OF_LEVELS = 3;
 
@@ -62,10 +62,11 @@ size_t BRICKS1[14][4] = {{375, -500, 750, 30},
                          {750, 250, 30, 500}};
 
 // Bricks for Map 2
-size_t BRICKS2[11][4] = {{100, 390, 200, BRICK_WIDTH}, // where the door is
+size_t BRICKS2[12][4] = {{100, 390, 200, BRICK_WIDTH}, // where the door is
                          {450, 390, 300, BRICK_WIDTH},
                          {350, 290, 350, BRICK_WIDTH}, // next row
                          {630, 270, 300, BRICK_WIDTH},
+                         {715, 70, 60, BRICK_WIDTH},
                          {225, 200, 450, BRICK_WIDTH}, // third row
                          {500, 130, 300, BRICK_WIDTH},
                          {100, 80, 200, BRICK_WIDTH}, // starting platform
