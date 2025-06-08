@@ -272,6 +272,7 @@ void wrap_edges(body_t *body) {
 
 void move_elevator(state_t *state) {
   for (size_t i = 0; i < scene_bodies(state->scene); i++) {
+    body_t *spirit = state->spirit;
     body_t *body = scene_get_body(state->scene, i);
     if (strcmp(body_get_info(body), "elevator") == 0) {
       vector_t centroid = body_get_centroid(body);
@@ -299,6 +300,10 @@ void move_elevator(state_t *state) {
           }
         }
       }
+
+      if (find_collision(body, spirit).collided && (state->collision_type == UP_COLLISION || state->collision_type == UP_LEFT_COLLISION || state->collision_type == UP_RIGHT_COLLISION)) {
+        body_set_velocity(spirit, (vector_t){body_get_velocity(spirit).x, body_get_velocity(body).y});
+      }
     }
   }
 }
@@ -315,8 +320,6 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   sdl_play_level_failed(FAILED_SOUND_PATH);
 }
 
-// TODO: jumping velocity implementation matters for when platofrm elevator
-// TODO: collision??? handles the collisions between user and platform
 void elevator_user_handler(body_t *body1, body_t *body2, vector_t axis,
                            void *aux, double force_const) {
   vector_t vel = body_get_velocity(body1);
@@ -335,6 +338,7 @@ void elevator_user_handler(body_t *body1, body_t *body2, vector_t axis,
 
   if (cen.x > v4->x - INNER_RADIUS && cen.x < v3->x + INNER_RADIUS &&
       cen.y - (INNER_RADIUS - 8) >= v4->y) {
+    body_set_centroid(body1, (vector_t){cen.x, plat_pos.y + BRICK_WIDTH + 3});
     vel.y = plat_vel.y;
   }
 
@@ -1027,7 +1031,6 @@ bool emscripten_main(state_t *state) {
       if (dt < 0.2) {
         apply_gravity(state, dt);
       }
-
 
       // check for pressed buttons
       button_press(state);
