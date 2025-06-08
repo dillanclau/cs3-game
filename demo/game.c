@@ -1064,53 +1064,53 @@ bool emscripten_main(state_t *state) {
                                .h = text_dim.y};
     sdl_render_text(text, state->font, CLOCK_COL, &rect);
 
-  if (!(state->pause)) {
-    state->collision_type = collision(state);
-    double dt = time_since_last_tick();
+    if (!(state->pause)) {
+      state->collision_type = collision(state);
+      double dt = time_since_last_tick();
 
-    // apply gravity
-    if (dt < 0.2) {
-      apply_gravity(state, dt);
-    }
+      // apply gravity
+      if (dt < 0.2) {
+        apply_gravity(state, dt);
+      }
 
-    // check for pressed buttons
-    button_press(state);
+      // check for pressed buttons
+      button_press(state);
 
-    // move elevator
-    if (state->elevator) {
-      move_elevator(state);
-    }
+      // move elevator
+      if (state->elevator) {
+        move_elevator(state);
+      }
 
-    // update points
-    update_points(state);
+      // update points
+      update_points(state);
 
-    // check for completed level
-    level_complete(state);
+      // check for completed level
+      level_complete(state);
 
       scene_tick(state->scene, dt);
       state->time += dt;
     }
 
-  // asset_destroy(clock); // only destroy if the clock is there
+    // asset_destroy(clock); // only destroy if the clock is there
 
-  // sdl_render_scene(state->scene);
-}
+    // sdl_render_scene(state->scene);
+  }
 
-// body_t *elevator = scene_get_body(state->scene, 1);
-// move_elevator(elevator);
+  // body_t *elevator = scene_get_body(state->scene, 1);
+  // move_elevator(elevator);
 
-size_t time = (size_t)state->time;
-if (time % 10 != 0) {
-  state->music_played = false;
-}
+  size_t time = (size_t)state->time;
+  if (time % 10 != 0) {
+    state->music_played = false;
+  }
 
-if ((time % 10 == 0) && (!(state->music_played))) {
-  sdl_play_music(BACKGROUND_MUSIC_PATH);
-  state->music_played = true;
-}
+  if ((time % 10 == 0) && (!(state->music_played))) {
+    sdl_play_music(BACKGROUND_MUSIC_PATH);
+    state->music_played = true;
+  }
 
-sdl_show();
-return false;
+  sdl_show();
+  return false;
 }
 
 void emscripten_free(state_t *state) {
