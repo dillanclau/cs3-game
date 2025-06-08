@@ -90,8 +90,8 @@ size_t EXITS[3][4] = {{60, 458, INNER_RADIUS * 3, OUTER_RADIUS * 3},
                       {60, 424, INNER_RADIUS * 3, OUTER_RADIUS * 3}};
 
 // elevators
-const size_t ELEVATORS[3][4] = {
-    {50, 220, 70, 20}, {700, 25, 70, 20}, {50, 200, 70, 20}};
+const size_t ELEVATORS[3][4] = {{50, 220, 70, 20}, {700, 25, 70, 20}, 
+                                {50, 200, 70, 20}};
 // elevator buttons
 const size_t E_BUTTONS[2][4] = {{475, 150, 30, 20}, {400, 25, 30, 20}};
 
