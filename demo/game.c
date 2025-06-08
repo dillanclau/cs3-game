@@ -173,6 +173,7 @@ const char *WATER1_PATH = "assets/waterframe1.png";
 const char *WATER2_PATH = "assets/waterframe2.png";
 const char *WATER3_PATH = "assets/waterframe3.png";
 const char *GAME_OVER_PATH = "assets/game_over.png";
+const char *WIN_PATH = "assets/level_completed.png";
 
 const char *BACKGROUND_MUSIC_PATH = "assets/background_music.mp3";
 const char *GEM_SOUND_PATH = "assets/gem_sound.mp3";
@@ -327,6 +328,11 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   asset_make_image(GAME_OVER_PATH,
                    (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
   sdl_play_level_failed(FAILED_SOUND_PATH);
+}
+
+void win_handler(body_t *body1, body_t *body2, vector_t axis, void *aux, double force_const) {
+  asset_make_image(WIN_PATH, (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
+  sdl_play_level_completed(COMPLETED_SOUND_PATH);
 }
 
 void elevator_user_handler(body_t *body1, body_t *body2, vector_t axis,
@@ -493,7 +499,7 @@ void make_level1(state_t *state) {
   vector_t coord = (vector_t){EXITS[0][0], EXITS[0][1]};
   body_t *exit = make_obstacle(EXITS[0][2], EXITS[0][3], coord, "exit");
   scene_add_body(state->scene, exit);
-  create_collision(state->scene, state->spirit, exit, reset_user_handler, NULL,
+  create_collision(state->scene, state->spirit, exit, win_handler, NULL,
                    0, NULL);
   asset_make_image_with_body(EXIT_DOOR_PATH, exit);
 
@@ -551,7 +557,7 @@ void make_level2(state_t *state) {
   vector_t coord = (vector_t){EXITS[1][0], EXITS[1][1]};
   body_t *exit = make_obstacle(EXITS[1][2], EXITS[1][3], coord, "exit");
   scene_add_body(state->scene, exit);
-  create_collision(state->scene, state->spirit, exit, reset_user_handler, NULL,
+  create_collision(state->scene, state->spirit, exit, win_handler, NULL,
                    0, NULL);
   asset_make_image_with_body(EXIT_DOOR_PATH, exit);
 
@@ -680,7 +686,7 @@ void make_level3(state_t *state) {
   vector_t coord = (vector_t){EXITS[2][0], EXITS[2][1]};
   body_t *exit = make_obstacle(EXITS[2][2], EXITS[2][3], coord, "exit");
   scene_add_body(state->scene, exit);
-  create_collision(state->scene, state->spirit, exit, reset_user_handler, NULL,
+  create_collision(state->scene, state->spirit, exit, win_handler, NULL,
                    0, NULL);
   asset_make_image_with_body(EXIT_DOOR_PATH, exit);
 
