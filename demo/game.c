@@ -99,21 +99,12 @@ const size_t E_BUTTONS[2][4] = {{475, 150, 30, 20}, {400, 25, 30, 20}};
 const size_t DOORS[2][4] = {{300, 245, 30, 70}, {250, 175, 30, 90}};
 // doors buttons
 const size_t BUTTONS[2][4] = {{40, 100, 30, 20}, {500, 140, 30, 20}};
-<<<<<<< HEAD
 
 // point range thresholds
 const size_t RED_THRESHOLD = 25;
 const size_t ORANGE_THRESHOLD = 50;
 const size_t GREEN_THRESHOLD = 75;
 
-=======
-
-// point range thresholds
-const size_t RED_THRESHOLD = 25;
-const size_t ORANGE_THRESHOLD = 50;
-const size_t GREEN_THRESHOLD = 75;
-
->>>>>>> refs/remotes/origin/master
 // gem constants
 const size_t GEM_NUM[3] = {3, 3, 3};
 const size_t GEM1[3][2] = {{180, 100}, {560, 450}, {375, 325}};
@@ -187,6 +178,7 @@ struct state {
   size_t level_points[3];
   double time;
   bool music_played;
+  TTF_Font *font;
 };
 
 body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
@@ -402,18 +394,10 @@ void platform_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   body_set_velocity(body1, vel);
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> refs/remotes/origin/master
 vector_t get_dimensions_for_text(char *text) {
   return (vector_t){strlen(text) * TEXT_SIZE, TEXT_SIZE * TEXT_HEIGHT_SCALE};
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> refs/remotes/origin/master
 void init_bgd_player(state_t *state) {
   state->time = 0;
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
@@ -974,6 +958,7 @@ state_t *emscripten_init() {
   state->level_points[1] = 0; // for level 2
   state->level_points[2] = 0; // for level 3
   state->time = 0;
+  state->font = TTF_OpenFont(FONT_FILEPATH, 18);
 
   go_to_homepage(state);
 
@@ -1026,8 +1011,7 @@ bool emscripten_main(state_t *state) {
                                .w = text_dim.x,
                                .h = text_dim.y};
 
-    TTF_Font *font = TTF_OpenFont(FONT_FILEPATH, 18);
-    sdl_render_text(text, font, CLOCK_COL, &rect);
+    sdl_render_text(text, state->font, CLOCK_COL, &rect);
 
     if (!(state->pause)) {
       state->collision_type = collision(state);
