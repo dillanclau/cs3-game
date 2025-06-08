@@ -66,7 +66,7 @@ size_t BRICKS2[12][4] = {{100, 390, 200, BRICK_WIDTH}, // where the door is
                          {450, 390, 300, BRICK_WIDTH},
                          {350, 290, 350, BRICK_WIDTH}, // next row
                          {630, 270, 300, BRICK_WIDTH},
-                         {715, 70, 60, BRICK_WIDTH},
+                         {715, 290, 70, 60},
                          {225, 200, 450, BRICK_WIDTH}, // third row
                          {500, 130, 300, BRICK_WIDTH},
                          {100, 80, 200, BRICK_WIDTH}, // starting platform
