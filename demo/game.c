@@ -186,7 +186,6 @@ struct state {
   bool elevator;
   double level_points[3];
   bool level_completed[3];
-  bool level_failed[3];
   double time;
   bool music_played;
   TTF_Font *font;
@@ -674,7 +673,6 @@ void make_level3(state_t *state) {
 }
 
 void go_to_level1(state_t *state) {
-  state->level_failed[0] = false;
   asset_reset_asset_list();
   scene_free(state->scene);
   state->scene = scene_init();
@@ -686,7 +684,6 @@ void go_to_level1(state_t *state) {
 }
 
 void go_to_level2(state_t *state) {
-  state->level_failed[1] = false;
   asset_reset_asset_list();
   scene_free(state->scene);
   state->scene = scene_init();
@@ -698,7 +695,6 @@ void go_to_level2(state_t *state) {
 }
 
 void go_to_level3(state_t *state) {
-  state->level_failed[2] = false;
   asset_reset_asset_list();
   scene_free(state->scene);
   state->scene = scene_init();
@@ -952,21 +948,21 @@ void level_complete(state_t *state) {
   }
 }
 
-void level_failed(state_t *state) {
-  body_t *spirit = state->spirit;
-  list_t *asset_list = asset_get_asset_list();
-  for (size_t i = 0; i < list_size(asset_list); i++) {
-    asset_t *asset = list_get(asset_list, i);
-    if (asset->type == ASSET_IMAGE) {
-      image_asset_t *lava = (image_asset_t *)asset;
-      body_t *body = lava->body;
-      if ((strcmp(body_get_info(body), "lava")) == 0 &&
-          find_collision(spirit, body).collided) {
-        state->level_failed[state->current_screen - 1] == true;
-      }
-    }
-  }
-}
+// void level_failed(state_t *state) {
+//   body_t *spirit = state->spirit;
+//   list_t *asset_list = asset_get_asset_list();
+//   for (size_t i = 0; i < list_size(asset_list); i++) {
+//     asset_t *asset = list_get(asset_list, i);
+//     if (asset->type == ASSET_IMAGE) {
+//       image_asset_t *lava = (image_asset_t *)asset;
+//       body_t *body = lava->body;
+//       if ((strcmp(body_get_info(body), "lava")) == 0 &&
+//           find_collision(spirit, body).collided) {
+//         state->level_failed[state->current_screen - 1] == true;
+//       }
+//     }
+//   }
+// }
 
 collision_type_t collision(state_t *state) {
   body_t *spirit = state->spirit;
@@ -1028,18 +1024,15 @@ state_t *emscripten_init() {
   state->collision_type = NO_COLLISION;
   state->pause = false;
   state->elevator = false;
-  state->level_points[0] = 0.0;             // for level 1
-  state->level_points[1] = 0.0;             // for level 2
+  state->level_points[0] = 0.0;      // for level 1
+  state->level_points[1] = 0.0;      // for level 2
   state->level_points[2] = 0.0;      // for level 3
   state->level_completed[0] = false; // for level 1
   state->level_completed[1] = false; // for level 2
-  state->level_completed[2] = false;        // for level 3
+  state->level_completed[2] = false; // for level 3
   state->level_completed[0] = false; // for level 1
   state->level_completed[1] = false; // for level 2
   state->level_completed[2] = false; // for level 3
-  state->level_failed[0] = false;
-  state->level_failed[1] = false;
-  state->level_failed[2] = false;
   state->time = 0;
   state->font = TTF_OpenFont(FONT_FILEPATH, 18);
 
@@ -1078,26 +1071,13 @@ bool emscripten_main(state_t *state) {
   list_t *body_assets = asset_get_asset_list();
   size_t len = list_size(body_assets);
 
-  // update points
-  update_points(state);
+  // level_failed(state);
 
-  // check for completed level
-  level_complete(state);
-  level_failed(state);
-
-  bool game_over = false;
-  if (state->level_completed[state->current_screen - 1] ||
-      state->level_failed[state->current_screen - 1]) {
-    game_over = true;
-  }
-
-  printf("%s\n", "level completed");
-  printf("%d\n", state->level_completed[state->current_screen - 1]);
-  printf("%s\n", "level failed");
-  printf("%d\n", state->level_failed[state->current_screen - 1]);
-  printf("%s\n", "game over");
-
-  printf("%d\n", game_over);
+  // bool game_over = false;
+  // if (state->level_completed[state->current_screen - 1] ||
+  //     state->level_failed[state->current_screen - 1]) {
+  //   game_over = true;
+  // }
 
   // if ((state->current_screen == LEVEL1 && !(state->level_completed[0])) ||
   // (state->current_screen == LEVEL2 && !(state->level_completed[1])) ||
@@ -1114,7 +1094,7 @@ bool emscripten_main(state_t *state) {
 
   if (state->current_screen != HOMEPAGE) {
 
-    if (!(state->pause) && !(game_over)) {
+    if (!(state->pause)) {
 
       char text[10000];
       sprintf(text, "Clock:%.0f", floor(state->time));
