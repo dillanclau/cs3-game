@@ -99,12 +99,21 @@ const size_t E_BUTTONS[2][4] = {{475, 150, 30, 20}, {400, 25, 30, 20}};
 const size_t DOORS[2][4] = {{300, 245, 30, 70}, {250, 175, 30, 90}};
 // doors buttons
 const size_t BUTTONS[2][4] = {{40, 100, 30, 20}, {500, 140, 30, 20}};
+<<<<<<< HEAD
 
 // point range thresholds
 const size_t RED_THRESHOLD = 25;
 const size_t ORANGE_THRESHOLD = 50;
 const size_t GREEN_THRESHOLD = 75;
 
+=======
+
+// point range thresholds
+const size_t RED_THRESHOLD = 25;
+const size_t ORANGE_THRESHOLD = 50;
+const size_t GREEN_THRESHOLD = 75;
+
+>>>>>>> refs/remotes/origin/master
 // gem constants
 const size_t GEM_NUM[3] = {3, 3, 3};
 const size_t GEM1[3][2] = {{180, 100}, {560, 450}, {375, 325}};
@@ -393,10 +402,18 @@ void platform_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   body_set_velocity(body1, vel);
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> refs/remotes/origin/master
 vector_t get_dimensions_for_text(char *text) {
   return (vector_t){strlen(text) * TEXT_SIZE, TEXT_SIZE * TEXT_HEIGHT_SCALE};
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> refs/remotes/origin/master
 void init_bgd_player(state_t *state) {
   state->time = 0;
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
@@ -1005,9 +1022,15 @@ bool emscripten_main(state_t *state) {
     sprintf(text, "Clock:%.0f", floor(state->time));
     vector_t text_dim = get_dimensions_for_text(text);
     SDL_Rect rect = (SDL_Rect){.x = CLOCK_POS.x - (text_dim.x / 2),
+<<<<<<< HEAD
                                .y = CLOCK_POS.y,
                                .w = text_dim.x,
                                .h = text_dim.y};
+=======
+                                 .y = CLOCK_POS.y,
+                                 .w = text_dim.x,
+                                 .h = text_dim.y};
+>>>>>>> refs/remotes/origin/master
 
     TTF_Font *font = TTF_OpenFont(FONT_FILEPATH, 18);
     sdl_render_text(text, font, CLOCK_COL, &rect);

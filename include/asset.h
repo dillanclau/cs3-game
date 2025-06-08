@@ -45,6 +45,15 @@ typedef struct spirit_asset {
   body_t *body;
 } spirit_asset_t;
 
+typedef struct anim_asset {
+  asset_t base;
+  SDL_Texture *curr_texture;
+  SDL_Texture *frame1_texture;
+  SDL_Texture *frame2_texture;
+  SDL_Texture *frame3_texture;
+  body_t *body;
+} anim_asset_t;
+
 typedef struct button_asset {
   asset_t base;
   SDL_Texture *curr_texture;
@@ -90,6 +99,20 @@ void asset_make_text(const char *filepath, SDL_Rect bounding_box,
                      const char *text, color_t color);
 
 /**
+ * Allocates memory for a text asset with the given parameters and adds it
+ * to the internal asset list.
+ *
+ * @param filepath the filepath to the .ttf file
+ * @param bounding_box the bounding box containing the location and dimensions
+ * of the text when it is rendered
+ * @param text the text to render
+ * @param color the color of the text
+ */
+void asset_make_text_body(const char *filepath,
+                     const char *text, color_t color, body_t *body);
+
+void asset_update_text(asset_t *asset, const char *text);
+/**
  * Allocates memory for a spirit asset with the given parameters and adds it
  * to the internal asset list.
  *
@@ -100,6 +123,7 @@ void asset_make_text(const char *filepath, SDL_Rect bounding_box,
  */
 void asset_make_spirit(const char *front_filepath, const char *left_filepath,
                        const char *right_filepath, body_t *body);
+
 /**
  * Allocates memory for an animation asset with the given parameters and
  * adds it to the internal asset list.
@@ -133,9 +157,22 @@ void asset_animate(asset_t *asset, double time);
  */
 void asset_reset_asset_list();
 
+/**
+ * Allocates memory for an button asset with the given parameters and
+ * adds it to the internal asset list.
+ *
+ * @param unpressed_filepath filepath to .png for unpressed button
+ * @param pressed_filepath filepath to .png for pressed button
+ * @param body the body to render the image on top of
+ */
 void asset_make_button(const char *unpressed_filepath,
                        const char *pressed_filepath, body_t *body);
 
+/**
+ * Changes the texture of the button asset to the pressed button.
+ * This function is called when the spirit collides with the button.
+ * @param asset button asset
+ */
 void asset_change_texture_button(asset_t *asset);
 
 /**

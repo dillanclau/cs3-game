@@ -10,15 +10,6 @@
 static list_t *ASSET_LIST = NULL;
 const size_t INIT_CAPACITY = 10;
 
-typedef struct anim_asset {
-  asset_t base;
-  SDL_Texture *curr_texture;
-  SDL_Texture *frame1_texture;
-  SDL_Texture *frame2_texture;
-  SDL_Texture *frame3_texture;
-  body_t *body;
-} anim_asset_t;
-
 /**
  * Allocates memory for an asset with the given parameters.
  *
@@ -86,6 +77,17 @@ void asset_make_text_with_body(const char *filepath, const char *text,
   list_add(ASSET_LIST, (asset_t *)text_asset);
 }
 
+void asset_make_text_body(const char *filepath, const char *text, color_t color,
+                          body_t *body) {
+  SDL_Rect bounding_box = (SDL_Rect){.x = 0, .y = 0, .w = 0, .h = 0};
+  asset_t *asset = asset_init(ASSET_TEXT, bounding_box);
+  text_asset_t *text_asset = (text_asset_t *)asset;
+  text_asset->font = asset_cache_obj_get_or_create(ASSET_TEXT, filepath);
+  text_asset->text = text;
+  text_asset->body = body;
+  list_add(ASSET_LIST, (asset_t *)text_asset);
+}
+
 void asset_make_text(const char *filepath, SDL_Rect bounding_box,
                      const char *text, color_t color) {
   asset_t *asset = asset_init(ASSET_TEXT, bounding_box);
@@ -95,6 +97,13 @@ void asset_make_text(const char *filepath, SDL_Rect bounding_box,
   text_asset->color = color;
   text_asset->body = NULL;
   list_add(ASSET_LIST, (asset_t *)text_asset);
+}
+
+void asset_update_text(asset_t *asset, const char *text){
+  if (asset->type == ASSET_TEXT){
+    text_asset_t *text_asset = (text_asset_t*) asset;
+    text_asset->text = text;
+  }
 }
 
 // new asset for the spirit
@@ -194,7 +203,6 @@ list_t *asset_get_asset_list() { return ASSET_LIST; }
 
 void asset_remove_body(body_t *body) {
   size_t len = list_size(ASSET_LIST);
-  printf("%zu\n", len);
   for (size_t i = 0; i < len; i++) {
     asset_t *asset = list_get(ASSET_LIST, i);
     if (asset->type == ASSET_IMAGE) {
@@ -221,6 +229,9 @@ void asset_render(asset_t *asset) {
     break;
   case ASSET_TEXT:
     text_asset_t *text_asset = (text_asset_t *)asset;
+    if (text_asset->body != NULL) {
+      box = sdl_get_body_bounding_box(image->body);
+    }
     sdl_render_text(text_asset->text, text_asset->font, text_asset->color,
                     &box);
     break;
