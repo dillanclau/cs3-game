@@ -105,6 +105,7 @@ void asset_make_text(const char *filepath, SDL_Rect bounding_box,
  */
 void asset_make_spirit(const char *front_filepath, const char *left_filepath,
                        const char *right_filepath, body_t *body);
+
 /**
  * Allocates memory for an animation asset with the given parameters and
  * adds it to the internal asset list.
