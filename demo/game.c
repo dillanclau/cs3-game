@@ -958,7 +958,8 @@ void level_failed(state_t *state) {
     if (asset->type == ASSET_IMAGE) {
       image_asset_t *lava = (image_asset_t *)asset;
       body_t *body = lava->body;
-      if ((strcmp(body_get_info(body), "lava")) == 0 && find_collision(spirit, body).collided) {
+      if ((strcmp(body_get_info(body), "lava")) == 0 &&
+          find_collision(spirit, body).collided) {
         state->level_failed[state->current_screen - 1] == true;
       }
     }
@@ -1080,7 +1081,8 @@ bool emscripten_main(state_t *state) {
   level_failed(state);
 
   bool game_over = false;
-  if (state->level_completed[state->current_screen - 1] || state->level_failed[state->current_screen - 1]) {
+  if (state->level_completed[state->current_screen - 1] ||
+      state->level_failed[state->current_screen - 1]) {
     game_over = true;
   }
 
@@ -1092,7 +1094,9 @@ bool emscripten_main(state_t *state) {
 
   printf("%d\n", game_over);
 
-  // if ((state->current_screen == LEVEL1 && !(state->level_completed[0])) || (state->current_screen == LEVEL2 && !(state->level_completed[1])) || (state->current_screen == LEVEL3 && !(state->level_completed[2]))) {
+  // if ((state->current_screen == LEVEL1 && !(state->level_completed[0])) ||
+  // (state->current_screen == LEVEL2 && !(state->level_completed[1])) ||
+  // (state->current_screen == LEVEL3 && !(state->level_completed[2]))) {
   //   game_over = true;
   // }
 
@@ -1105,65 +1109,64 @@ bool emscripten_main(state_t *state) {
 
   if (state->current_screen != HOMEPAGE) {
 
-
-  if (!(state->pause) && !(game_over)) {
+    if (!(state->pause) && !(game_over)) {
 
       char text[10000];
       sprintf(text, "Clock:%.0f", floor(state->time));
       vector_t text_dim = get_dimensions_for_text(text);
       SDL_Rect rect = (SDL_Rect){.x = CLOCK_POS.x - (text_dim.x / 2),
-                                .y = CLOCK_POS.y,
-                                .w = text_dim.x,
-                                .h = text_dim.y};
+                                 .y = CLOCK_POS.y,
+                                 .w = text_dim.x,
+                                 .h = text_dim.y};
 
       sdl_render_text(text, state->font, CLOCK_COL, &rect);
-    
-    state->collision_type = collision(state);
-    double dt = time_since_last_tick();
 
-    // apply gravity
-    if (dt < 0.2) {
-      apply_gravity(state, dt);
+      state->collision_type = collision(state);
+      double dt = time_since_last_tick();
+
+      // apply gravity
+      if (dt < 0.2) {
+        apply_gravity(state, dt);
+      }
+
+      // check for pressed buttons
+      button_press(state);
+
+      // move elevator
+      if (state->elevator) {
+        move_elevator(state);
+      }
+
+      // clocks
+      // asset_t *clock = list_get(body_assets, len - 1);
+      // asset_destroy(clock);
+      // list_remove(body_assets, len - 1);
+      // update_clock(state);
+      scene_tick(state->scene, dt);
+      // make_clock(state);
+      state->time += dt;
     }
 
-    // check for pressed buttons
-    button_press(state);
+    // asset_destroy(clock); // only destroy if the clock is there
 
-    // move elevator
-    if (state->elevator) {
-      move_elevator(state);
-    }
-
-    // clocks
-    // asset_t *clock = list_get(body_assets, len - 1);
-    // asset_destroy(clock);
-    // list_remove(body_assets, len - 1);
-    // update_clock(state);
-    scene_tick(state->scene, dt);
-    // make_clock(state);
-    state->time += dt;
+    // sdl_render_scene(state->scene);
   }
 
-  // asset_destroy(clock); // only destroy if the clock is there
+  // body_t *elevator = scene_get_body(state->scene, 1);
+  // move_elevator(elevator);
 
-  // sdl_render_scene(state->scene);
-}
+  // size_t time = (size_t)state->time;
+  // if (time % 10 != 0) {
+  //   state->music_played = false;
+  // }
 
-// body_t *elevator = scene_get_body(state->scene, 1);
-// move_elevator(elevator);
+  // if ((time % 10 == 0) && (!(state->music_played))) {
+  //   sdl_play_music(BACKGROUND_MUSIC_PATH);
+  //   state->music_played = true;
+  // }
 
-// size_t time = (size_t)state->time;
-// if (time % 10 != 0) {
-//   state->music_played = false;
-// }
-
-// if ((time % 10 == 0) && (!(state->music_played))) {
-//   sdl_play_music(BACKGROUND_MUSIC_PATH);
-//   state->music_played = true;
-// }
-
-sdl_show();
-return false;
+  sdl_show();
+  return false;
 }
 
 void emscripten_free(state_t *state) {
