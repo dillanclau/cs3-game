@@ -678,7 +678,7 @@ void go_to_level1(state_t *state) {
   state->scene = scene_init();
   state->current_screen = LEVEL1;
   state->elevator = false;
-  state->level_completed[0] = false;
+  // state->level_completed[0] = false;
   make_level1(state);
   return;
 }
@@ -689,7 +689,6 @@ void go_to_level2(state_t *state) {
   state->scene = scene_init();
   state->current_screen = LEVEL2;
   state->elevator = false;
-  state->level_completed[1] = false;
   make_level2(state);
   return;
 }
@@ -700,7 +699,6 @@ void go_to_level3(state_t *state) {
   state->scene = scene_init();
   state->current_screen = LEVEL3;
   state->elevator = false;
-  state->level_completed[2] = false;
   make_level3(state);
   return;
 }
