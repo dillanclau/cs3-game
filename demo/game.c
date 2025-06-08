@@ -114,11 +114,6 @@ const size_t DOORS[2][4] = {{300, 245, 30, 70}, {250, 175, 30, 90}};
 // doors buttons
 const size_t BUTTONS[2][4] = {{40, 100, 30, 20}, {500, 140, 30, 20}};
 
-// point range thresholds
-const size_t RED_THRESHOLD = 25;
-const size_t ORANGE_THRESHOLD = 50;
-const size_t GREEN_THRESHOLD = 75;
-
 // gem constants
 const size_t GEM_NUM[3] = {3, 3, 3};
 const size_t GEM1[3][2] = {{180, 100}, {560, 450}, {375, 325}};
@@ -1067,67 +1062,62 @@ bool emscripten_main(state_t *state) {
                                .y = CLOCK_POS.y,
                                .w = text_dim.x,
                                .h = text_dim.y};
-=======
-                               .y = CLOCK_POS.y,
-                               .w = text_dim.x,
-                               .h = text_dim.y};
->>>>>>> refs/remotes/origin/master
 
-    sdl_render_text(text, state->font, CLOCK_COL, &rect);
+  sdl_render_text(text, state->font, CLOCK_COL, &rect);
 
-    if (!(state->pause)) {
-      state->collision_type = collision(state);
-      double dt = time_since_last_tick();
+  if (!(state->pause)) {
+    state->collision_type = collision(state);
+    double dt = time_since_last_tick();
 
-      // apply gravity
-      if (dt < 0.2) {
-        apply_gravity(state, dt);
-      }
-
-      // check for pressed buttons
-      button_press(state);
-
-      // move elevator
-      if (state->elevator) {
-        move_elevator(state);
-      }
-
-      // update points
-      update_points(state);
-
-      // check for completed level
-      level_complete(state);
-
-      // clocks
-      // asset_t *clock = list_get(body_assets, len - 1);
-      // asset_destroy(clock);
-      // list_remove(body_assets, len - 1);
-      // update_clock(state);
-      scene_tick(state->scene, dt);
-      // make_clock(state);
-      state->time += dt;
+    // apply gravity
+    if (dt < 0.2) {
+      apply_gravity(state, dt);
     }
 
-    // asset_destroy(clock); // only destroy if the clock is there
+    // check for pressed buttons
+    button_press(state);
 
-    // sdl_render_scene(state->scene);
+    // move elevator
+    if (state->elevator) {
+      move_elevator(state);
+    }
+
+    // update points
+    update_points(state);
+
+    // check for completed level
+    level_complete(state);
+
+    // clocks
+    // asset_t *clock = list_get(body_assets, len - 1);
+    // asset_destroy(clock);
+    // list_remove(body_assets, len - 1);
+    // update_clock(state);
+    scene_tick(state->scene, dt);
+    // make_clock(state);
+    state->time += dt;
   }
 
-  // body_t *elevator = scene_get_body(state->scene, 1);
-  // move_elevator(elevator);
+  // asset_destroy(clock); // only destroy if the clock is there
 
-  size_t time = (size_t)state->time;
-  if (time % 10 != 0) {
-    state->music_played = false;
-  }
+  // sdl_render_scene(state->scene);
+}
 
-  if ((time % 10 == 0) && (!(state->music_played))) {
-    sdl_play_music(BACKGROUND_MUSIC_PATH);
-    state->music_played = true;
-  }
+// body_t *elevator = scene_get_body(state->scene, 1);
+// move_elevator(elevator);
 
-  sdl_show();
-  return false;
+size_t time = (size_t)state->time;
+if (time % 10 != 0) {
+  state->music_played = false;
+}
+
+if ((time % 10 == 0) && (!(state->music_played))) {
+  sdl_play_music(BACKGROUND_MUSIC_PATH);
+  state->music_played = true;
+}
+
+sdl_show();
+return false;
 }
 
 void emscripten_free(state_t *state) {
