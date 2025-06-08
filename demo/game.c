@@ -38,7 +38,6 @@ const size_t NUMBER_OF_LEVELS = 3;
 size_t RED_THRESHOLD = 0;
 size_t ORANGE_THRESHOLD = 5;
 size_t GREEN_THRESHOLD = 15;
-
 // x, y, w, h
 // Bricks for Map 1
 size_t BRICKS1[14][4] = {{375, -500, 750, 30},
@@ -215,7 +214,7 @@ body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
   return obstacle;
 }
 
-body_t *make_spirit(double outer_radius, double inner_radius, vector_t center) {
+list_t *make_bodypt_list(double outer_radius, double inner_radius, vector_t center){
   center.y += inner_radius;
   list_t *c = list_init(SPIRIT_NUM_POINTS, free);
   for (size_t i = 0; i < SPIRIT_NUM_POINTS; i++) {
@@ -225,20 +224,17 @@ body_t *make_spirit(double outer_radius, double inner_radius, vector_t center) {
                     center.y + outer_radius * sin(angle)};
     list_add(c, v);
   }
-  body_t *spirit = body_init(c, 1, SPIRIT_COLOR);
+  return c;
+}
+
+body_t *make_spirit(double outer_radius, double inner_radius, vector_t center) {
+  list_t *c = make_bodypt_list(outer_radius, inner_radius, center);
+  body_t *spirit = body_init_with_info(c, 1, SPIRIT_COLOR, "spirit", NULL);
   return spirit;
 }
 
 body_t *make_gem(double outer_radius, double inner_radius, vector_t center) {
-  center.y += inner_radius;
-  list_t *c = list_init(SPIRIT_NUM_POINTS, free);
-  for (size_t i = 0; i < SPIRIT_NUM_POINTS; i++) {
-    double angle = 2 * M_PI * i / SPIRIT_NUM_POINTS;
-    vector_t *v = malloc(sizeof(*v));
-    *v = (vector_t){center.x + inner_radius * cos(angle),
-                    center.y + outer_radius * sin(angle)};
-    list_add(c, v);
-  }
+  list_t *c = make_bodypt_list(outer_radius, inner_radius, center);
   body_t *gem = body_init_with_info(c, 1, OBS_COLOR, "gem", NULL);
   return gem;
 }
@@ -424,9 +420,9 @@ void init_bgd_player(state_t *state) {
                     spirit);
 }
 
+
 void make_level1(state_t *state) {
   init_bgd_player(state);
-
   // make brick platforms
   size_t brick_len = BRICK_NUM[0];
   for (size_t i = 0; i < brick_len; i++) {
@@ -669,45 +665,56 @@ void make_level3(state_t *state) {
   // make_clock(state);
 }
 
-void go_to_level1(state_t *state) {
+void transition_screen(state_t *state, int level) {
   asset_reset_asset_list();
   scene_free(state->scene);
   state->scene = scene_init();
-  state->current_screen = LEVEL1;
+  state->current_screen = level;
   state->elevator = false;
+  state->pause = false;
+  sdl_reset_timer();
+}
+
+void go_to_level1(state_t *state) {
+  transition_screen(state, LEVEL1);
+  // asset_reset_asset_list();
+  // scene_free(state->scene);
+  // state->scene = scene_init();
+  // state->current_screen = LEVEL1;
+  // state->elevator = false;
   make_level1(state);
-  return;
 }
 
 void go_to_level2(state_t *state) {
-  asset_reset_asset_list();
-  scene_free(state->scene);
-  state->scene = scene_init();
-  state->current_screen = LEVEL2;
-  state->elevator = false;
+  transition_screen(state, LEVEL2);
+  // asset_reset_asset_list();
+  // scene_free(state->scene);
+  // state->scene = scene_init();
+  // state->current_screen = LEVEL2;
+  // state->elevator = false;
   make_level2(state);
-  return;
 }
 
 void go_to_level3(state_t *state) {
-  asset_reset_asset_list();
-  scene_free(state->scene);
-  state->scene = scene_init();
-  state->current_screen = LEVEL3;
-  state->elevator = false;
+  transition_screen(state, LEVEL3);
+  // asset_reset_asset_list();
+  // scene_free(state->scene);
+  // state->scene = scene_init();
+  // state->current_screen = LEVEL3;
+  // state->elevator = false;
   make_level3(state);
-  return;
 }
 
 void go_to_homepage(state_t *state) {
-  if (state->current_screen != HOMEPAGE) {
-    asset_reset_asset_list();
-    scene_free(state->scene);
-    state->scene = scene_init();
-  }
-  state->current_screen = HOMEPAGE;
-  state->pause = false;
-  sdl_reset_timer();
+  // if (state->current_screen != HOMEPAGE) {
+  //   asset_reset_asset_list();
+  //   scene_free(state->scene);
+  //   state->scene = scene_init();
+  // }
+  // state->current_screen = HOMEPAGE;
+  // state->pause = false;
+  // sdl_reset_timer();
+  transition_screen(state, HOMEPAGE);
 
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(HOMEPAGE_PATH, box);
@@ -745,7 +752,6 @@ void unpause(state_t *state) {
   list_t *asset_list = asset_get_asset_list();
   list_remove(asset_list, list_size(asset_list) - 1);
   sdl_reset_timer();
-  // list_remove(asset_list, list_size(asset_list) - 1);
 }
 
 void restart(state_t *state) {
@@ -1012,27 +1018,6 @@ state_t *emscripten_init() {
   state->font = TTF_OpenFont(FONT_FILEPATH, 18);
 
   go_to_homepage(state);
-
-  // moved this code to init_bgd_spirit()
-  // SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
-  // asset_make_image(BACKGROUND_PATH, box);
-
-  // body_t *spirit = make_spirit(OUTER_RADIUS, INNER_RADIUS, VEC_ZERO);
-  // body_set_centroid(spirit, START_POS);
-  // state->spirit = spirit;
-  // scene_add_body(state->scene, spirit);
-
-  // // spirit
-  // asset_make_spirit(SPIRIT_FRONT_PATH, SPIRIT_LEFT_PATH, SPIRIT_RIGHT_PATH,
-  //                   spirit);
-
-  // make level
-  // make_level1(state);
-  // make_level2(state);
-  // make_level3(state);
-
-  // make_clock(state);
-
   sdl_on_key((key_handler_t)on_key);
 
   return state;
@@ -1050,7 +1035,6 @@ bool emscripten_main(state_t *state) {
   for (size_t i = 0; i < len; i++) {
     asset_t *asset = list_get(body_assets, i);
     asset_animate(asset, state->time);
-    asset_animate(asset, state->time);
     asset_render(list_get(body_assets, i));
   }
 
@@ -1067,15 +1051,7 @@ bool emscripten_main(state_t *state) {
     if (!(state->pause)) {
       state->collision_type = collision(state);
       double dt = time_since_last_tick();
-    if (!(state->pause)) {
-      state->collision_type = collision(state);
-      double dt = time_since_last_tick();
-
-      // apply gravity
-      if (dt < 0.2) {
-        apply_gravity(state, dt);
-      }
-      // apply gravity
+      
       if (dt < 0.2) {
         apply_gravity(state, dt);
       }
@@ -1087,42 +1063,19 @@ bool emscripten_main(state_t *state) {
       if (state->elevator) {
         move_elevator(state);
       }
-      // move elevator
-      if (state->elevator) {
-        move_elevator(state);
-      }
 
       // update points
       update_points(state);
-      // update points
-      update_points(state);
 
-      // check for completed level
-      level_complete(state);
       // check for completed level
       level_complete(state);
 
       scene_tick(state->scene, dt);
-      state->time += dt;
+        state->time += dt;
     }
-
-    // asset_destroy(clock); // only destroy if the clock is there
-    // asset_destroy(clock); // only destroy if the clock is there
-
-    // sdl_render_scene(state->scene);
-  }
     // sdl_render_scene(state->scene);
   }
 
-  // body_t *elevator = scene_get_body(state->scene, 1);
-  // move_elevator(elevator);
-  // body_t *elevator = scene_get_body(state->scene, 1);
-  // move_elevator(elevator);
-
-  size_t time = (size_t)state->time;
-  if (time % 10 != 0) {
-    state->music_played = false;
-  }
   size_t time = (size_t)state->time;
   if (time % 10 != 0) {
     state->music_played = false;
@@ -1132,13 +1085,6 @@ bool emscripten_main(state_t *state) {
     sdl_play_music(BACKGROUND_MUSIC_PATH);
     state->music_played = true;
   }
-  if ((time % 10 == 0) && (!(state->music_played))) {
-    sdl_play_music(BACKGROUND_MUSIC_PATH);
-    state->music_played = true;
-  }
-
-  sdl_show();
-  return false;
   sdl_show();
   return false;
 }
