@@ -82,6 +82,9 @@ void asset_make_image(const char *filepath, SDL_Rect bounding_box);
  */
 void asset_make_image_with_body(const char *filepath, body_t *body);
 
+void asset_make_text_with_body(const char *filepath, const char *text,
+                               color_t color, body_t *body);
+
 /**
  * Allocates memory for a text asset with the given parameters and adds it
  * to the internal asset list.
