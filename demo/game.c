@@ -239,19 +239,6 @@ body_t *make_gem(double outer_radius, double inner_radius, vector_t center) {
   return gem;
 }
 
-void wrap_edges(body_t *body) {
-  vector_t centroid = body_get_centroid(body);
-  if (centroid.x > MAX.x) {
-    body_set_centroid(body, (vector_t){MIN.x, centroid.y});
-  } else if (centroid.x < MIN.x) {
-    body_set_centroid(body, (vector_t){MAX.x, centroid.y});
-  } else if (centroid.y > MAX.y) {
-    body_set_centroid(body, (vector_t){centroid.x, MIN.y});
-  } else if (centroid.y < MIN.y) {
-    body_set_centroid(body, (vector_t){centroid.x, MAX.y});
-  }
-}
-
 void move_elevator(state_t *state) {
   for (size_t i = 0; i < scene_bodies(state->scene); i++) {
     body_t *spirit = state->spirit;
@@ -833,10 +820,6 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
   }
 }
 
-double rand_double(double low, double high) {
-  return (high - low) * rand() / RAND_MAX + low;
-}
-
 void button_action(state_t *state, body_t *button) {
   list_t *asset_list = asset_get_asset_list();
   for (size_t i = 0; i < list_size(asset_list); i++) {
@@ -983,15 +966,15 @@ state_t *emscripten_init() {
   state->collision_type = NO_COLLISION;
   state->pause = false;
   state->elevator = false;
-  state->level_points[0] = 0.0;      
-  state->level_points[1] = 0.0;      
-  state->level_points[2] = 0.0;      
-  state->level_completed[0] = false; 
-  state->level_completed[1] = false; 
-  state->level_completed[2] = false; 
-  state->level_completed[0] = false; 
-  state->level_completed[1] = false; 
-  state->level_completed[2] = false; 
+  state->level_points[0] = 0.0;
+  state->level_points[1] = 0.0;
+  state->level_points[2] = 0.0;
+  state->level_completed[0] = false;
+  state->level_completed[1] = false;
+  state->level_completed[2] = false;
+  state->level_completed[0] = false;
+  state->level_completed[1] = false;
+  state->level_completed[2] = false;
   state->time = 0;
   state->font = TTF_OpenFont(FONT_FILEPATH, 18);
 
