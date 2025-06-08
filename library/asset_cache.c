@@ -128,10 +128,12 @@ void *asset_cache_obj_get_or_create(asset_type_t ty, const char *filepath) {
     case ASSET_ANIM: // check this!
       entry->obj = sdl_get_image_texture(filepath);
       break;
+    case ASSET_BUTTON: // check this!
+      entry->obj = sdl_get_image_texture(filepath);
+      break;
     }
     list_add(ASSET_CACHE, entry);
     return entry->obj;
   }
-
   return obj;
 }

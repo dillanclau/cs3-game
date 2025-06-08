@@ -93,9 +93,9 @@ const size_t LAVA_NUM[NUM_MAP] = {4, 4, 2};
 size_t LAVA1[4][4] = {{180, 15, 165, LAVA_WIDTH},
                       {500, 85, 165, LAVA_WIDTH},
                       {500, 310, 100, LAVA_WIDTH},
-                      {252, 310, 160, LAVA_WIDTH}};
+                      {252, 310, 140, LAVA_WIDTH}};
 
-size_t LAVA2[4][4] = {{500, 15, 160, LAVA_WIDTH},
+size_t LAVA2[4][4] = {{500, 15, 140, LAVA_WIDTH},
                       {580, 140, 80, LAVA_WIDTH},
                       {510, 400, 60, LAVA_WIDTH},
                       {390, 400, 60, LAVA_WIDTH}};
@@ -144,7 +144,7 @@ const size_t BODY_ASSETS = 2;
 // velocity constants
 const vector_t VELOCITY_LEFT = (vector_t){-200, 0};
 const vector_t VELOCITY_RIGHT = (vector_t){200, 0};
-const vector_t VELOCITY_UP = (vector_t){0, 225};
+const vector_t VELOCITY_UP = (vector_t){0, 240};
 
 // gravity constants
 const double GRAVITY = 320;
@@ -301,22 +301,31 @@ void move_elevator(state_t *state) {
         }
       }
 
-      if (find_collision(body, spirit).collided && (state->collision_type == UP_COLLISION || state->collision_type == UP_LEFT_COLLISION || state->collision_type == UP_RIGHT_COLLISION)) {
-        body_set_velocity(spirit, (vector_t){body_get_velocity(spirit).x, body_get_velocity(body).y});
+      if (find_collision(body, spirit).collided &&
+          (state->collision_type == UP_COLLISION ||
+           state->collision_type == UP_LEFT_COLLISION ||
+           state->collision_type == UP_RIGHT_COLLISION)) {
+        vector_t spirit_vel = body_get_velocity(spirit);
+        vector_t elevator_vel = body_get_velocity(body);
+        if (spirit_vel.y <= elevator_vel.y) {
+        body_set_velocity(spirit, (vector_t){body_get_velocity(spirit).x,
+                                             body_get_velocity(body).y});
+        }
       }
     }
   }
 }
 
 // Handlers
-void reset_user(body_t *body) { body_set_centroid(body, START_POS); }
+void reset_user(body_t *body) {
+  body_set_centroid(body, (vector_t){-500, -500}); 
+}
 
 void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
                         double force_const) {
   reset_user(body1);
   asset_make_image(GAME_OVER_PATH,
                    (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
-  // go_to_homepage(state);
   sdl_play_level_failed(FAILED_SOUND_PATH);
 }
 
@@ -551,7 +560,7 @@ void make_level2(state_t *state) {
   body_t *elevator =
       make_obstacle(ELEVATORS[0][2], ELEVATORS[0][3], e_coord, "elevator");
   scene_add_body(state->scene, elevator);
-  create_collision(state->scene, state->spirit, elevator, elevator_user_handler,
+  create_collision(state->scene, state->spirit, elevator, platform_handler,
                    NULL, 0, NULL);
   asset_make_image_with_body(ELEVATOR_PATH, elevator);
 
@@ -683,7 +692,7 @@ void go_to_level1(state_t *state) {
   scene_free(state->scene);
   state->scene = scene_init();
   state->current_screen = LEVEL1;
-  state->collision_type = DOWN_COLLISION;
+  // state->collision_type = DOWN_COLLISION;
   state->elevator = false;
   make_level1(state);
   return;
@@ -694,7 +703,7 @@ void go_to_level2(state_t *state) {
   scene_free(state->scene);
   state->scene = scene_init();
   state->current_screen = LEVEL2;
-  state->collision_type = DOWN_COLLISION;
+  // state->collision_type = DOWN_COLLISION;
   state->elevator = false;
   make_level2(state);
   return;
@@ -705,7 +714,7 @@ void go_to_level3(state_t *state) {
   scene_free(state->scene);
   state->scene = scene_init();
   state->current_screen = LEVEL3;
-  state->collision_type = DOWN_COLLISION;
+  // state->collision_type = DOWN_COLLISION;
   state->elevator = false;
   make_level3(state);
   return;
@@ -1047,7 +1056,7 @@ bool emscripten_main(state_t *state) {
       scene_tick(state->scene, dt);
       // make_clock(state);
       state->time += dt;
-    } 
+    }
 
     // asset_destroy(clock); // only destroy if the clock is there
 
