@@ -87,9 +87,9 @@ void asset_make_text(const char *filepath, SDL_Rect bounding_box,
   list_add(ASSET_LIST, (asset_t *)text_asset);
 }
 
-void asset_update_text(asset_t *asset, const char *text){
-  if (asset->type == ASSET_TEXT){
-    text_asset_t *text_asset = (text_asset_t*) asset;
+void asset_update_text(asset_t *asset, const char *text) {
+  if (asset->type == ASSET_TEXT) {
+    text_asset_t *text_asset = (text_asset_t *)asset;
     text_asset->text = text;
   }
 }

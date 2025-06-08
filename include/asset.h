@@ -105,8 +105,8 @@ void asset_make_text(const char *filepath, SDL_Rect bounding_box,
  * @param text the text to render
  * @param color the color of the text
  */
-void asset_make_text_body(const char *filepath,
-                     const char *text, color_t color, body_t *body);
+void asset_make_text_body(const char *filepath, const char *text, color_t color,
+                          body_t *body);
 
 void asset_update_text(asset_t *asset, const char *text);
 /**
