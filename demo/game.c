@@ -1027,9 +1027,9 @@ bool emscripten_main(state_t *state) {
                                .w = text_dim.x,
                                .h = text_dim.y};
 =======
-                                 .y = CLOCK_POS.y,
-                                 .w = text_dim.x,
-                                 .h = text_dim.y};
+                               .y = CLOCK_POS.y,
+                               .w = text_dim.x,
+                               .h = text_dim.y};
 >>>>>>> refs/remotes/origin/master
 
     TTF_Font *font = TTF_OpenFont(FONT_FILEPATH, 18);
