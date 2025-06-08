@@ -16,96 +16,67 @@ const vector_t MAX = {750, 500};
 const vector_t CENTER = {375, 250};
 
 const vector_t START_POS = {40, 40};
-const vector_t BASE_OBJ_VEL = {30, 0};
-const double EXTRA_VEL_MULT = 10;
-const double VEL_MULT_PROB = 0.2;
 
+// make the spirit
 const double OUTER_RADIUS = 15;
 const double INNER_RADIUS = 15;
-const size_t OBSTACLE_HEIGHT = 30;
-const vector_t OBS_WIDTHS = {30, 70};
-const vector_t OBS_SPACING = {120, 350};
-
 const size_t SPIRIT_NUM_POINTS = 20;
 
+// colors
 const color_t OBS_COLOR = (color_t){0.2, 0.2, 0.3};
 const color_t SPIRIT_COLOR = (color_t){0.1, 0.9, 0.2};
-const color_t TEXT_COLOR = (color_t){1, 0, 0};
+const color_t CLOCK_COL = {1, 1, .5};
 
 // constants to create platforms
 const size_t NUM_MAP = 3;
-const size_t BRICK_WIDTH = 20;
 const size_t BRICK_NUM[NUM_MAP] = {14, 12, 12};
 
-const size_t NUMBER_OF_LEVELS = 3;
-
-// point range thresholds
-const size_t RED_THRESHOLD = 25;
-const size_t ORANGE_THRESHOLD = 50;
-const size_t GREEN_THRESHOLD = 75;
-
-// x, y, w, h
-// Bricks for Map 1
-const size_t BRICKS1[14][4] = {{375, -500, 750, 30},
-                         {160, 425, 320, 20},
-                         {560, 425, 150, 20},
-                         {425, 300, 650, 20},
-                         {325, 200, 650, 20},
-                         {180, 75, 175, 20},
-                         {500, 75, 175, 20},
-                         {730, 330, 40, 60},
-                         {30, 235, 60, 70},
-                         {730, 90, 40, 60},
-                         {715, 35, 70, 70},
-                         {375, 0, 750, 30},
-                         {0, 250, 30, 500},
-                         {750, 250, 30, 500}};
+// obstacle dimensions in {x, y, w, h}
+// Bricks for Map 1, the width of the bricks are 20
+const size_t BRICKS1[14][4] = {
+    {375, -500, 750, 30}, {160, 425, 320, 20}, {560, 425, 150, 20},
+    {425, 300, 650, 20},  {325, 200, 650, 20}, {180, 75, 175, 20},
+    {500, 75, 175, 20},   {730, 330, 40, 60},  {30, 235, 60, 70},
+    {730, 90, 40, 60},    {715, 35, 70, 70},   {375, 0, 750, 30},
+    {0, 250, 30, 500},    {750, 250, 30, 500}};
 
 // Bricks for Map 2
-const size_t BRICKS2[12][4] = {{100, 390, 200, 20}, // where the door is
-                         {450, 390, 300, 20},
-                         {350, 290, 350, 20}, // next row
-                         {630, 270, 300, 20},
-                         {715, 290, 70, 60},
-                         {225, 200, 450, 20}, // third row
-                         {500, 130, 300, 20},
-                         {100, 80, 200, 20}, // starting platform
-                         {710, 30, 80, 60},           // misc sq
-                         {375, 0, 750, 30},           // border
-                         {0, 250, 30, 500},
-                         {750, 250, 30, 500}};
+const size_t BRICKS2[12][4] = {
+    {100, 390, 200, 20},                      // where the door is
+    {450, 390, 300, 20}, {350, 290, 350, 20}, // next row
+    {630, 270, 300, 20}, {715, 290, 70, 60},  {225, 200, 450, 20}, // third row
+    {500, 130, 300, 20}, {100, 80, 200, 20}, // starting platform
+    {710, 30, 80, 60},                       // misc sq
+    {375, 0, 750, 30},                       // border
+    {0, 250, 30, 500},   {750, 250, 30, 500}};
 
 // get rid of brick_width and hard code the whole thing
-const size_t BRICKS3[12][4] = {{50, 390, 100, 20},  // where the door is
-                         {185, 275, 20, 200}, // left column
-                         {375, 250, 20, 250}, // second column
-                         {435, 315, 120, 20},
-                         {580, 230, 90, 20},
-                         {690, 370, 120, 20},
-                         {240, 230, 90, 20},
-                         {140, 325, 90, 20},
-                         {325, 120, 650, 20}, // starting platform
-                         {375, 0, 750, 30},            // border
-                         {0, 250, 30, 500},
-                         {750, 250, 30, 500}};
+const size_t BRICKS3[12][4] = {
+    {50, 390, 100, 20},  // where the door is
+    {185, 275, 20, 200}, // left column
+    {375, 250, 20, 250}, // second column
+    {435, 315, 120, 20}, {580, 230, 90, 20},
+    {690, 370, 120, 20}, {240, 230, 90, 20},
+    {140, 325, 90, 20}, {325, 120, 650, 20}, // starting platform
+    {375, 0, 750, 30},                        // border
+    {0, 250, 30, 500}, {750, 250, 30, 500}};
 
-const size_t LAVA_WIDTH = 11;
+// width of the lava + water = 11
 const size_t LAVA_NUM[NUM_MAP] = {4, 4, 2};
 const size_t LAVA1[4][4] = {{180, 15, 165, 11},
-                      {500, 85, 165, 11},
-                      {500, 310, 100, 11},
-                      {252, 310, 140, 11}};
+                            {500, 85, 165, 11},
+                            {500, 310, 100, 11},
+                            {252, 310, 140, 11}};
 
 const size_t LAVA2[4][4] = {{500, 15, 140, 11},
-                      {580, 140, 80, 11},
-                      {510, 400, 60, 11},
-                      {390, 400, 60, 11}};
+                            {580, 140, 80, 11},
+                            {510, 400, 60, 11},
+                            {390, 400, 60, 11}};
 
 const size_t LAVA3[2][4] = {{550, 15, 90, 11}, {225, 240, 50, 11}};
 
 const size_t WATER_NUM[NUM_MAP] = {2, 2, 2};
-const size_t WATER1[2][4] = {{500, 210, 165, 11},
-                       {220, 210, 120, 11}};
+const size_t WATER1[2][4] = {{500, 210, 165, 11}, {220, 210, 120, 11}};
 
 const size_t WATER2[2][4] = {{300, 300, 120, 11}, {110, 90, 100, 11}};
 
@@ -117,30 +88,31 @@ size_t EXITS[3][4] = {{60, 458, INNER_RADIUS * 3, OUTER_RADIUS * 3},
                       {60, 424, INNER_RADIUS * 3, OUTER_RADIUS * 3}};
 
 // elevators
-const size_t ELEVATORS[3][4] = {{50, 220, 70, 20},
-                          {700, 25, 70, 20},
-                          {50, 200, 70, 20}};
-
+const size_t ELEVATORS[3][4] = {
+    {50, 220, 70, 20}, {700, 25, 70, 20}, {50, 200, 70, 20}};
 // elevator buttons
 const size_t E_BUTTONS[2][4] = {{475, 150, 30, 20}, {400, 25, 30, 20}};
 
 // doors
 const size_t DOORS[2][4] = {{300, 245, 30, 70}, {250, 175, 30, 90}};
-
 // doors buttons
 const size_t BUTTONS[2][4] = {{40, 100, 30, 20}, {500, 140, 30, 20}};
 
+// point range thresholds
+const size_t RED_THRESHOLD = 25;
+const size_t ORANGE_THRESHOLD = 50;
+const size_t GREEN_THRESHOLD = 75;
+
+// gem constants
 const size_t GEM_NUM[3] = {3, 3, 3};
 const size_t GEM1[3][2] = {{180, 100}, {560, 450}, {375, 325}};
 const size_t GEM2[3][2] = {{120, 100}, {430, 310}, {450, 410}};
 const size_t GEM3[3][2] = {{670, 390}, {580, 250}, {135, 345}};
 
+// clock constants
 const vector_t CLOCK_POS = {.x = 375, .y = 10};
-const color_t CLOCK_COL = {1, 1, .5};
 const size_t TEXT_SIZE = 14;
 const size_t TEXT_HEIGHT_SCALE = 2;
-
-const size_t BODY_ASSETS = 2;
 
 // velocity constants
 const vector_t VELOCITY_LEFT = (vector_t){-200, 0};
@@ -158,7 +130,6 @@ const char *BACKGROUND_PATH = "assets/dungeonbackground.png";
 const char *PAUSE_PATH = "assets/pause.png";
 const char *FONT_FILEPATH = "assets/Cascadia.ttf";
 const char *BRICK_PATH = "assets/brick_texture.png";
-const char *LAVA_PATH = "assets/lava.png";
 const char *HOMEPAGE_PATH = "assets/homepage.png";
 const char *ELEVATOR_PATH = "assets/elevator.png";
 const char *DOOR_PATH = "assets/door.png";
@@ -747,7 +718,7 @@ void go_to_homepage(state_t *state) {
       (SDL_Rect){.x = 200, .y = 500, .w = 50, .h = 50},
       (SDL_Rect){.x = 300, .y = 500, .w = 50, .h = 50}};
 
-  for (size_t i = 0; i < NUMBER_OF_LEVELS; i++) {
+  for (size_t i = 0; i < NUM_MAP; i++) {
     if (state->level_points[i] > GREEN_THRESHOLD) {
       asset_make_image(GREEN_GEM_PATH, level_gem_box[i]);
       break;
