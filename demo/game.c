@@ -318,7 +318,6 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   // sdl_play_level_failed(FAILED_SOUND_PATH);
 }
 
-
 // TODO: jumping velocity implementation matters for when platofrm elevator
 // TODO: collision??? handles the collisions between user and platform
 void elevator_user_handler(body_t *body1, body_t *body2, vector_t axis,
@@ -404,13 +403,15 @@ void platform_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
 }
 
 void init_bgd_player(state_t *state) {
-  state->time = 0; // code duplicatory 
+  state->time = 0; // code duplicatory
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
   asset_make_image(BACKGROUND_PATH, box);
+  // state->collision_type = DOWN_COLLISION; // might be wrong
 
   body_t *spirit = make_spirit(OUTER_RADIUS, INNER_RADIUS, VEC_ZERO);
   body_set_centroid(spirit, START_POS);
-  body_set_velocity(spirit, (vector_t) {.x=0,.y=0}); // maybe this will help the issue?
+  body_set_velocity(
+      spirit, (vector_t){.x = 0, .y = 0}); // maybe this will help the issue?
   state->spirit = spirit;
   scene_add_body(state->scene, spirit);
   asset_make_spirit(SPIRIT_FRONT_PATH, SPIRIT_LEFT_PATH, SPIRIT_RIGHT_PATH,
@@ -683,7 +684,7 @@ void make_level3(state_t *state) {
   make_clock(state);
 }
 
-void transition_screen(state_t *state){
+void transition_screen(state_t *state) {
   printf("%s/n", "transitions");
   state->time = 0;
   asset_reset_asset_list();
@@ -707,18 +708,21 @@ void unpause(state_t *state) {
 }
 
 void go_to_level1(state_t *state) {
+  transition_screen(state);
   state->current_screen = LEVEL1;
   make_level1(state);
   return;
 }
 
 void go_to_level2(state_t *state) {
+  transition_screen(state);
   state->current_screen = LEVEL2;
   make_level2(state);
   return;
 }
 
 void go_to_level3(state_t *state) {
+  transition_screen(state);
   state->current_screen = LEVEL3;
   make_level3(state);
   return;
@@ -726,17 +730,15 @@ void go_to_level3(state_t *state) {
 
 void restart(state_t *state) {
   // just double checks lol
-  if (state->current_screen != HOMEPAGE){
-    transition_screen(state);
-    if (state->current_screen == LEVEL1) {
-      go_to_level1(state);
-    } else if (state->current_screen == LEVEL2) {
-      go_to_level2(state);
-    } else if (state->current_screen == LEVEL3) {
-      go_to_level3(state);
-    }
+  // if (state->current_screen != HOMEPAGE) {
+  if (state->current_screen == LEVEL1) {
+    go_to_level1(state);
+  } else if (state->current_screen == LEVEL2) {
+    go_to_level2(state);
+  } else if (state->current_screen == LEVEL3) {
+    go_to_level3(state);
   }
-  
+  // }
 }
 
 void go_to_homepage(state_t *state) {
@@ -770,18 +772,24 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
     if (type == KEY_PRESSED) {
       switch (key) {
       case KEY_1:
-        transition_screen(state);
-        go_to_level1(state);
+        // transition_screen(state);
+        state->current_screen = LEVEL1;
+        // go_to_level1(state);
         break;
       case KEY_2:
-        transition_screen(state);
-        go_to_level2(state);
+        // transition_screen(state);
+        state->current_screen = LEVEL2;
+        // restart(state);
+        // go_to_level2(state);
         break;
       case KEY_3:
-        transition_screen(state);
-        go_to_level3(state);
+        // transition_screen(state);
+        state->current_screen = LEVEL3;
+        // restart(state);
+        // go_to_level3(state);
         break;
       }
+      restart(state);
     }
   } else {
     list_t *asset_list = asset_get_asset_list();
@@ -885,6 +893,7 @@ void button_press(state_t *state) {
 }
 
 void apply_gravity(state_t *state, double dt) {
+  printf("dt: %d", dt);
   body_t *spirit = state->spirit;
   vector_t spirit_velocity = body_get_velocity(spirit);
   if (!(state->collision_type == UP_COLLISION ||
@@ -1019,7 +1028,8 @@ bool emscripten_main(state_t *state) {
     //           UP_RIGHT_COLLISION)) { // only apply if on platform
     //   printf("%s\n", "help");
     //   body_set_velocity(spirit, (vector_t){spirit_velocity.x,
-    //                                        spirit_velocity.y - (GRAVITY * dt)});
+    //                                        spirit_velocity.y - (GRAVITY *
+    //                                        dt)});
     // }
     // apply gravity
 
@@ -1060,7 +1070,6 @@ bool emscripten_main(state_t *state) {
       sdl_play_music(BACKGROUND_MUSIC_PATH);
       state->music_played = true;
     }
-    
   }
 
   sdl_show();
