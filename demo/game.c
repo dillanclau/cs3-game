@@ -40,19 +40,19 @@ const size_t BRICK_NUM[NUM_MAP] = {14, 12, 12};
 const size_t NUMBER_OF_LEVELS = 3;
 
 // point range thresholds
-size_t RED_THRESHOLD = 25;
-size_t ORANGE_THRESHOLD = 50;
-size_t GREEN_THRESHOLD = 75;
+const size_t RED_THRESHOLD = 25;
+const size_t ORANGE_THRESHOLD = 50;
+const size_t GREEN_THRESHOLD = 75;
 
 // x, y, w, h
 // Bricks for Map 1
-size_t BRICKS1[14][4] = {{375, -500, 750, 30},
-                         {160, 425, 320, BRICK_WIDTH},
-                         {560, 425, 150, BRICK_WIDTH},
-                         {425, 300, 650, BRICK_WIDTH},
-                         {325, 200, 650, BRICK_WIDTH},
-                         {180, 75, 175, BRICK_WIDTH},
-                         {500, 75, 175, BRICK_WIDTH},
+const size_t BRICKS1[14][4] = {{375, -500, 750, 30},
+                         {160, 425, 320, 20},
+                         {560, 425, 150, 20},
+                         {425, 300, 650, 20},
+                         {325, 200, 650, 20},
+                         {180, 75, 175, 20},
+                         {500, 75, 175, 20},
                          {730, 330, 40, 60},
                          {30, 235, 60, 70},
                          {730, 90, 40, 60},
@@ -62,54 +62,54 @@ size_t BRICKS1[14][4] = {{375, -500, 750, 30},
                          {750, 250, 30, 500}};
 
 // Bricks for Map 2
-size_t BRICKS2[12][4] = {{100, 390, 200, BRICK_WIDTH}, // where the door is
-                         {450, 390, 300, BRICK_WIDTH},
-                         {350, 290, 350, BRICK_WIDTH}, // next row
-                         {630, 270, 300, BRICK_WIDTH},
+const size_t BRICKS2[12][4] = {{100, 390, 200, 20}, // where the door is
+                         {450, 390, 300, 20},
+                         {350, 290, 350, 20}, // next row
+                         {630, 270, 300, 20},
                          {715, 290, 70, 60},
-                         {225, 200, 450, BRICK_WIDTH}, // third row
-                         {500, 130, 300, BRICK_WIDTH},
-                         {100, 80, 200, BRICK_WIDTH}, // starting platform
+                         {225, 200, 450, 20}, // third row
+                         {500, 130, 300, 20},
+                         {100, 80, 200, 20}, // starting platform
                          {710, 30, 80, 60},           // misc sq
                          {375, 0, 750, 30},           // border
                          {0, 250, 30, 500},
                          {750, 250, 30, 500}};
 
 // get rid of brick_width and hard code the whole thing
-size_t BRICKS3[12][4] = {{50, 390, 100, BRICK_WIDTH},  // where the door is
-                         {185, 275, BRICK_WIDTH, 200}, // left column
-                         {375, 250, BRICK_WIDTH, 250}, // second column
-                         {435, 315, 120, BRICK_WIDTH},
-                         {580, 230, 90, BRICK_WIDTH},
-                         {690, 370, 120, BRICK_WIDTH},
-                         {240, 230, 90, BRICK_WIDTH},
-                         {140, 325, 90, BRICK_WIDTH},
-                         {325, 120, 650, BRICK_WIDTH}, // starting platform
+const size_t BRICKS3[12][4] = {{50, 390, 100, 20},  // where the door is
+                         {185, 275, 20, 200}, // left column
+                         {375, 250, 20, 250}, // second column
+                         {435, 315, 120, 20},
+                         {580, 230, 90, 20},
+                         {690, 370, 120, 20},
+                         {240, 230, 90, 20},
+                         {140, 325, 90, 20},
+                         {325, 120, 650, 20}, // starting platform
                          {375, 0, 750, 30},            // border
                          {0, 250, 30, 500},
                          {750, 250, 30, 500}};
 
 const size_t LAVA_WIDTH = 11;
 const size_t LAVA_NUM[NUM_MAP] = {4, 4, 2};
-size_t LAVA1[4][4] = {{180, 15, 165, LAVA_WIDTH},
-                      {500, 85, 165, LAVA_WIDTH},
-                      {500, 310, 100, LAVA_WIDTH},
-                      {252, 310, 140, LAVA_WIDTH}};
+const size_t LAVA1[4][4] = {{180, 15, 165, 11},
+                      {500, 85, 165, 11},
+                      {500, 310, 100, 11},
+                      {252, 310, 140, 11}};
 
-size_t LAVA2[4][4] = {{500, 15, 140, LAVA_WIDTH},
-                      {580, 140, 80, LAVA_WIDTH},
-                      {510, 400, 60, LAVA_WIDTH},
-                      {390, 400, 60, LAVA_WIDTH}};
+const size_t LAVA2[4][4] = {{500, 15, 140, 11},
+                      {580, 140, 80, 11},
+                      {510, 400, 60, 11},
+                      {390, 400, 60, 11}};
 
-size_t LAVA3[2][4] = {{550, 15, 90, LAVA_WIDTH}, {225, 240, 50, LAVA_WIDTH}};
+const size_t LAVA3[2][4] = {{550, 15, 90, 11}, {225, 240, 50, 11}};
 
 const size_t WATER_NUM[NUM_MAP] = {2, 2, 2};
-size_t WATER1[2][4] = {{500, 210, 165, LAVA_WIDTH},
-                       {220, 210, 120, LAVA_WIDTH}};
+const size_t WATER1[2][4] = {{500, 210, 165, 11},
+                       {220, 210, 120, 11}};
 
-size_t WATER2[2][4] = {{300, 300, 120, LAVA_WIDTH}, {110, 90, 100, LAVA_WIDTH}};
+const size_t WATER2[2][4] = {{300, 300, 120, 11}, {110, 90, 100, 11}};
 
-size_t WATER3[2][4] = {{280, 15, 160, LAVA_WIDTH}, {670, 380, 70, LAVA_WIDTH}};
+const size_t WATER3[2][4] = {{280, 15, 160, 11}, {670, 380, 70, 11}};
 
 // exits
 size_t EXITS[3][4] = {{60, 458, INNER_RADIUS * 3, OUTER_RADIUS * 3},
@@ -117,18 +117,18 @@ size_t EXITS[3][4] = {{60, 458, INNER_RADIUS * 3, OUTER_RADIUS * 3},
                       {60, 424, INNER_RADIUS * 3, OUTER_RADIUS * 3}};
 
 // elevators
-size_t ELEVATORS[3][4] = {{50, 220, 70, BRICK_WIDTH},
-                          {700, 25, 70, BRICK_WIDTH},
-                          {50, 200, 70, BRICK_WIDTH}};
+const size_t ELEVATORS[3][4] = {{50, 220, 70, 20},
+                          {700, 25, 70, 20},
+                          {50, 200, 70, 20}};
 
 // elevator buttons
-size_t E_BUTTONS[2][4] = {{475, 150, 30, 20}, {400, 25, 30, 20}};
+const size_t E_BUTTONS[2][4] = {{475, 150, 30, 20}, {400, 25, 30, 20}};
 
 // doors
-size_t DOORS[2][4] = {{300, 245, 30, 70}, {250, 175, 30, 90}};
+const size_t DOORS[2][4] = {{300, 245, 30, 70}, {250, 175, 30, 90}};
 
 // doors buttons
-size_t BUTTONS[2][4] = {{40, 100, 30, 20}, {500, 140, 30, 20}};
+const size_t BUTTONS[2][4] = {{40, 100, 30, 20}, {500, 140, 30, 20}};
 
 const size_t GEM_NUM[3] = {3, 3, 3};
 const size_t GEM1[3][2] = {{180, 100}, {560, 450}, {375, 325}};
