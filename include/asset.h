@@ -44,6 +44,15 @@ typedef struct spirit_asset {
   body_t *body;
 } spirit_asset_t;
 
+typedef struct anim_asset {
+  asset_t base;
+  SDL_Texture *curr_texture;
+  SDL_Texture *frame1_texture;
+  SDL_Texture *frame2_texture;
+  SDL_Texture *frame3_texture;
+  body_t *body;
+} anim_asset_t;
+
 typedef struct button_asset {
   asset_t base;
   SDL_Texture *curr_texture;
@@ -129,9 +138,22 @@ void asset_animate(asset_t *asset, double time);
  */
 void asset_reset_asset_list();
 
+/**
+ * Allocates memory for an button asset with the given parameters and
+ * adds it to the internal asset list.
+ *
+ * @param unpressed_filepath filepath to .png for unpressed button
+ * @param pressed_filepath filepath to .png for pressed button
+ * @param body the body to render the image on top of
+ */
 void asset_make_button(const char *unpressed_filepath,
                        const char *pressed_filepath, body_t *body);
 
+/**
+ * Changes the texture of the button asset to the pressed button.
+ * This function is called when the spirit collides with the button.
+ * @param asset button asset
+ */
 void asset_change_texture_button(asset_t *asset);
 
 /**

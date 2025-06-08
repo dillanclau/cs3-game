@@ -10,15 +10,6 @@
 static list_t *ASSET_LIST = NULL;
 const size_t INIT_CAPACITY = 10;
 
-typedef struct anim_asset {
-  asset_t base;
-  SDL_Texture *curr_texture;
-  SDL_Texture *frame1_texture;
-  SDL_Texture *frame2_texture;
-  SDL_Texture *frame3_texture;
-  body_t *body;
-} anim_asset_t;
-
 /**
  * Allocates memory for an asset with the given parameters.
  *
@@ -181,7 +172,6 @@ list_t *asset_get_asset_list() { return ASSET_LIST; }
 
 void asset_remove_body(body_t *body) {
   size_t len = list_size(ASSET_LIST);
-  printf("%zu\n", len);
   for (size_t i = 0; i < len; i++) {
     asset_t *asset = list_get(ASSET_LIST, i);
     if (asset->type == ASSET_IMAGE) {

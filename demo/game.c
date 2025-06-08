@@ -708,7 +708,6 @@ void go_to_homepage(state_t *state) {
     scene_free(state->scene);
     state->scene = scene_init();
   }
-  printf("%s/n", "at homepage");
   state->current_screen = HOMEPAGE;
   state->pause = false;
   sdl_reset_timer();
