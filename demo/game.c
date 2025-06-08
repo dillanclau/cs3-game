@@ -309,8 +309,8 @@ void move_elevator(state_t *state) {
         vector_t spirit_vel = body_get_velocity(spirit);
         vector_t elevator_vel = body_get_velocity(body);
         if (spirit_vel.y <= elevator_vel.y) {
-        body_set_velocity(spirit, (vector_t){body_get_velocity(spirit).x,
-                                             body_get_velocity(body).y});
+          body_set_velocity(spirit, (vector_t){body_get_velocity(spirit).x,
+                                               body_get_velocity(body).y});
         }
       }
     }
@@ -319,7 +319,7 @@ void move_elevator(state_t *state) {
 
 // Handlers
 void reset_user(body_t *body) {
-  body_set_centroid(body, (vector_t){-500, -500}); 
+  body_set_centroid(body, (vector_t){-500, -500});
 }
 
 void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
@@ -330,7 +330,8 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   sdl_play_level_failed(FAILED_SOUND_PATH);
 }
 
-void win_handler(body_t *body1, body_t *body2, vector_t axis, void *aux, double force_const) {
+void win_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
+                 double force_const) {
   asset_make_image(WIN_PATH, (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400});
   sdl_play_level_completed(COMPLETED_SOUND_PATH);
 }
@@ -499,8 +500,8 @@ void make_level1(state_t *state) {
   vector_t coord = (vector_t){EXITS[0][0], EXITS[0][1]};
   body_t *exit = make_obstacle(EXITS[0][2], EXITS[0][3], coord, "exit");
   scene_add_body(state->scene, exit);
-  create_collision(state->scene, state->spirit, exit, win_handler, NULL,
-                   0, NULL);
+  create_collision(state->scene, state->spirit, exit, win_handler, NULL, 0,
+                   NULL);
   asset_make_image_with_body(EXIT_DOOR_PATH, exit);
 
   // make_clock(state);
@@ -557,8 +558,8 @@ void make_level2(state_t *state) {
   vector_t coord = (vector_t){EXITS[1][0], EXITS[1][1]};
   body_t *exit = make_obstacle(EXITS[1][2], EXITS[1][3], coord, "exit");
   scene_add_body(state->scene, exit);
-  create_collision(state->scene, state->spirit, exit, win_handler, NULL,
-                   0, NULL);
+  create_collision(state->scene, state->spirit, exit, win_handler, NULL, 0,
+                   NULL);
   asset_make_image_with_body(EXIT_DOOR_PATH, exit);
 
   // make elevator
@@ -686,8 +687,8 @@ void make_level3(state_t *state) {
   vector_t coord = (vector_t){EXITS[2][0], EXITS[2][1]};
   body_t *exit = make_obstacle(EXITS[2][2], EXITS[2][3], coord, "exit");
   scene_add_body(state->scene, exit);
-  create_collision(state->scene, state->spirit, exit, win_handler, NULL,
-                   0, NULL);
+  create_collision(state->scene, state->spirit, exit, win_handler, NULL, 0,
+                   NULL);
   asset_make_image_with_body(EXIT_DOOR_PATH, exit);
 
   // make_clock(state);
