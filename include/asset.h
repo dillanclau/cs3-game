@@ -27,6 +27,7 @@ typedef struct text_asset {
   TTF_Font *font;
   const char *text;
   color_t color;
+  body_t *body;
 } text_asset_t;
 
 typedef struct image_asset {
@@ -71,6 +72,9 @@ void asset_make_image(const char *filepath, SDL_Rect bounding_box);
  * @param body the body to render the image on top of
  */
 void asset_make_image_with_body(const char *filepath, body_t *body);
+
+void asset_make_text_with_body(const char *filepath, const char *text, color_t color,
+  body_t *body);
 
 /**
  * Allocates memory for a text asset with the given parameters and adds it
