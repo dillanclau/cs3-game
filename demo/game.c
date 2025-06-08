@@ -16,21 +16,16 @@ const vector_t MAX = {750, 500};
 const vector_t CENTER = {375, 250};
 
 const vector_t START_POS = {40, 40};
-const vector_t BASE_OBJ_VEL = {30, 0};
-const double EXTRA_VEL_MULT = 10;
-const double VEL_MULT_PROB = 0.2;
 
+// make the spirit
 const double OUTER_RADIUS = 15;
 const double INNER_RADIUS = 15;
-const size_t OBSTACLE_HEIGHT = 30;
-const vector_t OBS_WIDTHS = {30, 70};
-const vector_t OBS_SPACING = {120, 350};
-
 const size_t SPIRIT_NUM_POINTS = 20;
 
+// colors
 const color_t OBS_COLOR = (color_t){0.2, 0.2, 0.3};
 const color_t SPIRIT_COLOR = (color_t){0.1, 0.9, 0.2};
-const color_t TEXT_COLOR = (color_t){1, 0, 0};
+const color_t CLOCK_COL = {1, 1, .5};
 
 // constants to create platforms
 const size_t NUM_MAP = 3;
@@ -62,53 +57,46 @@ size_t BRICKS1[14][4] = {{375, -500, 750, 30},
                          {750, 250, 30, 500}};
 
 // Bricks for Map 2
-size_t BRICKS2[11][4] = {{100, 390, 200, BRICK_WIDTH}, // where the door is
-                         {450, 390, 300, BRICK_WIDTH},
-                         {350, 290, 350, BRICK_WIDTH}, // next row
-                         {630, 270, 300, BRICK_WIDTH},
-                         {225, 200, 450, BRICK_WIDTH}, // third row
-                         {500, 130, 300, BRICK_WIDTH},
-                         {100, 80, 200, BRICK_WIDTH}, // starting platform
-                         {710, 30, 80, 60},           // misc sq
-                         {375, 0, 750, 30},           // border
-                         {0, 250, 30, 500},
-                         {750, 250, 30, 500}};
+const size_t BRICKS2[12][4] = {
+    {100, 390, 200, 20},                      // where the door is
+    {450, 390, 300, 20}, {350, 290, 350, 20}, // next row
+    {630, 270, 300, 20}, {715, 290, 70, 60},  {225, 200, 450, 20}, // third row
+    {500, 130, 300, 20}, {100, 80, 200, 20}, // starting platform
+    {710, 30, 80, 60},                       // misc sq
+    {375, 0, 750, 30},                       // border
+    {0, 250, 30, 500},   {750, 250, 30, 500}};
 
 // get rid of brick_width and hard code the whole thing
-size_t BRICKS3[12][4] = {{50, 390, 100, BRICK_WIDTH},  // where the door is
-                         {185, 275, BRICK_WIDTH, 200}, // left column
-                         {375, 250, BRICK_WIDTH, 250}, // second column
-                         {435, 315, 120, BRICK_WIDTH},
-                         {580, 230, 90, BRICK_WIDTH},
-                         {690, 370, 120, BRICK_WIDTH},
-                         {240, 230, 90, BRICK_WIDTH},
-                         {140, 325, 90, BRICK_WIDTH},
-                         {325, 120, 650, BRICK_WIDTH}, // starting platform
-                         {375, 0, 750, 30},            // border
-                         {0, 250, 30, 500},
-                         {750, 250, 30, 500}};
+const size_t BRICKS3[12][4] = {
+    {50, 390, 100, 20},  // where the door is
+    {185, 275, 20, 200}, // left column
+    {375, 250, 20, 250}, // second column
+    {435, 315, 120, 20}, {580, 230, 90, 20},
+    {690, 370, 120, 20}, {240, 230, 90, 20},
+    {140, 325, 90, 20},  {325, 120, 650, 20}, // starting platform
+    {375, 0, 750, 30},                        // border
+    {0, 250, 30, 500},   {750, 250, 30, 500}};
 
-const size_t LAVA_WIDTH = 11;
+// width of the lava + water = 11
 const size_t LAVA_NUM[NUM_MAP] = {4, 4, 2};
-size_t LAVA1[4][4] = {{180, 15, 165, LAVA_WIDTH},
-                      {500, 85, 165, LAVA_WIDTH},
-                      {500, 310, 100, LAVA_WIDTH},
-                      {252, 310, 140, LAVA_WIDTH}};
+const size_t LAVA1[4][4] = {{180, 15, 165, 11},
+                            {500, 85, 165, 11},
+                            {500, 310, 100, 11},
+                            {252, 310, 140, 11}};
 
-size_t LAVA2[4][4] = {{500, 15, 140, LAVA_WIDTH},
-                      {580, 140, 80, LAVA_WIDTH},
-                      {510, 400, 60, LAVA_WIDTH},
-                      {390, 400, 60, LAVA_WIDTH}};
+const size_t LAVA2[4][4] = {{500, 15, 140, 11},
+                            {580, 140, 80, 11},
+                            {510, 400, 60, 11},
+                            {390, 400, 60, 11}};
 
-size_t LAVA3[2][4] = {{500, 15, 100, LAVA_WIDTH}, {225, 240, 50, LAVA_WIDTH}};
+const size_t LAVA3[2][4] = {{550, 15, 90, 11}, {225, 240, 50, 11}};
 
 const size_t WATER_NUM[NUM_MAP] = {2, 2, 2};
-size_t WATER1[2][4] = {{500, 210, 165, LAVA_WIDTH},
-                       {220, 210, 120, LAVA_WIDTH}};
+const size_t WATER1[2][4] = {{500, 210, 165, 11}, {220, 210, 120, 11}};
 
-size_t WATER2[2][4] = {{300, 300, 120, LAVA_WIDTH}, {110, 90, 100, LAVA_WIDTH}};
+const size_t WATER2[2][4] = {{300, 300, 120, 11}, {110, 90, 100, 11}};
 
-size_t WATER3[2][4] = {{280, 15, 160, LAVA_WIDTH}, {670, 380, 70, LAVA_WIDTH}};
+const size_t WATER3[2][4] = {{280, 15, 160, 11}, {670, 380, 70, 11}};
 
 // exits
 size_t EXITS[3][4] = {{60, 458, INNER_RADIUS * 3, OUTER_RADIUS * 3},
@@ -116,30 +104,31 @@ size_t EXITS[3][4] = {{60, 458, INNER_RADIUS * 3, OUTER_RADIUS * 3},
                       {60, 424, INNER_RADIUS * 3, OUTER_RADIUS * 3}};
 
 // elevators
-size_t ELEVATORS[3][4] = {{50, 220, 70, BRICK_WIDTH},
-                          {700, 25, 70, BRICK_WIDTH},
-                          {50, 200, 70, BRICK_WIDTH}};
-
+const size_t ELEVATORS[3][4] = {
+    {50, 220, 70, 20}, {700, 25, 70, 20}, {50, 200, 70, 20}};
 // elevator buttons
-size_t E_BUTTONS[2][4] = {{475, 150, 30, 20}, {350, 25, 30, 20}};
+const size_t E_BUTTONS[2][4] = {{475, 150, 30, 20}, {400, 25, 30, 20}};
 
 // doors
-size_t DOORS[2][4] = {{300, 245, 30, 70}, {250, 175, 30, 90}};
-
+const size_t DOORS[2][4] = {{300, 245, 30, 70}, {250, 175, 30, 90}};
 // doors buttons
-size_t BUTTONS[2][4] = {{40, 100, 30, 20}, {500, 140, 30, 20}};
+const size_t BUTTONS[2][4] = {{40, 100, 30, 20}, {500, 140, 30, 20}};
 
+// point range thresholds
+const size_t RED_THRESHOLD = 25;
+const size_t ORANGE_THRESHOLD = 50;
+const size_t GREEN_THRESHOLD = 75;
+
+// gem constants
 const size_t GEM_NUM[3] = {3, 3, 3};
 const size_t GEM1[3][2] = {{180, 100}, {560, 450}, {375, 325}};
 const size_t GEM2[3][2] = {{120, 100}, {430, 310}, {450, 410}};
 const size_t GEM3[3][2] = {{670, 390}, {580, 250}, {135, 345}};
 
+// clock constants
 const vector_t CLOCK_POS = {.x = 375, .y = 10};
-const color_t CLOCK_COL = {1, 1, .5};
 const size_t TEXT_SIZE = 14;
 const size_t TEXT_HEIGHT_SCALE = 2;
-
-const size_t BODY_ASSETS = 2;
 
 // velocity constants
 const vector_t VELOCITY_LEFT = (vector_t){-200, 0};
@@ -157,7 +146,6 @@ const char *BACKGROUND_PATH = "assets/dungeonbackground.png";
 const char *PAUSE_PATH = "assets/pause.png";
 const char *FONT_FILEPATH = "assets/Cascadia.ttf";
 const char *BRICK_PATH = "assets/brick_texture.png";
-const char *LAVA_PATH = "assets/lava.png";
 const char *HOMEPAGE_PATH = "assets/homepage.png";
 const char *ELEVATOR_PATH = "assets/elevator.png";
 const char *DOOR_PATH = "assets/door.png";
@@ -205,6 +193,7 @@ struct state {
   bool level_completed[3];
   double time;
   bool music_played;
+  TTF_Font *font;
 };
 
 body_t *make_obstacle(size_t w, size_t h, vector_t center, char *info) {
@@ -420,6 +409,10 @@ void platform_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   body_set_velocity(body1, vel);
 }
 
+vector_t get_dimensions_for_text(char *text) {
+  return (vector_t){strlen(text) * TEXT_SIZE, TEXT_SIZE * TEXT_HEIGHT_SCALE};
+}
+
 void init_bgd_player(state_t *state) {
   state->time = 0;
   SDL_Rect box = (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
@@ -434,21 +427,6 @@ void init_bgd_player(state_t *state) {
   // spirit
   asset_make_spirit(SPIRIT_FRONT_PATH, SPIRIT_LEFT_PATH, SPIRIT_RIGHT_PATH,
                     spirit);
-}
-
-vector_t get_dimensions_for_text(char *text) {
-  return (vector_t){strlen(text) * TEXT_SIZE, TEXT_SIZE * TEXT_HEIGHT_SCALE};
-}
-
-void make_clock(state_t *state) {
-  char text[10000];
-  sprintf(text, "Clock:%.0f", floor(state->time));
-  vector_t text_dim = get_dimensions_for_text(text);
-  SDL_Rect text_box = (SDL_Rect){.x = CLOCK_POS.x - (text_dim.x / 2),
-                                 .y = CLOCK_POS.y,
-                                 .w = text_dim.x,
-                                 .h = text_dim.y};
-  asset_make_text(FONT_FILEPATH, text_box, text, CLOCK_COL);
 }
 
 void make_level1(state_t *state) {
@@ -1037,6 +1015,7 @@ state_t *emscripten_init() {
   state->level_completed[1] = false; // for level 2
   state->level_completed[2] = false; // for level 3
   state->time = 0;
+  state->font = TTF_OpenFont(FONT_FILEPATH, 18);
 
   go_to_homepage(state);
 
@@ -1073,13 +1052,28 @@ bool emscripten_main(state_t *state) {
   list_t *body_assets = asset_get_asset_list();
   size_t len = list_size(body_assets);
 
+  // for loop
   for (size_t i = 0; i < len; i++) {
     asset_t *asset = list_get(body_assets, i);
-    asset_animate(asset, state->time);
+    // asset_animate(asset, state->time);
     asset_render(list_get(body_assets, i));
   }
 
   if (state->current_screen != HOMEPAGE) {
+    char text[10000];
+    sprintf(text, "Clock:%.0f", floor(state->time));
+    vector_t text_dim = get_dimensions_for_text(text);
+    SDL_Rect rect = (SDL_Rect){.x = CLOCK_POS.x - (text_dim.x / 2),
+                               .y = CLOCK_POS.y,
+                               .w = text_dim.x,
+                               .h = text_dim.y};
+=======
+                               .y = CLOCK_POS.y,
+                               .w = text_dim.x,
+                               .h = text_dim.y};
+>>>>>>> refs/remotes/origin/master
+
+    sdl_render_text(text, state->font, CLOCK_COL, &rect);
 
     if (!(state->pause)) {
       state->collision_type = collision(state);
@@ -1108,6 +1102,7 @@ bool emscripten_main(state_t *state) {
       // asset_t *clock = list_get(body_assets, len - 1);
       // asset_destroy(clock);
       // list_remove(body_assets, len - 1);
+      // update_clock(state);
       scene_tick(state->scene, dt);
       // make_clock(state);
       state->time += dt;
