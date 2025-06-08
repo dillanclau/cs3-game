@@ -29,6 +29,8 @@ const color_t CLOCK_COL = {1, 1, .5};
 
 // constants to create platforms
 const size_t NUM_MAP = 3;
+const size_t BRICK_WIDTH = 20;
+const size_t LAVA_WIDTH = 11;
 const size_t BRICK_NUM[NUM_MAP] = {14, 12, 12};
 
 // obstacle dimensions in {x, y, w, h}
