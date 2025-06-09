@@ -1024,5 +1024,6 @@ void emscripten_free(state_t *state) {
   list_free(asset_get_asset_list());
   scene_free(state->scene);
   asset_cache_destroy();
+  TTF_CloseFont(state->font);
   free(state);
 }
