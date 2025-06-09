@@ -370,7 +370,6 @@ void sdl_play_jump_sound(const char *path) {
   sdl_play_sound_effect(&jump_sound, path);
 }
 
-// added by Natalie
 void sdl_quit() {
   if (background_music) {
     Mix_FreeMusic(background_music);
