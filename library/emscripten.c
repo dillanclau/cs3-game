@@ -12,7 +12,6 @@
 state_t *state;
 
 void loop() {
-  // If needed, generate a pointer to our initial state
   if (!state) {
     state = emscripten_init();
   }

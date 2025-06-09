@@ -19,8 +19,6 @@ const size_t INIT_CAPACITY = 10;
  * @return a pointer to the newly allocated asset
  */
 static asset_t *asset_init(asset_type_t ty, SDL_Rect bounding_box) {
-  // This is a fancy way of malloc'ing space for an `image_asset_t` if `ty` is
-  // ASSET_IMAGE, and `text_asset_t` otherwise.
   if (ASSET_LIST == NULL) {
     ASSET_LIST = list_init(INIT_CAPACITY, (free_func_t)asset_destroy);
   }
@@ -75,7 +73,6 @@ void asset_make_text(const char *filepath, SDL_Rect bounding_box,
   list_add(ASSET_LIST, (asset_t *)text_asset);
 }
 
-// new asset for the spirit
 void asset_make_spirit(const char *front_filepath, const char *left_filepath,
                        const char *right_filepath, body_t *body) {
   SDL_Rect bounding_box = (SDL_Rect){.x = 0, .y = 0, .w = 0, .h = 0};
@@ -109,7 +106,6 @@ void asset_make_anim(const char *frame1_filepath, const char *frame2_filepath,
 }
 
 void asset_change_texture(asset_t *asset, char key) {
-  // pass in the key instead
   assert(asset->type == ASSET_SPIRIT);
   spirit_asset_t *spirit_asset = (spirit_asset_t *)asset;
   switch (key) {
@@ -126,8 +122,6 @@ void asset_change_texture(asset_t *asset, char key) {
 }
 
 void asset_animate(asset_t *asset, double time) {
-  // pass in the key instead
-  // assert(asset->type == ASSET_ANIM);
   if (asset->type == ASSET_ANIM) {
     anim_asset_t *anim_asset = (anim_asset_t *)asset;
     int val = ((int)floor(time) / 1) % 3;
