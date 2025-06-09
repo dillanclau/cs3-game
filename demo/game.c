@@ -595,17 +595,11 @@ void go_to_level(state_t *state, screen_t target_screen,
   make_level(state);
 }
 
-void go_to_level1(state_t *state) {
-  go_to_level(state, LEVEL1, make_level1);
-}
+void go_to_level1(state_t *state) { go_to_level(state, LEVEL1, make_level1); }
 
-void go_to_level2(state_t *state) {
-  go_to_level(state, LEVEL2, make_level2);
-}
+void go_to_level2(state_t *state) { go_to_level(state, LEVEL2, make_level2); }
 
-void go_to_level3(state_t *state) {
-  go_to_level(state, LEVEL3, make_level3);
-}
+void go_to_level3(state_t *state) { go_to_level(state, LEVEL3, make_level3); }
 
 void go_to_homepage(state_t *state) {
   if (state->current_screen != HOMEPAGE) {
@@ -684,80 +678,79 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
     vector_t velocity = body_get_velocity(spirit);
     asset_t *spirit_asset = list_get(asset_list, 1);
     if (type == KEY_PRESSED) {
-    if (!state->pause) {
-      switch (key) {
-      case KEY_H: {
-        go_to_homepage(state);
-        break;
-      }
-      case LEFT_ARROW: {
-        if (!(collision_type == RIGHT_COLLISION ||
-              collision_type == UP_RIGHT_COLLISION ||
-              collision_type == DOWN_RIGHT_COLLISION)) {
-          body_set_velocity(spirit, (vector_t){VELOCITY_LEFT.x, velocity.y});
+      if (!state->pause) {
+        switch (key) {
+        case KEY_H: {
+          go_to_homepage(state);
+          break;
         }
-        asset_change_texture(spirit_asset, key);
+        case LEFT_ARROW: {
+          if (!(collision_type == RIGHT_COLLISION ||
+                collision_type == UP_RIGHT_COLLISION ||
+                collision_type == DOWN_RIGHT_COLLISION)) {
+            body_set_velocity(spirit, (vector_t){VELOCITY_LEFT.x, velocity.y});
+          }
+          asset_change_texture(spirit_asset, key);
+          break;
+        }
+        case RIGHT_ARROW: {
+          if (!(collision_type == LEFT_COLLISION ||
+                collision_type == UP_LEFT_COLLISION ||
+                collision_type == DOWN_LEFT_COLLISION)) {
+            body_set_velocity(spirit, (vector_t){VELOCITY_RIGHT.x, velocity.y});
+          }
+          asset_change_texture(spirit_asset, key);
+          break;
+        }
+        case UP_ARROW: {
+          sdl_play_jump_sound(JUMP_SOUND_PATH);
+          if (collision_type == UP_COLLISION ||
+              collision_type == UP_LEFT_COLLISION ||
+              collision_type == UP_RIGHT_COLLISION) {
+            body_set_velocity(spirit, (vector_t){velocity.x, VELOCITY_UP.y});
+            break;
+          }
+          asset_change_texture(spirit_asset, key);
+          break;
+        }
+        case KEY_P: {
+          if (state->current_screen == LEVEL1 ||
+              state->current_screen == LEVEL2 ||
+              state->current_screen == LEVEL3) {
+            pause(state);
+          }
+          break;
+        }
+        }
+      } else if (state->pause) {
+        switch (key) {
+        case KEY_H: {
+          go_to_homepage(state);
+          break;
+        }
+        case KEY_R: {
+          restart(state);
+          break;
+        }
+        case KEY_U: {
+          unpause(state);
+          break;
+        }
+        }
+      }
+    } else {
+      switch (key) {
+      case LEFT_ARROW: {
+        body_set_velocity(spirit, (vector_t){0, velocity.y});
         break;
       }
       case RIGHT_ARROW: {
-        if (!(collision_type == LEFT_COLLISION ||
-              collision_type == UP_LEFT_COLLISION ||
-              collision_type == DOWN_LEFT_COLLISION)) {
-          body_set_velocity(spirit, (vector_t){VELOCITY_RIGHT.x, velocity.y});
-        }
-        asset_change_texture(spirit_asset, key);
-        break;
-      }
-      case UP_ARROW: {
-        sdl_play_jump_sound(JUMP_SOUND_PATH);
-        if (collision_type == UP_COLLISION ||
-            collision_type == UP_LEFT_COLLISION ||
-            collision_type == UP_RIGHT_COLLISION) {
-          body_set_velocity(spirit, (vector_t){velocity.x, VELOCITY_UP.y});
-          break;
-        }
-        asset_change_texture(spirit_asset, key);
-        break;
-      }
-      case KEY_P: {
-        if (state->current_screen == LEVEL1 ||
-            state->current_screen == LEVEL2 ||
-            state->current_screen == LEVEL3) {
-          pause(state);
-        }
+        body_set_velocity(spirit, (vector_t){0, velocity.y});
         break;
       }
       }
-    } else if (state->pause) {
-      switch (key) {
-      case KEY_H: {
-        go_to_homepage(state);
-        break;
-      }
-      case KEY_R: {
-        restart(state);
-        break;
-      }
-      case KEY_U: {
-        unpause(state);
-        break;
-      }
-      }
+      asset_change_texture(spirit_asset, UP_ARROW);
     }
-  } 
-  else {
-    switch (key) {
-    case LEFT_ARROW: {
-      body_set_velocity(spirit, (vector_t){0, velocity.y});
-      break;
-    }
-    case RIGHT_ARROW: {
-      body_set_velocity(spirit, (vector_t){0, velocity.y});
-      break;
-    }
-  }
-  asset_change_texture(spirit_asset, UP_ARROW);
-  }
   }
 }
 
