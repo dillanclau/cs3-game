@@ -18,8 +18,8 @@ typedef struct {
 } entry_t;
 
 static void asset_cache_free_entry(entry_t *entry) {
-  if ((entry->type == ASSET_IMAGE) || (entry->type == ASSET_ANIM) 
-  || (entry->type == ASSET_SPIRIT) || (entry->type == ASSET_BUTTON)) {
+  if ((entry->type == ASSET_IMAGE) || (entry->type == ASSET_ANIM) ||
+      (entry->type == ASSET_SPIRIT) || (entry->type == ASSET_BUTTON)) {
     SDL_DestroyTexture(entry->obj);
   } else if (entry->type == ASSET_TEXT) {
     TTF_CloseFont(entry->obj);
