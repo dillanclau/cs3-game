@@ -39,20 +39,12 @@ size_t ORANGE_THRESHOLD = 5;
 size_t GREEN_THRESHOLD = 15;
 
 // Bricks for Map 1
-size_t BRICKS1[14][4] = {{375, -500, 750, 30},
-                         {160, 425, 320, 20},
-                         {560, 425, 150, 20},
-                         {425, 300, 650, 20},
-                         {325, 200, 650, 20},
-                         {180, 75, 175, 20},
-                         {500, 75, 175, 20},
-                         {730, 330, 40, 60},
-                         {30, 235, 60, 70},
-                         {730, 90, 40, 60},
-                         {715, 35, 70, 70},
-                         {375, 0, 750, 30},
-                         {0, 250, 30, 500},
-                         {750, 250, 30, 500}};
+size_t BRICKS1[14][4] = {
+    {375, -500, 750, 30}, {160, 425, 320, 20}, {560, 425, 150, 20},
+    {425, 300, 650, 20},  {325, 200, 650, 20}, {180, 75, 175, 20},
+    {500, 75, 175, 20},   {730, 330, 40, 60},  {30, 235, 60, 70},
+    {730, 90, 40, 60},    {715, 35, 70, 70},   {375, 0, 750, 30},
+    {0, 250, 30, 500},    {750, 250, 30, 500}};
 
 // Bricks for Map 2
 const size_t BRICKS2[12][4] = {
@@ -95,9 +87,8 @@ const size_t WATER2[2][4] = {{300, 300, 120, 11}, {110, 90, 100, 11}};
 const size_t WATER3[2][4] = {{280, 15, 160, 11}, {670, 380, 70, 11}};
 
 // exits
-const size_t EXITS[3][4] = {{60, 458, 45, 45},
-                      {60, 424, 45, 45},
-                      {60, 424, 45, 45}};
+const size_t EXITS[3][4] = {
+    {60, 458, 45, 45}, {60, 424, 45, 45}, {60, 424, 45, 45}};
 
 // elevators
 const size_t ELEVATORS[3][4] = {
@@ -674,10 +665,9 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
         }
         break;
       }
+      }
     }
-    }
-  } 
-  else {
+  } else {
     list_t *asset_list = asset_get_asset_list();
     collision_type_t collision_type = state->collision_type;
     body_t *spirit = scene_get_body(state->scene, 0);
@@ -726,9 +716,8 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
         }
         break;
       }
-    }
-    } 
-    else if (type == KEY_PRESSED && state->pause) {
+      }
+    } else if (type == KEY_PRESSED && state->pause) {
       switch (key) {
       case KEY_H: {
         go_to_homepage(state);
@@ -742,9 +731,8 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
         unpause(state);
         break;
       }
-    }
-    } 
-    else {
+      }
+    } else {
       switch (key) {
       case LEFT_ARROW: {
         body_set_velocity(spirit, (vector_t){0, velocity.y});
@@ -754,7 +742,7 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
         body_set_velocity(spirit, (vector_t){0, velocity.y});
         break;
       }
-    }
+      }
       asset_change_texture(spirit_asset, UP_ARROW);
     }
   }

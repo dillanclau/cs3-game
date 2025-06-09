@@ -126,8 +126,6 @@ void asset_change_texture(asset_t *asset, char key) {
 }
 
 void asset_animate(asset_t *asset, double time) {
-  // pass in the key instead
-  // assert(asset->type == ASSET_ANIM);
   if (asset->type == ASSET_ANIM) {
     anim_asset_t *anim_asset = (anim_asset_t *)asset;
     int val = ((int)floor(time) / 1) % 3;

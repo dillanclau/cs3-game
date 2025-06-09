@@ -67,8 +67,6 @@ static vector_t get_max_min_projections(list_t *shape, vector_t unit_axis) {
  */
 static collision_info_t compare_collision(list_t *shape1, list_t *shape2,
                                           double *min_overlap) {
-  // TODO: copy and paste your implementation from last week here and make the
-  // changes specified in the guide!
   list_t *edges1 = get_edges(shape1);
   vector_t collision_axis = VEC_ZERO;
 

@@ -18,10 +18,10 @@ typedef struct {
 } entry_t;
 
 static void asset_cache_free_entry(entry_t *entry) {
-  if (entry->type == ASSET_IMAGE) {
+  if ((entry->type == ASSET_IMAGE) || (entry->type == ASSET_ANIM) 
+  || (entry->type == ASSET_SPIRIT) || (entry->type == ASSET_BUTTON)) {
     SDL_DestroyTexture(entry->obj);
-  }
-  if (entry->type == ASSET_TEXT) {
+  } else if (entry->type == ASSET_TEXT) {
     TTF_CloseFont(entry->obj);
   }
   free(entry);
@@ -58,13 +58,13 @@ void *asset_cache_obj_get_or_create(asset_type_t ty, const char *filepath) {
     case ASSET_TEXT:
       entry->obj = TTF_OpenFont(filepath, FONT_SIZE);
       break;
-    case ASSET_SPIRIT: // check this!
+    case ASSET_SPIRIT:
       entry->obj = sdl_get_image_texture(filepath);
       break;
-    case ASSET_ANIM: // check this!
+    case ASSET_ANIM:
       entry->obj = sdl_get_image_texture(filepath);
       break;
-    case ASSET_BUTTON: // check this!
+    case ASSET_BUTTON:
       entry->obj = sdl_get_image_texture(filepath);
       break;
     }
