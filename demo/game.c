@@ -145,6 +145,9 @@ const size_t EXITS[3][4] = {
 const size_t ELEVATORS[3][4] = {
     {50, 220, 70, 20}, {700, 25, 70, 20}, {50, 200, 70, 20}};
 
+// elevator ranges
+const size_t ELEVATOR_RANGES[3][2] = {{310, 230}, {310, 35}, {310, 210}};
+
 // elevator buttons
 const size_t E_BUTTONS[2][4] = {{475, 150, 30, 20}, {400, 25, 30, 20}};
 
@@ -169,6 +172,8 @@ const size_t TEXT_HEIGHT_SCALE = 2;
 const vector_t VELOCITY_LEFT = (vector_t){-200, 0};
 const vector_t VELOCITY_RIGHT = (vector_t){200, 0};
 const vector_t VELOCITY_UP = (vector_t){0, 240};
+const vector_t ELEVATOR_UP = (vector_t){0, 20};
+const vector_t ELEVATOR_DOWN = (vector_t){0, -20};
 
 // gravity constants
 const double GRAVITY = 320;
@@ -810,25 +815,25 @@ void move_elevator(state_t *state) {
       vector_t centroid = body_get_centroid(body);
 
       if (state->current_screen == LEVEL2) {
-        if (centroid.y + 10 > 320) {
-          body_set_velocity(body, (vector_t){0, -20});
-        } else if (centroid.y - 10 < 220) {
-          body_set_velocity(body, (vector_t){0, 20});
+        if (centroid.y > ELEVATOR_RANGES[0][0]) {
+          body_set_velocity(body, ELEVATOR_DOWN);
+        } else if (centroid.y < ELEVATOR_RANGES[0][1]) {
+          body_set_velocity(body, ELEVATOR_UP);
         }
       }
 
       if (state->current_screen == LEVEL3) {
-        if (centroid.x == 700) { // first elevator
-          if (centroid.y + 10 > 320) {
-            body_set_velocity(body, (vector_t){0, -20});
-          } else if (centroid.y - 10 < 25) {
-            body_set_velocity(body, (vector_t){0, 20});
+        if (centroid.x == ELEVATORS[1][0]) { // first elevator
+          if (centroid.y > ELEVATOR_RANGES[1][0]) {
+            body_set_velocity(body, ELEVATOR_DOWN);
+          } else if (centroid.y < ELEVATOR_RANGES[1][1]) {
+            body_set_velocity(body, ELEVATOR_UP);
           }
-        } else if (centroid.x == 50) { // second elevator
-          if (centroid.y + 10 > 320) {
-            body_set_velocity(body, (vector_t){0, -20});
-          } else if (centroid.y - 10 < 200) {
-            body_set_velocity(body, (vector_t){0, 20});
+        } else if (centroid.x == ELEVATORS[2][0]) { // second elevator
+          if (centroid.y > ELEVATOR_RANGES[2][0]) {
+            body_set_velocity(body, ELEVATOR_DOWN);
+          } else if (centroid.y < ELEVATOR_RANGES[2][1]) {
+            body_set_velocity(body, ELEVATOR_UP);
           }
         }
       }
@@ -976,8 +981,8 @@ bool emscripten_main(state_t *state) {
   }
 
   if (state->current_screen != HOMEPAGE) {
-
-    if (!(state->pause) && !(game_over)) {
+    double dt = time_since_last_tick();
+    if (!(state->pause) && !(game_over) && dt < 0.1) {
 
       // timer
       char text[10000];
@@ -991,11 +996,8 @@ bool emscripten_main(state_t *state) {
       sdl_render_text(text, state->font, CLOCK_COL, &rect);
       state->collision_type = collision(state);
 
-      double dt = time_since_last_tick();
-
-      if (dt < 0.2) {
-        apply_gravity(state, dt);
-      }
+      // gravity
+      apply_gravity(state, dt);
 
       // check for pressed buttons
       button_press(state);
@@ -1004,8 +1006,6 @@ bool emscripten_main(state_t *state) {
         move_elevator(state);
       }
 
-      // check for completed level
-      level_complete(state);
       // check for completed level
       level_complete(state);
 

@@ -177,6 +177,10 @@ void sdl_on_key(key_handler_t handler);
  */
 double time_since_last_tick(void);
 
+
+/**
+ * Resets internal timer.
+ */
 void sdl_reset_timer(void);
 
 /**
