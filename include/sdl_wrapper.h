@@ -145,26 +145,6 @@ void sdl_render_scene(scene_t *scene);
  * Registers a function to be called every time a key is pressed.
  * Overwrites any existing handler.
  *
- * Example:
- * ```
- * void on_key(char key, key_event_type_t type, double held_time) {
- *     if (type == KEY_PRESSED) {
- *         switch (key) {
- *             case 'a':
- *                 printf("A pressed\n");
- *                 break;
- *             case UP_ARROW:
- *                 printf("UP pressed\n");
- *                 break;
- *         }
- *     }
- * }
- * int main(void) {
- *     sdl_on_key(on_key);
- *     while (!sdl_is_done());
- * }
- * ```
- *
  * @param handler the function to call with each key press
  */
 void sdl_on_key(key_handler_t handler);

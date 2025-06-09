@@ -36,7 +36,6 @@ static list_t *get_edges(list_t *shape) {
  * length and `min` is the minimum projection length.
  */
 static vector_t get_max_min_projections(list_t *shape, vector_t unit_axis) {
-  // TODO: copy and paste your implementation from last week!
   double min = __DBL_MAX__;
   double max = -__DBL_MAX__;
 

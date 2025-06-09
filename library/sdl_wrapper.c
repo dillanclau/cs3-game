@@ -14,7 +14,6 @@ const size_t WINDOW_WIDTH = 750;
 const size_t WINDOW_HEIGHT = 500;
 const SDL_Color SDL_BLACK = {0, 0, 0};
 const int8_t FONT_HEIGHT_SCALE = 2;
-// const double MS_PER_S = 1000.0;
 const double MS_PER_S = 100000;
 
 const size_t NUMBER_OF_SOUNDS = 5;
@@ -75,7 +74,6 @@ vector_t get_window_center(void) {
  * chosen to maximize the size of the scene while keeping it in the window.
  */
 double get_scene_scale(vector_t window_center) {
-  // Scale scene so it fits entirely in the window
   double x_scale = window_center.x / max_diff.x,
          y_scale = window_center.y / max_diff.y;
   return x_scale < y_scale ? x_scale : y_scale;
@@ -83,8 +81,6 @@ double get_scene_scale(vector_t window_center) {
 
 /** Maps a scene coordinate to a window coordinate */
 vector_t get_window_position(vector_t scene_pos, vector_t window_center) {
-  // Scale scene coordinates by the scaling factor
-  // and map the center of the scene to the center of the window
   vector_t scene_center_offset = vec_subtract(scene_pos, center);
   double scale = get_scene_scale(window_center);
   vector_t pixel_center_offset = vec_multiply(scale, scene_center_offset);
@@ -253,7 +249,7 @@ void sdl_draw_body(body_t *body) {
   sdl_show();
   free(x_points);
   free(y_points);
-  list_free(points); // this is added by olivia
+  list_free(points);
 }
 
 SDL_Texture *sdl_get_image_texture(const char *image_path) {
