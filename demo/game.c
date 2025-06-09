@@ -11,125 +11,10 @@
 #include "forces.h"
 #include "sdl_wrapper.h"
 
+// window constants
 const vector_t MIN = {0, 0};
 const vector_t MAX = {750, 500};
 const vector_t CENTER = {375, 250};
-
-const vector_t START_POS = {40, 40};
-
-// make the spirit
-const double OUTER_RADIUS = 15;
-const double INNER_RADIUS = 15;
-const size_t SPIRIT_NUM_POINTS = 20;
-
-// colors
-const color_t OBS_COLOR = (color_t){0.2, 0.2, 0.3};
-const color_t SPIRIT_COLOR = (color_t){0.1, 0.9, 0.2};
-const color_t CLOCK_COL = {1, 1, .5};
-
-// constants to create platforms
-const size_t BRICK_WIDTH = 20;
-const size_t BRICK_NUM[3] = {14, 12, 12};
-
-const size_t NUMBER_OF_LEVELS = 3;
-
-// point range thresholds
-size_t RED_THRESHOLD = 0;
-size_t ORANGE_THRESHOLD = 5;
-size_t GREEN_THRESHOLD = 15;
-
-// Bricks for Map 1
-size_t BRICKS1[14][4] = {{375, -500, 750, 30},
-                         {160, 425, 320, 20},
-                         {560, 425, 150, 20},
-                         {425, 300, 650, 20},
-                         {325, 200, 650, 20},
-                         {180, 75, 175, 20},
-                         {500, 75, 175, 20},
-                         {730, 330, 40, 60},
-                         {30, 235, 60, 70},
-                         {730, 90, 40, 60},
-                         {715, 35, 70, 70},
-                         {375, 0, 750, 30},
-                         {0, 250, 30, 500},
-                         {750, 250, 30, 500}};
-
-// Bricks for Map 2
-const size_t BRICKS2[12][4] = {
-    {100, 390, 200, 20},                      // where the door is
-    {450, 390, 300, 20}, {350, 290, 350, 20}, // next row
-    {630, 270, 300, 20}, {715, 290, 70, 60},  {225, 200, 450, 20}, // third row
-    {500, 130, 300, 20}, {100, 80, 200, 20}, // starting platform
-    {710, 30, 80, 60},                       // misc sq
-    {375, 0, 750, 30},                       // border
-    {0, 250, 30, 500},   {750, 250, 30, 500}};
-
-const size_t BRICKS3[12][4] = {
-    {50, 390, 100, 20},  // where the door is
-    {185, 275, 20, 200}, // left column
-    {375, 250, 20, 250}, // second column
-    {435, 315, 120, 20}, {580, 230, 90, 20},
-    {690, 370, 120, 20}, {240, 230, 90, 20},
-    {140, 325, 90, 20},  {325, 120, 650, 20}, // starting platform
-    {375, 0, 750, 30},                        // border
-    {0, 250, 30, 500},   {750, 250, 30, 500}};
-
-const size_t LAVA_NUM[3] = {4, 4, 2};
-const size_t LAVA1[4][4] = {{180, 15, 165, 11},
-                            {500, 85, 165, 11},
-                            {500, 310, 100, 11},
-                            {252, 310, 140, 11}};
-
-const size_t LAVA2[4][4] = {{500, 15, 140, 11},
-                            {580, 140, 80, 11},
-                            {510, 400, 60, 11},
-                            {390, 400, 60, 11}};
-
-const size_t LAVA3[2][4] = {{550, 15, 90, 11}, {225, 240, 50, 11}};
-
-const size_t WATER_NUM[3] = {2, 2, 2};
-const size_t WATER1[2][4] = {{500, 210, 165, 11}, {220, 210, 120, 11}};
-
-const size_t WATER2[2][4] = {{300, 300, 120, 11}, {110, 90, 100, 11}};
-
-const size_t WATER3[2][4] = {{280, 15, 160, 11}, {670, 380, 70, 11}};
-
-// exits
-const size_t EXITS[3][4] = {{60, 458, 45, 45},
-                      {60, 424, 45, 45},
-                      {60, 424, 45, 45}};
-
-// elevators
-const size_t ELEVATORS[3][4] = {
-    {50, 220, 70, 20}, {700, 25, 70, 20}, {50, 200, 70, 20}};
-
-// elevator buttons
-const size_t E_BUTTONS[2][4] = {{475, 150, 30, 20}, {400, 25, 30, 20}};
-
-// doors
-const size_t DOORS[2][4] = {{300, 245, 30, 70}, {250, 175, 30, 90}};
-
-// doors buttons
-const size_t BUTTONS[2][4] = {{40, 100, 30, 20}, {500, 140, 30, 20}};
-
-// gem constants
-const size_t GEM_NUM[3] = {3, 3, 3};
-const size_t GEM1[3][2] = {{180, 100}, {560, 450}, {375, 325}};
-const size_t GEM2[3][2] = {{120, 100}, {430, 310}, {450, 410}};
-const size_t GEM3[3][2] = {{670, 390}, {580, 250}, {135, 345}};
-
-// clock constants
-const vector_t CLOCK_POS = {.x = 375, .y = 10};
-const size_t TEXT_SIZE = 14;
-const size_t TEXT_HEIGHT_SCALE = 2;
-
-// velocity constants
-const vector_t VELOCITY_LEFT = (vector_t){-200, 0};
-const vector_t VELOCITY_RIGHT = (vector_t){200, 0};
-const vector_t VELOCITY_UP = (vector_t){0, 240};
-
-// gravity constants
-const double GRAVITY = 320;
 
 // image paths
 const char *SPIRIT_FRONT_PATH = "assets/waterspiritfront.png";
@@ -177,6 +62,117 @@ SDL_Rect BACKGROUND_BOX =
     (SDL_Rect){.x = MIN.x, .y = MIN.y, .w = MAX.x, .h = MAX.y};
 SDL_Rect POP_UP_BOX = (SDL_Rect){.x = 100, .y = 50, .w = 550, .h = 400};
 
+// initial spirit position
+const vector_t START_POS = {40, 40};
+
+// spirit measurements
+const double OUTER_RADIUS = 15;
+const double INNER_RADIUS = 15;
+const size_t SPIRIT_NUM_POINTS = 20;
+
+// colors
+const color_t OBS_COLOR = (color_t){0.2, 0.2, 0.3};
+const color_t SPIRIT_COLOR = (color_t){0.1, 0.9, 0.2};
+const color_t CLOCK_COL = {1, 1, .5};
+
+const size_t NUMBER_OF_LEVELS = 3;
+
+// point range thresholds
+size_t RED_THRESHOLD = 0;
+size_t ORANGE_THRESHOLD = 5;
+size_t GREEN_THRESHOLD = 15;
+
+// constants to create platforms
+const size_t BRICK_WIDTH = 20;
+const size_t BRICK_NUM[3] = {14, 12, 12};
+
+// Bricks for Map 1
+size_t BRICKS1[14][4] = {
+    {375, -500, 750, 30}, {160, 425, 320, 20}, {560, 425, 150, 20},
+    {425, 300, 650, 20},  {325, 200, 650, 20}, {180, 75, 175, 20},
+    {500, 75, 175, 20},   {730, 330, 40, 60},  {30, 235, 60, 70},
+    {730, 90, 40, 60},    {715, 35, 70, 70},   {375, 0, 750, 30},
+    {0, 250, 30, 500},    {750, 250, 30, 500}};
+
+// Bricks for Map 2
+const size_t BRICKS2[12][4] = {
+    {100, 390, 200, 20},                      // where the door is
+    {450, 390, 300, 20}, {350, 290, 350, 20}, // next row
+    {630, 270, 300, 20}, {715, 290, 70, 60},  {225, 200, 450, 20}, // third row
+    {500, 130, 300, 20}, {100, 80, 200, 20}, // starting platform
+    {710, 30, 80, 60},                       // misc sq
+    {375, 0, 750, 30},                       // border
+    {0, 250, 30, 500},   {750, 250, 30, 500}};
+
+// Bricks for Map 3
+const size_t BRICKS3[12][4] = {
+    {50, 390, 100, 20},  // where the door is
+    {185, 275, 20, 200}, // left column
+    {375, 250, 20, 250}, // second column
+    {435, 315, 120, 20}, {580, 230, 90, 20},
+    {690, 370, 120, 20}, {240, 230, 90, 20},
+    {140, 325, 90, 20},  {325, 120, 650, 20}, // starting platform
+    {375, 0, 750, 30},                        // border
+    {0, 250, 30, 500},   {750, 250, 30, 500}};
+
+const size_t LAVA_NUM[3] = {4, 4, 2};
+
+// Lava for Map 1
+const size_t LAVA1[4][4] = {{180, 15, 165, 11},
+                            {500, 85, 165, 11},
+                            {500, 310, 100, 11},
+                            {252, 310, 140, 11}};
+
+// Lava for Map 2
+const size_t LAVA2[4][4] = {{500, 15, 140, 11},
+                            {580, 140, 80, 11},
+                            {510, 400, 60, 11},
+                            {390, 400, 60, 11}};
+
+// Lava for Map 3
+const size_t LAVA3[2][4] = {{550, 15, 90, 11}, {225, 240, 50, 11}};
+
+const size_t WATER_NUM[3] = {2, 2, 2};
+const size_t WATER1[2][4] = {{500, 210, 165, 11}, {220, 210, 120, 11}};
+const size_t WATER2[2][4] = {{300, 300, 120, 11}, {110, 90, 100, 11}};
+const size_t WATER3[2][4] = {{280, 15, 160, 11}, {670, 380, 70, 11}};
+
+// exits
+const size_t EXITS[3][4] = {
+    {60, 458, 45, 45}, {60, 424, 45, 45}, {60, 424, 45, 45}};
+
+// elevators
+const size_t ELEVATORS[3][4] = {
+    {50, 220, 70, 20}, {700, 25, 70, 20}, {50, 200, 70, 20}};
+
+// elevator buttons
+const size_t E_BUTTONS[2][4] = {{475, 150, 30, 20}, {400, 25, 30, 20}};
+
+// doors
+const size_t DOORS[2][4] = {{300, 245, 30, 70}, {250, 175, 30, 90}};
+
+// doors buttons
+const size_t BUTTONS[2][4] = {{40, 100, 30, 20}, {500, 140, 30, 20}};
+
+// gem constants
+const size_t GEM_NUM[3] = {3, 3, 3};
+const size_t GEM1[3][2] = {{180, 100}, {560, 450}, {375, 325}};
+const size_t GEM2[3][2] = {{120, 100}, {430, 310}, {450, 410}};
+const size_t GEM3[3][2] = {{670, 390}, {580, 250}, {135, 345}};
+
+// clock constants
+const vector_t CLOCK_POS = {.x = 375, .y = 10};
+const size_t TEXT_SIZE = 14;
+const size_t TEXT_HEIGHT_SCALE = 2;
+
+// velocity constants
+const vector_t VELOCITY_LEFT = (vector_t){-200, 0};
+const vector_t VELOCITY_RIGHT = (vector_t){200, 0};
+const vector_t VELOCITY_UP = (vector_t){0, 240};
+
+// gravity constants
+const double GRAVITY = 320;
+
 bool game_over = false;
 
 typedef enum {
@@ -187,7 +183,6 @@ typedef enum {
 } screen_t;
 
 struct state {
-  // body_t *spirit;
   scene_t *scene;
   screen_t current_screen;
   collision_type_t collision_type;
@@ -600,11 +595,17 @@ void go_to_level(state_t *state, screen_t target_screen,
   make_level(state);
 }
 
-void go_to_level1(state_t *state) { go_to_level(state, LEVEL1, make_level1); }
+void go_to_level1(state_t *state) {
+  go_to_level(state, LEVEL1, make_level1);
+}
 
-void go_to_level2(state_t *state) { go_to_level(state, LEVEL2, make_level2); }
+void go_to_level2(state_t *state) {
+  go_to_level(state, LEVEL2, make_level2);
+}
 
-void go_to_level3(state_t *state) { go_to_level(state, LEVEL3, make_level3); }
+void go_to_level3(state_t *state) {
+  go_to_level(state, LEVEL3, make_level3);
+}
 
 void go_to_homepage(state_t *state) {
   if (state->current_screen != HOMEPAGE) {
@@ -674,16 +675,16 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
         }
         break;
       }
+      }
     }
-    }
-  } 
-  else {
+  } else {
     list_t *asset_list = asset_get_asset_list();
     collision_type_t collision_type = state->collision_type;
     body_t *spirit = scene_get_body(state->scene, 0);
     vector_t velocity = body_get_velocity(spirit);
     asset_t *spirit_asset = list_get(asset_list, 1);
-    if (type == KEY_PRESSED && !state->pause) {
+    if (type == KEY_PRESSED) {
+    if (!state->pause) {
       switch (key) {
       case KEY_H: {
         go_to_homepage(state);
@@ -726,9 +727,8 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
         }
         break;
       }
-    }
-    } 
-    else if (type == KEY_PRESSED && state->pause) {
+      }
+    } else if (state->pause) {
       switch (key) {
       case KEY_H: {
         go_to_homepage(state);
@@ -742,21 +742,22 @@ void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
         unpause(state);
         break;
       }
-    }
-    } 
-    else {
-      switch (key) {
-      case LEFT_ARROW: {
-        body_set_velocity(spirit, (vector_t){0, velocity.y});
-        break;
-      }
-      case RIGHT_ARROW: {
-        body_set_velocity(spirit, (vector_t){0, velocity.y});
-        break;
       }
     }
-      asset_change_texture(spirit_asset, UP_ARROW);
+  } 
+  else {
+    switch (key) {
+    case LEFT_ARROW: {
+      body_set_velocity(spirit, (vector_t){0, velocity.y});
+      break;
     }
+    case RIGHT_ARROW: {
+      body_set_velocity(spirit, (vector_t){0, velocity.y});
+      break;
+    }
+  }
+  asset_change_texture(spirit_asset, UP_ARROW);
+  }
   }
 }
 
@@ -963,9 +964,7 @@ state_t *emscripten_init() {
   state->font = TTF_OpenFont(FONT_FILEPATH, 18);
 
   go_to_homepage(state);
-
   sdl_on_key((key_handler_t)on_key);
-
   return state;
 }
 
@@ -1020,7 +1019,6 @@ bool emscripten_main(state_t *state) {
       state->time += dt;
     }
   }
-
   sdl_show();
   return false;
 }
