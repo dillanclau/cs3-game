@@ -2,7 +2,7 @@
 ## Section 0: Summary
 "The Floor is Lava" by Dillan Lau, Olivia Wang, and Natalie Zhou.
 
-This game was modeled after "Fire Boy and Water Girl" and was created for [CS3 (Introduction to Software Design)](https://sof.tware.design/25sp/) at Caltech, Spring 2025.
+This game was modeled after "Fire Boy and Water Girl" and was created for [CS3 (Introduction to Software Design) at Caltech](https://sof.tware.design/25sp/), Spring 2025.
 
 “The Floor is Lava” is a single player game where the player moves a water sprite to interact with obstacles including platforms, doors, and elevators. If the player successfully collects gems and escapes through the final door, the player wins! The game will be timed, so the player with the quickest moves and most gems wins the most!
 
