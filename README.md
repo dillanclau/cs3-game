@@ -6,7 +6,7 @@ This game was modeled after "Fire Boy and Water Girl" and was created for [CS3 (
 
 “The Floor is Lava” is a single player game where the player moves a water sprite to interact with obstacles including platforms, doors, and elevators. If the player successfully collects gems and escapes through the final door, the player wins! The game will be timed, so the player with the quickest moves and most gems wins the most!
 
-We will also describe how the game works, the special features we implemented in our game, our development timeline, and disaster recovery when things go awry. 
+We will also describe how the game works and the special features we implemented in our game.
 ## Section 1: Gameplay
 The game will begin at a home screen that shows the three levels. The player will be able to press the 1, 2, or 3 key to choose the corresponding level. The player can only select level 2 once level 1 has been completed, and can only select level 3 once both level 1 and level 2 have been completed.
 
