@@ -1,6 +1,8 @@
 # Game Design Document
 ## Section 0: Summary
-“The Floor is Lava” by Olivia Wang, Natalie Zhou, and Dillan Lau.
+"The Floor is Lava" by Dillan Lau, Olivia Wang, and Natalie Zhou.
+
+This game was modeled after "Fire Boy and Water Girl" and was created for CS3 (Introduction to Software Design) at Caltech, Spring 2025.
 
 “The Floor is Lava” is a single player game where the player moves a water sprite to interact with obstacles including platforms, doors, and elevators. If the player successfully collects gems and escapes through the final door, the player wins! The game will be timed, so the player with the quickest moves and most gems wins the most!
 
@@ -21,36 +23,35 @@ The player will be able to control the movement of the sprite using the right, l
 Physics will be applied to the movement of the sprite, so the sprite will be able to jump and fall in a realistic manner. Furthermore, the player’s interaction with obstacle objects will be implemented such that when the sprite is standing on an elevator, both the sprite and the elevator will move together and when a button is pressed, it stays pressed down.
 ## Section 2: Feature Set
 ### Features
-Priority numbers (1, 2, 3, 4) are in parentheses. 
 
 **General Features**
-- Initialization of the 3 maps (1)
+- Initialization of the 3 maps 
     - Where the obstacle objects and blocks are located in the map
-- Keyboard controls (1)
+- Keyboard controls 
     - Controlling the sprite
         - Up is jumping, sprite is facing front
         - Left is moving left, sprite faces left
         - Right is moving left, sprite faces right
     - Selecting level during homepage
-- Homepage (2)
-- Timer (3)
-- Restart, Pause, Return to Homepage (3)
-- Point calculation based on gems and time (4)
+- Homepage 
+- Timer 
+- Restart, Pause, Return to Homepage
+- Point calculation based on gems and time 
 
 **Physics**
-- Player is able to walk and run around (with velocity and acceleration implemented) (1)
+- Player is able to walk and run around (with velocity and acceleration implemented)
     - Player is also able to jump on blocks and fall off
-- Player dies when landing in lava (1)
+- Player dies when landing in lava
 - Player can click buttons to lead to movements including…
-    - Doors opening and closing (2)
-    - Elevators lifting and lowering (3)
+    - Doors opening and closing
+    - Elevators lifting and lowering
 
-**Graphics** (2)
+**Graphics**
 - Sprites (player, gems, blocks, levels)
     - Player sprite (left, right, and front)
 - Lava and water animation (3-4 frames)
 - Background
 
 **Sounds**
-- Constant background music (4)
-- Sound effects (when collecting gems, jumping, etc.) (4)
+- Constant background music
+- Sound effects (when collecting gems, jumping, etc.)
